@@ -10,6 +10,7 @@ tools/caffe_converter/*.prototxt
 tools/caffe_converter/*.caffemodel
 mxnet/
 .DS_Store
+.idea/
 
 # Compiled Object files
 *.slo
