@@ -3,6 +3,7 @@ import tools.find_mxnet
 import mxnet as mx
 import os
 import sys
+sys.path.append('/usr/local/lib/python2.7/site-packages')
 from detect.detector import Detector
 from symbol.symbol_factory import get_symbol
 
@@ -42,7 +43,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Single-shot detection network demo')
     parser.add_argument('--network', dest='network', type=str, default='resnet50',
                         help='which network to use')
-    parser.add_argument('--images', dest='images', type=str, default='./data/demo/dog.jpg',
+    parser.add_argument('--images', dest='images', type=str, default='./data/demo/dog.jpg, ./data/demo/street.jpg',
                         help='run demo with images, use comma to seperate multiple images')
     parser.add_argument('--dir', dest='dir', nargs='?',
                         help='demo image directory, optional', type=str)
@@ -105,6 +106,14 @@ if __name__ == '__main__':
     else:
         ctx = mx.gpu(args.gpu_id)
 
+    # customized
+    args.images = './data/demo/dog.jpg, ./data/demo/street.jpg, ./data/demo/person.jpg';
+    args.network = 'mobilenet'
+    args.epoch = 108
+    args.data_shape = 300
+    network = args.network
+    detect_count = False    # debug flag
+
     # parse image list
     image_list = [i.strip() for i in args.images.split(',')]
     assert len(image_list) > 0, "No valid image specified to detect"
@@ -115,10 +124,15 @@ if __name__ == '__main__':
         prefix = args.prefix + args.network + '_' + str(args.data_shape)
     else:
         prefix = args.prefix
+
     detector = get_detector(network, prefix, args.epoch,
                             args.data_shape,
                             (args.mean_r, args.mean_g, args.mean_b),
                             ctx, len(class_names), args.nms_thresh, args.force_nms)
     # run detection
-    detector.detect_and_visualize(image_list, args.dir, args.extension,
-                                  class_names, args.thresh, args.show_timer)
+    if not detect_count:
+        detector.detect_and_visualize(image_list, args.dir, args.extension,
+                                      class_names, args.thresh, args.show_timer)
+    else:
+        detector.detect_and_record(image_list, args.dir, args.extension,
+                                   class_names, args.thresh, args.show_timer)

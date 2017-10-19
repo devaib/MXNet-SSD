@@ -3,6 +3,7 @@ import tools.find_mxnet
 import mxnet as mx
 import os
 import sys
+sys.path.append('/usr/local/lib/python2.7/site-packages')
 from train.train_net import train_net
 
 def parse_args():
@@ -17,7 +18,7 @@ def parse_args():
                         default="", type=str)
     parser.add_argument('--network', dest='network', type=str, default='vgg16_reduced',
                         help='which network to use')
-    parser.add_argument('--batch-size', dest='batch_size', type=int, default=32,
+    parser.add_argument('--batch-size', dest='batch_size', type=int, default=16,
                         help='training batch size')
     parser.add_argument('--resume', dest='resume', type=int, default=-1,
                         help='resume training from epoch n')
@@ -109,6 +110,13 @@ if __name__ == '__main__':
     # context list
     ctx = [mx.gpu(int(i)) for i in args.gpus.split(',') if i.strip()]
     ctx = [mx.cpu()] if not ctx else ctx
+
+    # customized
+    args.network = 'mobilenet'
+    args.pretrained = os.path.join(os.getcwd(), 'model', 'mobilenet', 'mobilenet')
+    # args.pretrained = False
+    args.resume = 128
+
     # class names if applicable
     class_names = parse_class_names(args)
     # start training

@@ -30,7 +30,7 @@ def get_symbol(num_classes, **kwargs):
     # separable convolutions
     filters = [64, 128, 128, 256, 256, 512, 512, 512, 512, 512, 512, 1024, 1024]
     strides = [1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1]
-    last_filter = 32
+    last_filter = 32    # input channel
     index = 2
     x = relu1
     for nf, ns in zip(filters, strides):

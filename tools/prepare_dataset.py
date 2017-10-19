@@ -100,6 +100,11 @@ if __name__ == '__main__':
         db = load_coco(args.set, args.root_path, args.shuffle)
         print("saving list to disk...")
         db.save_imglist(args.target, root=args.root_path)
+    elif args.dataset == 'kitti':
+        db = load_kitti(args.root_path, args.shuffle)
+        print("saving list to disk...")
+        db.save_imglist(args.target, root=args.root_path)
+
     else:
         raise NotImplementedError("No implementation for dataset: " + args.dataset)
 

@@ -174,3 +174,24 @@ class Detector(object):
             img = cv2.imread(im_list[k])
             img[:, :, (0, 1, 2)] = img[:, :, (2, 1, 0)]
             self.visualize_detection(img, det, classes, thresh)
+
+    def detect_and_record(self, im_list, root_dir=None, extension=None,
+                            classes=[], thresh=0.6, show_timer=False):
+        """
+        detect and record the valid detection classes and positions
+        """
+        print('===== Detect and Record =====')
+        dets = self.im_detect(im_list, root_dir, extension, show_timer=show_timer)
+        if not isinstance(im_list, list):
+            im_list = [im_list]
+        assert len(dets) == len(im_list)
+        valid_det = []
+        for k, det in enumerate(dets):
+            for i in range(det.shape[0]):
+                cls_id = int(det[i, 0])
+                if cls_id >= 0:
+                    score = det[i, 1]
+                    if score > thresh:
+                        valid_det.append(det[i])
+
+        print('detect_and_record finished')
