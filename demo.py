@@ -43,7 +43,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Single-shot detection network demo')
     parser.add_argument('--network', dest='network', type=str, default='resnet50',
                         help='which network to use')
-    parser.add_argument('--images', dest='images', type=str, default='./data/demo/dog.jpg, ./data/demo/street.jpg',
+    parser.add_argument('--images', dest='images', type=str, default='./data/demo/dog.jpg',
                         help='run demo with images, use comma to seperate multiple images')
     parser.add_argument('--dir', dest='dir', nargs='?',
                         help='demo image directory, optional', type=str)
@@ -107,11 +107,14 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.images = './data/demo/dog.jpg, ./data/demo/street.jpg, ./data/demo/person.jpg';
-    args.network = 'mobilenet'
-    args.epoch = 108
-    args.data_shape = 300
-    network = args.network
+    # args.images = './data/demo/dog.jpg, ./data/demo/street.jpg, ./data/demo/person.jpg';
+    # args.network = 'mobilenet'
+    # args.epoch = 108
+    # args.data_shape = 300
+    # network = args.network
+    args.images = './data/test/original.png, ./data/test/cropped1.png, ./data/test/cropped2.png'
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet', 'ssd_')
+    args.thresh = 0.2
     detect_count = False    # debug flag
 
     # parse image list
