@@ -113,7 +113,7 @@ if __name__ == '__main__':
     # args.data_shape = 300
     # network = args.network
     args.images = './data/test/original.png, ./data/test/cropped1.png, ./data/test/cropped2.png'
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet', 'ssd_')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'ssd_')
     args.thresh = 0.2
     detect_count = False    # debug flag
 

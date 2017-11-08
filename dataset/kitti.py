@@ -44,7 +44,18 @@ class Kitti(Imdb):
         return cache_path
 
     def _load_image_set_index(self, shuffle):
-        pass
+        """
+        find out which indexes correspond to given image set (train or val)
+
+        Parameters:
+        ----------
+        shuffle : boolean
+            whether to shuffle the image list
+        Returns:
+        ----------
+        entire list of images specified in the setting
+        """
+        image_set_index_file = os.path.join(self.data_path, )
 
     def _load_image_labels(self):
         pass
