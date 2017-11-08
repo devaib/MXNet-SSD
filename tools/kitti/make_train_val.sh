@@ -1,12 +1,5 @@
 #!/bin/bash
-#FILES=./image_2/*
-#for f in $FILES
-#do
-#	filename=${f%.*}
-#	filename=${filename##*/}
-#	echo $filename
-#done
-
+#Should be placed in $KITTI/data_object_image_2/training/ folder
 trainfile=$(find image_2/ -type f | shuf)
 i=0
 for f in $trainfile

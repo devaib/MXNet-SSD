@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import sys
 import importlib
+import tools.find_mxnet
 import mxnet as mx
 from dataset.iterator import DetRecordIter
 from config.config import cfg

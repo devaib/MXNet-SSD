@@ -107,15 +107,49 @@ def parse_class_names(args):
 
 if __name__ == '__main__':
     args = parse_args()
+
+    # customized
+    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train.rec')
+    args.train_list = ""
+    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+    args.val_list = ""
+    args.network = 'mobilenet'
+    args.batch_size = 16
+    args.resume = -1
+    args.finetune = -1
+    args.pretrained = os.path.join(os.getcwd(), 'model', 'mobilenet')
+    args.epoch = 0
+    args.prefix = os.path.join(os.getcwd(), 'model', 'mobilenet', 'mobilenet_ssd')
+    args.gpus = '0'
+    args.begin_epoch = 0
+    args.end_epoch = 240
+    args.frequent = 20
+    args.data_shape = 300 # TODO: figure out data shape
+    args.label_width = 350
+    args.learning_rate = 0.0004
+    args.momentum = 0.9
+    args.weight_decay = 0.0005
+    args.mean_r = 128 #TODO: find out mean rgb
+    args.mean_g = 128
+    args.mean_b = 128
+    args.lr_refactor_step = '80, 160'
+    args.lr_refactor_ratio = 0.1
+    args.freeze_pattern = "" #TODO: find out influence
+    args.log_file = os.path.join('data', 'kitti', 'train.log')
+    args.monitor = 0
+    args.monitor_pattern = ".*"
+    args.num_class = 9
+    args.num_example = 5984
+    args.class_names = 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+    args.nms_thresh = 0.45
+    args.overlap_thresh = 0.5
+    args.force_nms = False
+    args.use_difficult = False
+    args.use_voc07_metric = True
+
     # context list
     ctx = [mx.gpu(int(i)) for i in args.gpus.split(',') if i.strip()]
     ctx = [mx.cpu()] if not ctx else ctx
-
-    # customized
-    args.network = 'mobilenet'
-    args.pretrained = os.path.join(os.getcwd(), 'model', 'mobilenet', 'mobilenet')
-    # args.pretrained = False
-    args.resume = 128
 
     # class names if applicable
     class_names = parse_class_names(args)

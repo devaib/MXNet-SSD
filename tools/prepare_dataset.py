@@ -112,8 +112,9 @@ if __name__ == '__main__':
 
     # customized
     args.dataset = 'kitti'
-    args.set = 'train'
-    args.target = os.path.join(curr_path, '..', args.set + '.lst')
+    args.set = 'val'
+    args.target = os.path.join(curr_path, '..', 'data', 'kitti',
+                               'rec', args.set + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
     if args.dataset == 'pascal':
