@@ -55,6 +55,28 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+
+    args.rec_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+    args.list_path = ""
+    args.network = 'mobilenet'
+    args.batch_size = 32
+    args.num_class = 9
+    args.class_names = 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+    args.epoch = 240
+    args.prefix = os.path.join(os.getcwd(), 'model', 'mobilenet', 'mobilenet_ssd')
+    args.gpus = '0'
+    args.cpu = None
+    args.data_shape = 300
+    args.mean_r = 128
+    args.mean_g = 128
+    args.mean_b = 128
+    args.nms = 0.45
+    args.overlap_thresh = 0.5
+    args.force_nms = False
+    args.use_difficult = False
+    args.use_voc07_metric = True
+    args.deploy_net = False
+
     # choose ctx
     if args.cpu:
         ctx = mx.cpu()

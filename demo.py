@@ -1,6 +1,7 @@
 import argparse
 import tools.find_mxnet
 import mxnet as mx
+import numpy as np
 import os
 import sys
 sys.path.append('/usr/local/lib/python2.7/site-packages')
@@ -107,14 +108,26 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    # args.images = './data/demo/dog.jpg, ./data/demo/street.jpg, ./data/demo/person.jpg';
-    # args.network = 'mobilenet'
-    # args.epoch = 108
-    # args.data_shape = 300
-    # network = args.network
-    args.images = './data/test/original.png, ./data/test/cropped1.png, ./data/test/cropped2.png'
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'ssd_')
-    args.thresh = 0.2
+    args.network = 'mobilenet'
+    image_path = './data/kitti/data_object_image_2/testing/image_2/'
+    args.images = ', '.join([image_path+'000002.png', image_path+'000005.png'])
+    args.dir = None
+    args.ext = None
+    args.epoch = 240
+    args.prefix = os.path.join(os.getcwd(), 'model', 'mobilenet', 'mobilenet_ssd')
+    args.cpu = False
+    args.gpu_id = 0
+    args.data_shape = 300
+    args.mean_r = 128
+    args.mean_g = 128
+    args.mean_b = 128
+    args.thresh = 0.5
+    args.nms = 0.5
+    args.force_nms = True
+    args.show_timer = True
+    args.deploy_net = False
+    args.class_names = 'Car, Van, Truck, Pedestrian, Persion_sitting, \
+                        Cyclist, Tram, Misc, DontCare'
     detect_count = False    # debug flag
 
     # parse image list

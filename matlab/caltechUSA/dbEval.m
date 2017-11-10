@@ -281,8 +281,9 @@ for p=1:nPlots
   % save figure to disk (uncomment pdfcrop commands to automatically crop)
   [o,~]=system('pdfcrop'); if(o==127), setenv('PATH',...
       [getenv('PATH') ':/Library/TeX/texbin/:/usr/local/bin/']); end
-  savefig(fName1,1,'pdf','-r300','-fonts'); close(1); f1=[fName1 '.pdf'];
-  system(['pdfcrop -margins ''-30 -20 -50 -10 '' ' f1 ' ' f1]);
+  % savefig(fName1,1,'pdf','-r300','-fonts'); close(1); f1=[fName1 '.pdf'];
+  % system(['pdfcrop -margins ''-30 -20 -50 -10 '' ' f1 ' ' f1]);
+  savefig(fName1,1,'jpeg','-r300','-fonts'); f1=[fName1 '.jpg'];
 end
 
 end

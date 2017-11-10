@@ -1,12 +1,12 @@
 clear; close all;
 disp('===== Getting Frequency on Grid =====');
 
-root_dir = '/home/binghao/data/KITTI/object_image_2';
+root_dir = '/home/binghao/data/kitti/object_image_2';
 data_set = 'training';
 cam = 2;
-image_dir = fullfile(root_dir,[data_set '/image_' num2str(cam)]);
-label_dir = fullfile(root_dir,[data_set '/label_' num2str(cam)]);
-calib_dir = fullfile(root_dir,[data_set '/calib']);
+image_dir = fullfile(root_dir,['/data_object_image_2/' data_set '/image_' num2str(cam)]);
+label_dir = fullfile(root_dir,['/data_object_label_2/' data_set '/label_' num2str(cam)]);
+calib_dir = fullfile(root_dir,['/data_object_calib/' data_set '/calib']);
 
 nimages = length(dir(fullfile(image_dir, '*.png')));
 

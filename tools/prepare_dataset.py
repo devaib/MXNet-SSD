@@ -135,7 +135,9 @@ if __name__ == '__main__':
 
     print("List file {} generated...".format(args.target))
 
-    subprocess.check_call(["python",
+    # indicate anaconda Python
+    remote_anaconda_path = '/home/binghao/software/anaconda2/bin'
+    subprocess.check_call([os.path.join(remote_anaconda_path, "python"),
         os.path.join(curr_path, "..", "mxnet/tools/im2rec.py"),
         os.path.abspath(args.target), os.path.abspath(args.root_path),
         "--shuffle", str(int(args.shuffle)), "--pack-label", "1"])

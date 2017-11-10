@@ -33,7 +33,7 @@ for i = 1:6
     end
 end
 
-root_dir = '/home/binghao/data/KITTI/object_image_2';
+root_dir = '/home/binghao/data/kitti/data_object_image_2';
 data_set = 'training';
 cam = 2;
 image_dir = fullfile(root_dir,[data_set '/image_' num2str(cam)]);

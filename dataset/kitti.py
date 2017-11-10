@@ -2,8 +2,6 @@ from __future__ import print_function, absolute_import
 import os
 import numpy as np
 from .imdb import Imdb
-import xml.etree.ElementTree as ET
-from evaluate.eval_voc import voc_eval
 import cv2
 
 class Kitti(Imdb):
@@ -30,15 +28,15 @@ class Kitti(Imdb):
         self.is_train = is_train
         self.classes = self._load_class_names(names,
                                               os.path.join(os.path.dirname(__file__), 'names'))
-        self.class_dict = {'Car': 1,
-                           'Van': 2,
-                           'Truck': 3,
-                           'Pedestrian': 4,
-                           'Person_sitting': 5,
-                           'Cyclist': 6,
-                           'Tram': 7,
-                           'Misc': 8,
-                           'DontCare': 9}
+        self.class_dict = {'Car': 0,
+                           'Van': 1,
+                           'Truck': 2,
+                           'Pedestrian': 3,
+                           'Person_sitting': 4,
+                           'Cyclist': 5,
+                           'Tram': 6,
+                           'Misc': 7,
+                           'DontCare': 8}
         # self.config = {'use_difficult': True}
         self.image_set_index = self._load_image_set_index(shuffle)
         self.num_images = len(self.image_set_index)
