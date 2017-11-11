@@ -126,8 +126,9 @@ class Detector(object):
             if cls_id >= 0:
                 score = dets[i, 1]
                 if score > thresh:
-                    if cls_id not in colors:
-                        colors[cls_id] = (random.random(), random.random(), random.random())
+                    # if cls_id not in colors:
+                    #     colors[cls_id] = (random.random(), random.random(), random.random())
+                    colors[cls_id] = (0.157, 0.443, 0.525)
                     xmin = int(dets[i, 2] * width)
                     ymin = int(dets[i, 3] * height)
                     xmax = int(dets[i, 4] * width)
@@ -135,15 +136,16 @@ class Detector(object):
                     rect = plt.Rectangle((xmin, ymin), xmax - xmin,
                                          ymax - ymin, fill=False,
                                          edgecolor=colors[cls_id],
-                                         linewidth=3.5)
+                                         linewidth=1.5)
                     plt.gca().add_patch(rect)
                     class_name = str(cls_id)
                     if classes and len(classes) > cls_id:
                         class_name = classes[cls_id]
                     plt.gca().text(xmin, ymin - 2,
-                                    '{:s} {:.3f}'.format(class_name, score),
+                                    # '{:s} {:.3f}'.format(class_name, score),
+                                    '{:.3f}'.format(score),
                                     bbox=dict(facecolor=colors[cls_id], alpha=0.5),
-                                    fontsize=12, color='white')
+                                    fontsize=10, color='white')
         plt.show()
 
     def detect_and_visualize(self, im_list, root_dir=None, extension=None,
@@ -181,17 +183,32 @@ class Detector(object):
         detect and record the valid detection classes and positions
         """
         print('===== Detect and Record =====')
+        import cv2
         dets = self.im_detect(im_list, root_dir, extension, show_timer=show_timer)
         if not isinstance(im_list, list):
             im_list = [im_list]
         assert len(dets) == len(im_list)
-        valid_det = []
+        valid_dets = []
         for k, det in enumerate(dets):
+            imgname = im_list[k]
+            imgindex = imgname.split('/')[-1].split('.')[0]
+
+            # get image size
+            img = cv2.imread(imgname)
+            height = img.shape[0]
+            width = img.shape[1]
+
             for i in range(det.shape[0]):
                 cls_id = int(det[i, 0])
                 if cls_id >= 0:
                     score = det[i, 1]
                     if score > thresh:
-                        valid_det.append(det[i])
+                        # assemble valid_det in [img_index, x, y, w, h, score] format
+                        x = int(det[i, 2] * width)
+                        y = int(det[i, 3] * height)
+                        w = int((det[i, 4] - det[i, 2]) * width)
+                        h = int((det[i, 5] - det[i, 3]) * height)
+                        valid_det = [imgindex, x, y, w, h, score]
+                        valid_dets.append(valid_det)
 
         print('detect_and_record finished')

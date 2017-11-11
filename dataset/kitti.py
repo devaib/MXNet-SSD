@@ -28,15 +28,18 @@ class Kitti(Imdb):
         self.is_train = is_train
         self.classes = self._load_class_names(names,
                                               os.path.join(os.path.dirname(__file__), 'names'))
+        # TODO: consider DontCare
         self.class_dict = {'Car': 0,
-                           'Van': 1,
-                           'Truck': 2,
-                           'Pedestrian': 3,
-                           'Person_sitting': 4,
-                           'Cyclist': 5,
-                           'Tram': 6,
-                           'Misc': 7,
-                           'DontCare': 8}
+                           'Van': 0,
+                           'Truck': 0}
+        '''
+        'Pedestrian': 3,
+        'Person_sitting': 4,
+        'Cyclist': 5,
+        'Tram': 6,
+        'Misc': 7,
+        'DontCare': 8}
+        '''
         # self.config = {'use_difficult': True}
         self.image_set_index = self._load_image_set_index(shuffle)
         self.num_images = len(self.image_set_index)
@@ -166,6 +169,9 @@ class Kitti(Imdb):
                 for line in lines:
                     words = line.split()
                     class_name = words[0]
+                    # ignore other classes
+                    if class_name not in self.class_dict.keys():
+                        continue
                     cls_id = self.class_dict[class_name]
                     xmin = float(words[4]) / width
                     ymin = float(words[5]) / height

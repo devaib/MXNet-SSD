@@ -108,27 +108,29 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'mobilenet'
-    image_path = './data/kitti/data_object_image_2/testing/image_2/'
-    args.images = ', '.join([image_path+'000002.png', image_path+'000005.png'])
+    args.network = 'resnet101'
+    imgpath = './data/kitti/data_object_image_2/training/image_2/'
+    imgnames = ['000010']
+    ext = '.png'
+    args.images = ', '.join([imgpath + s + ext for s in imgnames])
     args.dir = None
     args.ext = None
     args.epoch = 240
-    args.prefix = os.path.join(os.getcwd(), 'model', 'mobilenet', 'mobilenet_ssd')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
     args.cpu = False
     args.gpu_id = 0
     args.data_shape = 300
-    args.mean_r = 128
-    args.mean_g = 128
-    args.mean_b = 128
+    args.mean_r = 123
+    args.mean_g = 117
+    args.mean_b = 104
     args.thresh = 0.5
     args.nms = 0.5
     args.force_nms = True
     args.show_timer = True
     args.deploy_net = False
-    args.class_names = 'Car, Van, Truck, Pedestrian, Persion_sitting, \
-                        Cyclist, Tram, Misc, DontCare'
-    detect_count = False    # debug flag
+    args.class_names = 'Car'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+    # record bb and score
+    record_bb = 1
 
     # parse image list
     image_list = [i.strip() for i in args.images.split(',')]
@@ -146,7 +148,7 @@ if __name__ == '__main__':
                             (args.mean_r, args.mean_g, args.mean_b),
                             ctx, len(class_names), args.nms_thresh, args.force_nms)
     # run detection
-    if not detect_count:
+    if record_bb == 0:
         detector.detect_and_visualize(image_list, args.dir, args.extension,
                                       class_names, args.thresh, args.show_timer)
     else:
