@@ -184,12 +184,16 @@ class Detector(object):
         """
         print('===== Detect and Record =====')
         import cv2
+
+        print("detecting...")
         dets = self.im_detect(im_list, root_dir, extension, show_timer=show_timer)
         if not isinstance(im_list, list):
             im_list = [im_list]
         assert len(dets) == len(im_list)
         valid_dets = []
         for k, det in enumerate(dets):
+            if k % 100 == 0:
+                print('recording detection results of {}th image'.format(k+1))
             imgname = im_list[k]
             imgindex = imgname.split('/')[-1].split('.')[0]
 
@@ -210,5 +214,12 @@ class Detector(object):
                         h = int((det[i, 5] - det[i, 3]) * height)
                         valid_det = [imgindex, x, y, w, h, score]
                         valid_dets.append(valid_det)
+
+        # write to file
+        import csv
+        to_file = './data/kitti/results/dts.txt'
+        with open(to_file, 'w+') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(valid_dets)
 
         print('detect_and_record finished')

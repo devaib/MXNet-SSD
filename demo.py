@@ -110,7 +110,11 @@ if __name__ == '__main__':
     # customized
     args.network = 'resnet101'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
-    imgnames = ['000010']
+    val_path = './data/kitti/data_object_image_2/training/val.txt'
+    #with open(val_path) as f:
+    #    imgnames = [idx.rstrip() for idx in f.readlines()]
+    imgnames = ['001350', '003937']
+    record_bb = 0  # 0 - show detections, 1 - record detections
     ext = '.png'
     args.images = ', '.join([imgpath + s + ext for s in imgnames])
     args.dir = None
@@ -129,8 +133,8 @@ if __name__ == '__main__':
     args.show_timer = True
     args.deploy_net = False
     args.class_names = 'Car'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
-    # record bb and score
-    record_bb = 1
+
+    print("Generating detection results for {} images".format(len(imgnames)))
 
     # parse image list
     image_list = [i.strip() for i in args.images.split(',')]
@@ -151,6 +155,6 @@ if __name__ == '__main__':
     if record_bb == 0:
         detector.detect_and_visualize(image_list, args.dir, args.extension,
                                       class_names, args.thresh, args.show_timer)
-    else:
+    elif record_bb == 1:
         detector.detect_and_record(image_list, args.dir, args.extension,
                                    class_names, args.thresh, args.show_timer)
