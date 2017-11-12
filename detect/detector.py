@@ -192,8 +192,6 @@ class Detector(object):
         assert len(dets) == len(im_list)
         valid_dets = []
         for k, det in enumerate(dets):
-            if k % 100 == 0:
-                print('recording detection results of {}th image'.format(k+1))
             imgname = im_list[k]
             imgindex = imgname.split('/')[-1].split('.')[0]
 

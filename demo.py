@@ -111,10 +111,15 @@ if __name__ == '__main__':
     args.network = 'resnet101'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
     val_path = './data/kitti/data_object_image_2/training/val.txt'
-    #with open(val_path) as f:
-    #    imgnames = [idx.rstrip() for idx in f.readlines()]
-    imgnames = ['001350', '003937']
+
     record_bb = 0  # 0 - show detections, 1 - record detections
+    args.thresh = 0.05
+    if record_bb == 1:
+        with open(val_path) as f:
+            imgnames = [idx.rstrip() for idx in f.readlines()]
+    elif record_bb == 0:
+        imgnames = ['006667', '003937', '001433', '006472', '004238']
+
     ext = '.png'
     args.images = ', '.join([imgpath + s + ext for s in imgnames])
     args.dir = None
@@ -127,7 +132,6 @@ if __name__ == '__main__':
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104
-    args.thresh = 0.5
     args.nms = 0.5
     args.force_nms = True
     args.show_timer = True
