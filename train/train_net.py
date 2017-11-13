@@ -160,6 +160,8 @@ def train_net(net, train_path, num_classes, batch_size,
     # check args
     if isinstance(data_shape, int):
         data_shape = (3, data_shape, data_shape)
+    if isinstance(data_shape, list):
+        data_shape = (3, data_shape[0], data_shape[1])
     assert len(data_shape) == 3 and data_shape[0] == 3
     if prefix.endswith('_'):
         prefix += '_' + str(data_shape[1])

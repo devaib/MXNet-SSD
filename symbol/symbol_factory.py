@@ -80,6 +80,19 @@ def get_config(network, data_shape, **kwargs):
         normalizations = -1
         steps = []
         return locals()
+    elif network == 'resnet101_w_feature_layer1':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12']
+        num_filters = [-1]
+        strides = [-1]
+        pads = [-1]
+        sizes = [[.1, .141]]
+        ratios = [[1,2,.5]]
+        nomalizations = -1
+        steps = []
+        return locals()
     elif network == 'mobilenet':
         from_layers = ['activation22', 'activation26', '', '', '', '']
         num_filters = [-1, -1, 512, 256, 256, 128]
