@@ -93,6 +93,59 @@ def get_config(network, data_shape, **kwargs):
         nomalizations = -1
         steps = []
         return locals()
+    elif network == 'resnet101_w_feature_layer2':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12', '_plus15']
+        num_filters = [-1, -1]
+        strides = [-1, -1]
+        pads = [-1, -1]
+        sizes = [[.1, .141], [.2, .272]]
+        ratios = [[1, 2, .5], [1, 2, .5, 3, 1./3]]
+        nomalizations = -1
+        steps = []
+        return locals()
+    elif network == 'resnet101_w_feature_layer3':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12', '_plus15', '']
+        num_filters = [-1, -1, 512]
+        strides = [-1, -1, 2]
+        pads = [-1, -1, 1]
+        sizes = [[.1, .141], [.2,.272], [.37, .447]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
+    elif network == 'resnet101_w_feature_layer4':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12', '_plus15', '', '']
+        num_filters = [-1, -1, 512, 256]
+        strides = [-1, -1, 2, 2]
+        pads = [-1, -1, 1, 1]
+        sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
+    elif network == 'resnet101_w_feature_layer5':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12', '_plus15', '', '', '']
+        num_filters = [-1, -1, 512, 256, 256]
+        strides = [-1, -1, 2, 2, 2]
+        pads = [-1, -1, 1, 1, 1]
+        sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
+            [1,2,.5]]
+        normalizations = -1
+        steps = []
+        return locals()
     elif network == 'mobilenet':
         from_layers = ['activation22', 'activation26', '', '', '', '']
         num_filters = [-1, -1, 512, 256, 256, 128]

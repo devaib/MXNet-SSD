@@ -61,6 +61,8 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
     # args
     if isinstance(data_shape, int):
         data_shape = (3, data_shape, data_shape)
+    elif isinstance(data_shape, list):
+        data_shape = (3, data_shape[0], data_shape[1])
     assert len(data_shape) == 3 and data_shape[0] == 3
     # model_prefix += '_' + str(data_shape[1])
 

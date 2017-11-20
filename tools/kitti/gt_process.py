@@ -1,8 +1,8 @@
 import os
 import csv
 
-label_path = '../data/kitti/data_object_label_2/training/label_2'
-val_path = '../data/kitti/data_object_image_2/training/val.txt'
+label_path = '../../data/kitti/data_object_label_2/training/label_2'
+val_path = '../../data/kitti/data_object_image_2/training/val.txt'
 valid_cls = ['Car', 'Van', 'Truck']
 with open(val_path) as f:
     imgnames = [idx.rstrip() for idx in f.readlines()]
@@ -26,7 +26,7 @@ for imgname in imgnames:
             gts.append(gt)
 
 # write to file
-to_file = '../data/kitti/results/gts.txt'
+to_file = '../../data/kitti/results/gts.txt'
 with open(to_file, 'w+') as f:
     csv_writer = csv.writer(f)
     csv_writer.writerows(gts)

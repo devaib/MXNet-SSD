@@ -42,7 +42,7 @@ algs=cell2struct(algs',{'name','resize','color','style'});
 % remaining parameters and constants
 aspectRatio = .41;        % default aspect ratio for all bbs
 bnds = [5 5 635 475];     % discard bbs outside this pixel range
-plotRoc = 1;              % if true plot ROC else PR curves
+plotRoc = 0;              % if true plot ROC else PR curves
 plotAlg = 0;              % if true one plot per alg else one plot per exp
 plotNum = 15;             % only show best plotNum curves (and VJ and HOG)
 samples = 10.^(-2:.25:0); % samples for computing area under the curve

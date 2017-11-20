@@ -32,19 +32,32 @@ for i = 1:6
         h(i, size(size_i,2)+k-1) = size_i(1) / sqrt(ratio(k)) / 2;
     end
 end
-
 root_dir = '/home/binghao/data/kitti/data_object_image_2';
 data_set = 'training';
 cam = 2;
 image_dir = fullfile(root_dir,[data_set '/image_' num2str(cam)]);
 img = imread(sprintf('%s/%06d.png',image_dir,8));
 % img = imresize(img, [300, 300]);
-
+%feature_map_height = [19 19 10 5 3 2];
+%feature_map_width = [19 19 10 5 3 2];
+feature_map_height = [22 22 11 6 3 2];
+feature_map_width = [75 75 38 19 10 5];
+    
 img_height = size(img, 1);
 img_width  = size(img, 2);
 occ_col    = {'g','y','r','w','g','y'};
 for i = 1:size(sizes, 1)
+    img = imread(sprintf('%s/%06d.png',image_dir,8));
+    yy = round(linspace(1,size(img,1),feature_map_height(i)+1));
+    xx = round(linspace(1,size(img,2),feature_map_width(i)+1)); 
     imshow(img);
+    for x = 1:size(xx,1)
+        for y = 1:size(yy,1)
+            hold on; plot(xx(x), yy(y), 'rx');
+        end
+    end
+   
+    text(100, 00, sprintf('feature map size: %d x %d', feature_map_height(i), feature_map_width(i)),'color','g','HorizontalAlignment','left','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black')
     for j = 1:size(sizes,2)+size(ratios,2)-1
         if w(i,j) < 0
             continue

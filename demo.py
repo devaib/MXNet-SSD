@@ -108,12 +108,12 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet101'
+    args.network = 'resnet101_w_feature_layer1'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
     val_path = './data/kitti/data_object_image_2/training/val.txt'
+    to_file = './data/kitti/results/dts_first_layer.txt'
 
-    record_bb = 0  # 0 - show detections, 1 - record detections
-    args.thresh = 0.05
+    record_bb = 0  # 0 - show detections(demo), 1 - record detections
     if record_bb == 1:
         with open(val_path) as f:
             imgnames = [idx.rstrip() for idx in f.readlines()]
@@ -124,14 +124,15 @@ if __name__ == '__main__':
     args.images = ', '.join([imgpath + s + ext for s in imgnames])
     args.dir = None
     args.ext = None
-    args.epoch = 240
+    args.epoch = 120
     args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
     args.cpu = False
     args.gpu_id = 0
-    args.data_shape = 300
+    args.data_shape = [350, 1200]
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104
+    args.thresh = 0.5
     args.nms = 0.5
     args.force_nms = True
     args.show_timer = True
@@ -160,5 +161,5 @@ if __name__ == '__main__':
         detector.detect_and_visualize(image_list, args.dir, args.extension,
                                       class_names, args.thresh, args.show_timer)
     elif record_bb == 1:
-        detector.detect_and_record(image_list, args.dir, args.extension,
+        detector.detect_and_record(image_list, to_file, args.dir, args.extension,
                                    class_names, args.thresh, args.show_timer)

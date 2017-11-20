@@ -45,7 +45,7 @@ nimages = length(dir(fullfile(image_dir, '*.png')));
 h = visualization('init',image_dir);
 
 % main loop
-img_idx=0;
+img_idx=631;
 while 1
 
   % load projection matrix

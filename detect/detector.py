@@ -36,7 +36,10 @@ class Detector(object):
             symbol = load_symbol
         self.mod = mx.mod.Module(symbol, label_names=None, context=ctx)
         self.data_shape = data_shape
-        self.mod.bind(data_shapes=[('data', (batch_size, 3, data_shape, data_shape))])
+        if isinstance(data_shape, int):
+            self.mod.bind(data_shapes=[('data', (batch_size, 3, data_shape, data_shape))])
+        elif isinstance(data_shape, list):
+            self.mod.bind(data_shapes=[('data', (batch_size, 3, data_shape[0], data_shape[1]))])
         self.mod.set_params(args, auxs)
         self.data_shape = data_shape
         self.mean_pixels = mean_pixels
@@ -177,7 +180,7 @@ class Detector(object):
             img[:, :, (0, 1, 2)] = img[:, :, (2, 1, 0)]
             self.visualize_detection(img, det, classes, thresh)
 
-    def detect_and_record(self, im_list, root_dir=None, extension=None,
+    def detect_and_record(self, im_list, to_file, root_dir=None, extension=None,
                             classes=[], thresh=0.6, show_timer=False):
         """
         detect and record the valid detection classes and positions
@@ -215,7 +218,6 @@ class Detector(object):
 
         # write to file
         import csv
-        to_file = './data/kitti/results/dts.txt'
         with open(to_file, 'w+') as f:
             csv_writer = csv.writer(f)
             csv_writer.writerows(valid_dets)

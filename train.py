@@ -111,9 +111,9 @@ if __name__ == '__main__':
     # customized
     args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.val_list = ""
-    args.network = 'resnet101_w_feature_layer1'
+    args.network = 'resnet101_w_feature_layer2'
     args.batch_size = 4
     args.resume = -1
     args.finetune = -1
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
     args.gpus = '0'
     args.begin_epoch = 0
-    args.end_epoch = 240
+    args.end_epoch = 120
     args.frequent = 20
     args.data_shape = [350, 1200]
     args.label_width = 350
@@ -132,7 +132,8 @@ if __name__ == '__main__':
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104
-    args.lr_refactor_step = '80, 160'
+    #args.lr_refactor_step = '80, 160'
+    args.lr_refactor_step = '40, 80'
     args.lr_refactor_ratio = 0.1
     args.freeze_pattern = ""    # TODO: find out influence
     args.log_file = 'train.log'

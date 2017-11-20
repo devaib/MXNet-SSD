@@ -18,16 +18,21 @@ parser.add_argument('--data-shape', type=int, default=300,
 parser.add_argument('--train', action='store_true', default=False, help='show train net')
 args = parser.parse_args()
 
-args.network = 'mobilenet'
-args.num_classes = 20
-args.data_shape = 224
-args.train = True
+args.network = 'resnet101'
+args.num_classes = 1
+args.data_shape = (350, 1200)
+args.train = False
 
 
 if not args.train:
     net = symbol_factory.get_symbol(args.network, args.data_shape, num_classes=args.num_classes)
-    a = mx.viz.plot_network(net, shape={"data":(1,3,args.data_shape,args.data_shape)}, \
-        node_attrs={"shape":'rect', "fixedsize":'false'})
+    if isinstance(args.data_shape, int):
+        a = mx.viz.plot_network(net, shape={"data":(1,3,args.data_shape,args.data_shape)}, \
+            node_attrs={"shape":'rect', "fixedsize":'false'})
+    elif isinstance(args.data_shape, tuple):
+        a = mx.viz.plot_network(net, shape={"data":(1,3,args.data_shape[0],args.data_shape[1])}, \
+            node_attrs={"shape":'rect', "fixedsize":'false'})
+
     filename = "ssd_" + args.network + '_' + str(args.data_shape)
     a.render(osp.join(osp.dirname(__file__), filename))
 else:
