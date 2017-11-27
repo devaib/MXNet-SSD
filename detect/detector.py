@@ -223,3 +223,7 @@ class Detector(object):
             csv_writer.writerows(valid_dets)
 
         print('detect_and_record finished')
+
+    def detect_and_record_anchors(self, im_list, root_dir=None, extension=None,
+                                  classes=[], thresh=0.6, show_timer=False):
+        dets = self.im_detect(im_list, root_dir, extension, show_timer=show_timer)

@@ -113,7 +113,7 @@ if __name__ == '__main__':
     args.train_list = ""
     args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.val_list = ""
-    args.network = 'resnet101_w_feature_layer2'
+    args.network = 'resnet101'
     args.batch_size = 4
     args.resume = -1
     args.finetune = -1
@@ -124,7 +124,8 @@ if __name__ == '__main__':
     args.begin_epoch = 0
     args.end_epoch = 120
     args.frequent = 20
-    args.data_shape = [350, 1200]
+    #args.data_shape = [350, 1200]
+    args.data_shape = 300
     args.label_width = 350
     args.learning_rate = 0.0004
     args.momentum = 0.9

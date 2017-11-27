@@ -82,6 +82,8 @@ def parse_args():
                         car, cat, chair, cow, diningtable, dog, horse, motorbike, \
                         person, pottedplant, sheep, sofa, train, tvmonitor',
                         help='string of comma separated names, or text filename')
+    parser.add_argument('--mode', dest='mode', type=int, default=-1,
+                       help='running mode of this file')
     args = parser.parse_args()
     return args
 
@@ -108,26 +110,31 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet101_w_feature_layer1'
+    args.network = 'resnet101'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
-    val_path = './data/kitti/data_object_image_2/training/val.txt'
-    to_file = './data/kitti/results/dts_first_layer.txt'
 
-    record_bb = 0  # 0 - show detections(demo), 1 - record detections
-    if record_bb == 1:
+    if args.mode == 2:
+        mode = 2
+    else:
+        mode = 0 # 0 - show detections(demo), 1 - record detections, 2 - record anchors
+
+    if mode == 0:
+        #imgnames = ['006667', '003937', '001433', '006472', '004238']
+        imgnames = ['003937']
+    elif mode == 1:
+        val_path = './data/kitti/data_object_image_2/training/val.txt'
+        to_file = './data/kitti/results/dts_first_layer.txt'
         with open(val_path) as f:
             imgnames = [idx.rstrip() for idx in f.readlines()]
-    elif record_bb == 0:
-        imgnames = ['006667', '003937', '001433', '006472', '004238']
 
-    ext = '.png'
-    args.images = ', '.join([imgpath + s + ext for s in imgnames])
+    if mode == 0 or mode == 1:
+        ext = '.png'
+        args.images = ', '.join([imgpath + s + ext for s in imgnames])
+
     args.dir = None
     args.ext = None
     args.epoch = 120
     args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
-    args.cpu = False
-    args.gpu_id = 0
     args.data_shape = [350, 1200]
     args.mean_r = 123
     args.mean_g = 117
@@ -138,8 +145,14 @@ if __name__ == '__main__':
     args.show_timer = True
     args.deploy_net = False
     args.class_names = 'Car'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+    if mode == 0 or mode == 1:
+        args.cpu = False
+        args.gpu_id = 0
+    if mode == 2:
+        args.cpu = True
+    ctx = mx.cpu()
 
-    print("Generating detection results for {} images".format(len(imgnames)))
+    #print("Generating detection results for {} images".format(len(imgnames)))
 
     # parse image list
     image_list = [i.strip() for i in args.images.split(',')]
@@ -156,10 +169,16 @@ if __name__ == '__main__':
                             args.data_shape,
                             (args.mean_r, args.mean_g, args.mean_b),
                             ctx, len(class_names), args.nms_thresh, args.force_nms)
-    # run detection
-    if record_bb == 0:
+    # run detection demo
+    if mode == 0:
         detector.detect_and_visualize(image_list, args.dir, args.extension,
                                       class_names, args.thresh, args.show_timer)
-    elif record_bb == 1:
+    # keep records of valid detection
+    elif mode == 1:
         detector.detect_and_record(image_list, to_file, args.dir, args.extension,
                                    class_names, args.thresh, args.show_timer)
+    # keep records of scores and position for each anchor box,
+    # multibox_detecion.cc should be compiled with DEBUG defined
+    elif mode == 2:
+        detector.detect_and_record_anchors(image_list, args.dir, args.extension,
+                                           class_names, args.thresh, args.show_timer)
