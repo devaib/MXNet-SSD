@@ -38,10 +38,11 @@ cam = 2;
 image_dir = fullfile(root_dir,[data_set '/image_' num2str(cam)]);
 img = imread(sprintf('%s/%06d.png',image_dir,8));
 %img = imresize(img, [300, 300]);
-feature_map_height = [19 19 10 5 3 2];
-feature_map_width = [19 19 10 5 3 2];
-%feature_map_height = [22 22 11 6 3 2];
-%feature_map_width = [75 75 38 19 10 5];
+%feature_map_height = [19 19 10 5 3 2];
+%feature_map_width = [19 19 10 5 3 2];
+
+feature_map_height = [22 22 11 6 3 2];
+feature_map_width = [75 75 38 19 10 5];
     
 img_height = size(img, 1);
 img_width  = size(img, 2);

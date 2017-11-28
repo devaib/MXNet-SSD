@@ -116,7 +116,10 @@ if __name__ == '__main__':
     if args.mode == 2:
         mode = 2
     else:
-        mode = 0 # 0 - show detections(demo), 1 - record detections, 2 - record anchors
+        # 0 - show detections (demo)
+        # 1 - record detections (in order to get roc or precision-recall curve)
+        # 2 - record anchors (don't visualize detection result)
+        mode = 2
 
     if mode == 0:
         #imgnames = ['006667', '003937', '001433', '006472', '004238']
