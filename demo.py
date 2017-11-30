@@ -119,11 +119,11 @@ if __name__ == '__main__':
         # 0 - show detections (demo)
         # 1 - record detections (in order to get roc or precision-recall curve)
         # 2 - record anchors (don't visualize detection result)
-        mode = 2
+        mode = 0
 
     if mode == 0:
         #imgnames = ['006667', '003937', '001433', '006472', '004238']
-        imgnames = ['003937']
+        imgnames = ['005061']
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
         to_file = './data/kitti/results/dts_first_layer.txt'

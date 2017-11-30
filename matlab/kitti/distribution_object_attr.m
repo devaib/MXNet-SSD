@@ -1,8 +1,8 @@
 % inputs
-% attribute : which attribute of image to be explored, 'width' or 'ratio'
+% attribute : which attribute of image to be explored, 'width', 'height' or 'ratio'
 % nBin : number of bins in histogram
 function distribution_object_attr(attribute, nBin)
-imginfo_file = '../../data/kitti/results/imginfos.txt';
+imginfo_file = '../../data/kitti/results/imginfos_valset.txt';
 
 % load file
 f = fopen(imginfo_file);
@@ -11,6 +11,8 @@ fclose(f);
 
 if strcmp(attribute, 'width')
     attr = imginfos{1,4};
+elseif strcmp(attribute, 'height')
+    attr = imginfos{1,5};
 elseif strcmp(attribute, 'ratio')
     attr = imginfos{1,6};
 end

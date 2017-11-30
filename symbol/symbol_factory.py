@@ -66,6 +66,19 @@ def get_config(network, data_shape, **kwargs):
         normalizations = -1
         steps = []
         return locals()
+    elif network == 'resnet101_test':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12', '_plus15', '', '']
+        num_filters = [-1, -1, 512, 256]
+        strides = [-1, -1, 2, 2]
+        pads = [-1, -1, 1, 1]
+        sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
     elif network == 'resnet101':
         num_layers = 101
         image_shape = '3,224,224'
@@ -74,6 +87,14 @@ def get_config(network, data_shape, **kwargs):
         num_filters = [-1, -1, 512, 256, 256, 128]
         strides = [-1, -1, 2, 2, 2, 2]
         pads = [-1, -1, 1, 1, 1, 1]
+        '''
+            min_ratio = 20, max_ratio = 90,
+            step = (max_ratio - min_ratio) / (#layer - 2) = (90 - 20) / (6 - 2) = 17,
+            ratio = range(min_ratio, max_ratio, step) = [20, 37, 54, 71, 88],
+            min_sizes = ratio / 100 = [.2, .37, .54, .71, .88],
+            min_sizes = [.1] + min_size = [.1, .2, .37, .54, .71, .88],
+            max_sizes = sqrt( min_size * (min_size+step/100) ) = [.141, .272, .447, .619, .79, .961]
+        '''
         sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
         ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
             [1,2,.5], [1,2,.5]]

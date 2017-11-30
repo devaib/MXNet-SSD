@@ -1,6 +1,7 @@
 import os
 import csv
 
+# parse gt for validation set
 label_path = '../../data/kitti/data_object_label_2/training/label_2'
 val_path = '../../data/kitti/data_object_image_2/training/val.txt'
 valid_cls = ['Car', 'Van', 'Truck']
