@@ -51,17 +51,30 @@ if mode == 1
     ww = round(valid_w .* width ./ 2);
     hh = round(valid_h .* height ./ 2);
     
+
     imshow(img);hold on;
+    num_anchs_on_layer = feature_map_height .* feature_map_width .* anchors_per_location;
+    num_anchs = cumsum(num_anchs_on_layer);
     for i = 1:size(valid_index,1)
         pos = [center_x-ww, center_y-hh, 2*ww, 2*hh];
-        rect = rectangle('Position', pos(i,:), 'EdgeColor', 'g', 'LineWidth', 2);
-        label_text = sprintf('%.2f', valid_score(i));
-        txt = text(center_x(i),center_y(i)-hh(i)-6,label_text,'color','g',...
-            'BackgroundColor','k','HorizontalAlignment','center',...
-            'VerticalAlignment','bottom','FontWeight','bold',...
-            'FontSize',8);
-        pause(0.2);
-        delete(rect); delete(txt);
+        colors = ['r', 'g', 'b', 'y'];
+        if valid_index(i) <= num_anchs(1)
+            color = colors(1);
+        elseif valid_index(i) <= num_anchs(2)
+            color = colors(2);
+        elseif valid_index(i) <= num_anchs(3)
+            color = colors(3);
+        else
+            color = colors(4);
+        end
+        rect = rectangle('Position', pos(i,:), 'EdgeColor', color, 'LineWidth', 2);
+%         label_text = sprintf('%.2f', valid_score(i));
+%         txt = text(center_x(i),center_y(i)-hh(i)-6,label_text,'color','g',...
+%             'BackgroundColor','k','HorizontalAlignment','center',...
+%             'VerticalAlignment','bottom','FontWeight','bold',...
+%             'FontSize',8);
+%         pause(0.2);
+%         delete(rect); delete(txt);
     end
     
     return

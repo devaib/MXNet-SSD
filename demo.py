@@ -110,7 +110,7 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet101'
+    args.network = 'resnet101_test'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
 
     if args.mode == 2:
@@ -123,10 +123,10 @@ if __name__ == '__main__':
 
     if mode == 0:
         #imgnames = ['006667', '003937', '001433', '006472', '004238']
-        imgnames = ['005061']
+        imgnames = ['007109']
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
-        to_file = './data/kitti/results/dts_first_layer.txt'
+        to_file = './data/kitti/results/dts_fourth_layer_customized.txt'    # skip layer defined in multibox_detection.cu
         with open(val_path) as f:
             imgnames = [idx.rstrip() for idx in f.readlines()]
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
         args.gpu_id = 0
     if mode == 2:
         args.cpu = True
-    ctx = mx.cpu()
+        ctx = mx.cpu()
 
     #print("Generating detection results for {} images".format(len(imgnames)))
 

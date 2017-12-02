@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     args.rec_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.list_path = ""
-    args.network = 'resnet101_w_feature_layer5'
+    args.network = 'resnet101_test'
     args.batch_size = 4
     args.num_class = 1
     args.class_names = 'Car'  #'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
