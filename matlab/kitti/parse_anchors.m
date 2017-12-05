@@ -2,15 +2,14 @@ clc; clear; close all;
 disp('===== Parsing <anchors>.txt and generate statistical results =====');
 
 threshold = 0.5;
-num_anchors = 19852;
-anchors_dir = './anchors/';
+anchors_dir = './anchors_customized/';
+feature_map_height = [22 22 11 6];
+feature_map_width = [75 75 38 19];
+anchors_per_location = [4 6 6 6];
+num_anchors = sum(feature_map_height .* feature_map_width .* anchors_per_location);
 activated_anchors = zeros(num_anchors, 1);
 files = dir(strcat(anchors_dir, '*.txt'));
 imagenum = 32;  % number of the imagce
-feature_map_height = [22 22 11 6 3 2];
-feature_map_width = [75 75 38 19 10 5];
-anchors_per_location = [4 6 6 6 4 4];
-
 mode = 0;   % 0 - parse anchors, 1 - demo
 
 % demo mode, show valid anchors, only parse one file
@@ -81,37 +80,33 @@ if mode == 1
 end
 
 % get frequences of activated anchors
-if exist('activated_anchors.mat', 'file') == 2
-    load('activated_anchors.mat');
-else
-    counter = 0;
-    for file = files'
-        if mod(counter, 50) == 0
-            sprintf('Processing %d files...', counter+1)
-        end
-        anchor_file = strcat(anchors_dir, file.name);
-        f = fopen(anchor_file);             
-        anchors = textscan(f,'%f %f %f %f %f %f %f', 'delimiter', ',');
-        fclose(f);
-        index = anchors{1,1};
-        cls_id = anchors{1,2};
-        score = anchors{1,3};
-        ax = anchors{1,4};
-        ay = anchors{1,5};
-        aw = anchors{1,6};
-        ah = anchors{1,7};
-
-        valid_index = index(score > threshold);     % find anchors with score > threshold
-        valid_index = valid_index + 1;              % change from 0-indexed to 1-indexed (range from 1 to #anchors)
-        activated_anchors(valid_index) = activated_anchors(valid_index) + 1;
-        counter = counter + 1;
+counter = 0;
+for file = files'
+    if mod(counter, 50) == 0
+        sprintf('Processing %d files...', counter+1)
     end
-    save('activated_anchors.mat', 'activated_anchors');
+    anchor_file = strcat(anchors_dir, file.name);
+    f = fopen(anchor_file);             
+    anchors = textscan(f,'%f %f %f %f %f %f %f', 'delimiter', ',');
+    fclose(f);
+    index = anchors{1,1};
+    cls_id = anchors{1,2};
+    score = anchors{1,3};
+    ax = anchors{1,4};
+    ay = anchors{1,5};
+    aw = anchors{1,6};
+    ah = anchors{1,7};
+
+    valid_index = index(score > threshold);     % find anchors with score > threshold
+    valid_index = valid_index + 1;              % change from 0-indexed to 1-indexed (range from 1 to #anchors)
+    activated_anchors(valid_index) = activated_anchors(valid_index) + 1;
+    counter = counter + 1;
 end
+
 
 % generate heatmap
 i = 1;
-freq_map = cell(1,6);
+freq_map = cell(1,size(feature_map_height, 2));
 for scale_ind = 1:size(feature_map_height, 2)
     feature_h = feature_map_height(scale_ind);
     feature_w = feature_map_width(scale_ind);

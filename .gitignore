@@ -12,6 +12,7 @@ matlab/caltechUSA/results/*
 matlab/caltechUSA/data-USA/*
 matlab/kitti/results/*
 matlab/kitti/anchors/*
+matlab/kitti/anchors_customized/*
 mxnet/
 .DS_Store
 .idea/

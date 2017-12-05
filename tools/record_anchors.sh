@@ -8,7 +8,7 @@ do
     echo processing "$i" image...
     echo imagename: "$imagename".png
     /home/binghao/software/anaconda2/bin/python ./demo.py --mode 2 --images ./data/kitti/data_object_image_2/training/image_2/"$imagename".png
-    mv /home/binghao/workspace/MXNet-SSD/matlab/kitti/anchors/anchors.txt /home/binghao/workspace/MXNet-SSD/matlab/kitti/anchors/"$imagename".txt
+    mv /home/binghao/workspace/MXNet-SSD/matlab/kitti/anchors_customized/anchors.txt /home/binghao/workspace/MXNet-SSD/matlab/kitti/anchors_customized/"$imagename".txt
     ((++i))
 done < "$val_file"
 
