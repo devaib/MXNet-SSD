@@ -14,7 +14,9 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
                  model_prefix, epoch, ctx=mx.cpu(), batch_size=1,
                  path_imglist="", nms_thresh=0.45, force_nms=False,
                  ovp_thresh=0.5, use_difficult=False, class_names=None,
-                 voc07_metric=False):
+                 voc07_metric=False,
+                 use_second_network=False,
+                 network1=None, rec_path1=None, epoch1=None, prefix1=None, data_shape1=None):
     """
     evalute network given validation record file
 

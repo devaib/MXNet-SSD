@@ -77,6 +77,15 @@ if __name__ == '__main__':
     args.use_voc07_metric = True
     args.deploy_net = False
 
+    # second network
+    use_sub_network = False
+    if use_sub_network:
+        args.rec_path1 = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+        args.network1 = 'resnet101_test'
+        args.epoch1 = 120
+        args.prefix1 = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+        args.data_shape1 = [350, 1200]
+
     # choose ctx
     if args.cpu:
         ctx = mx.cpu()
@@ -102,10 +111,30 @@ if __name__ == '__main__':
         prefix = args.prefix + args.network
     else:
         prefix = args.prefix
-    evaluate_net(network, args.rec_path, num_class,
-                 (args.mean_r, args.mean_g, args.mean_b), args.data_shape,
-                 prefix, args.epoch, ctx, batch_size=args.batch_size,
-                 path_imglist=args.list_path, nms_thresh=args.nms_thresh,
-                 force_nms=args.force_nms, ovp_thresh=args.overlap_thresh,
-                 use_difficult=args.use_difficult, class_names=class_names,
-                 voc07_metric=args.use_voc07_metric)
+
+    if use_sub_network:
+        # initialize second networks
+        network1 = None if args.deploy_net else args.network1
+        if args.prefix1.endswith('_'):
+            prefix1 = args.prefix1 + args.network1
+        else:
+            prefix1 = args.prefix1
+        evaluate_net(network, args.rec_path, num_class,
+                     (args.mean_r, args.mean_g, args.mean_b), args.data_shape,
+                     prefix, args.epoch, ctx, batch_size=args.batch_size,
+                     path_imglist=args.list_path, nms_thresh=args.nms_thresh,
+                     force_nms=args.force_nms, ovp_thresh=args.overlap_thresh,
+                     use_difficult=args.use_difficult, class_names=class_names,
+                     voc07_metric=args.use_voc07_metric,
+                     use_second_network=use_sub_network,
+                     network1=network1, rec_path1=args.rec_path1, epoch1=args.epoch1,
+                     prefix1=args.prefix1, data_shape1=args.data_shape1)
+    else:
+        # single network
+        evaluate_net(network, args.rec_path, num_class,
+                     (args.mean_r, args.mean_g, args.mean_b), args.data_shape,
+                     prefix, args.epoch, ctx, batch_size=args.batch_size,
+                     path_imglist=args.list_path, nms_thresh=args.nms_thresh,
+                     force_nms=args.force_nms, ovp_thresh=args.overlap_thresh,
+                     use_difficult=args.use_difficult, class_names=class_names,
+                     voc07_metric=args.use_voc07_metric)

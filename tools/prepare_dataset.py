@@ -72,7 +72,7 @@ def load_coco(image_set, dirname, shuffle=False):
     else:
         return imdbs[0]
 
-def load_kitti(image_set, kitti_path, shuffle=False):
+def load_kitti(image_set, kitti_path, suffix='', shuffle=False):
     """
     wrapper function for loading kitti dataset
     """
@@ -81,7 +81,7 @@ def load_kitti(image_set, kitti_path, shuffle=False):
 
     imdbs = []
     for s in image_set:
-        imdbs.append(Kitti(s, kitti_path, shuffle, is_train=True))
+        imdbs.append(Kitti(s, kitti_path, shuffle, suffix, is_train=True))
     if len(imdbs) > 1:
         return ConcatDB(imdbs, shuffle)
     else:
@@ -113,8 +113,11 @@ if __name__ == '__main__':
     # customized
     args.dataset = 'kitti'
     args.set = 'val'
+    args.shuffle = False
+    suffixs = ['', '_central']
+    suffix = suffixs[1]
     args.target = os.path.join(curr_path, '..', 'data', 'kitti',
-                               'rec', args.set + '_central' + '.lst')
+                               'rec', args.set + suffix + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
     if args.dataset == 'pascal':
@@ -126,7 +129,7 @@ if __name__ == '__main__':
         print("saving list to disk...")
         db.save_imglist(args.target, root=args.root_path)
     elif args.dataset == 'kitti':
-        db = load_kitti(args.set, args.root_path, args.shuffle)
+        db = load_kitti(args.set, args.root_path, suffix, args.shuffle)
         print("saving list to disk...")
         db.save_imglist(args.target, root=args.root_path)
 

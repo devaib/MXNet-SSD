@@ -18,7 +18,7 @@ class Kitti(Imdb):
     is_train : boolean
         if true, will load annotations
     """
-    def __init__(self, image_set, kitti_path, shuffle=False, is_train=False,
+    def __init__(self, image_set, kitti_path, shuffle=False, suffix='', is_train=False,
                  names='kitti.names'):
         super(Kitti, self).__init__('kitti' + '_' + image_set)
         self.image_set = image_set
@@ -26,6 +26,7 @@ class Kitti(Imdb):
         self.data_path = os.path.join(self.kitti_path, 'data_object_image_2', 'training')
         self.extension = '.png'
         self.is_train = is_train
+        self.suffix = suffix
         self.classes = self._load_class_names(names,
                                               os.path.join(os.path.dirname(__file__), 'names'))
         # TODO: consider DontCare
@@ -89,7 +90,7 @@ class Kitti(Imdb):
         """
         assert self.image_set is not None, "Dataset not initialized"
         name = self.image_set_index[index]
-        image_file = os.path.join(self.data_path, 'image_2_central', name + self.extension)
+        image_file = os.path.join(self.data_path, 'image_2'+self.suffix, name + self.extension)
         assert os.path.exists(image_file), 'Path does not exist: {}'.format(image_file)
         return image_file
 
@@ -122,7 +123,7 @@ class Kitti(Imdb):
         ----------
         full path of annotation file
         """
-        label_file = os.path.join(self.kitti_path, 'data_object_label_2', 'training', 'label_2_central', index + '.txt')
+        label_file = os.path.join(self.kitti_path, 'data_object_label_2', 'training', 'label_2' + self.suffix, index + '.txt')
         assert os.path.exists(label_file), 'Path does not exist: {}'.format(label_file)
         return label_file
 
