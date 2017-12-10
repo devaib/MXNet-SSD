@@ -4,7 +4,7 @@ clear; close; clc;
 val_file = '../../data/kitti/data_object_image_2/training/val.txt';
 gts_file = '../../data/kitti/results/gts.txt';
 dts_file = '../../data/kitti/results/dts.txt';
-
+% dts_file = '../../data/kitti/results/dts_all_layer_customized.txt';
 % List of experiment settings: { name, hr, vr, ar, overlap, filter }
 %  name     - experiment name
 %  hr       - height range to test
@@ -46,6 +46,7 @@ plotRoc = 0;              % if true plot ROC else PR curves
 plotAlg = 0;              % if true one plot per alg else one plot per exp
 plotNum = 15;             % only show best plotNum curves (and VJ and HOG)
 samples = 10.^(-2:.25:0); % samples for computing area under the curve
+%samples = 0:0.1:1;
 lims = [2e-4 50 .035 1];  % axis limits for ROC plots
 bbsShow = 0;              % if true displays sample bbs for each alg/exp
 bbsType = 'fp';           % type of bbs to display (fp/tp/fn/dt)

@@ -87,19 +87,19 @@ end
 
 size_thres = 40;
 gts_missed_small = gts_missed(gts_missed(:,4) <= size_thres, :);
-% % show missed gts with height smaller than 40 
-% demo_img = imread(sprintf('%s/%s.png',image_dir,imgname));
-% imshow(demo_img); title('Miss detections demo'); hold on;
-% for i = 1:size(gts_missed_small,1)
-%     pos = gts_missed_small(i,1:4);
-%     rect = rectangle('Position', pos, 'EdgeColor', colors(2), 'LineWidth', 2);
-%     %waitforbuttonpress; %pause(0.2);
-% end
+% show missed gts with height smaller than 40 
+demo_img = imread(sprintf('%s/%s.png',image_dir,imgname));
+imshow(demo_img); title('Miss detections demo'); hold on;
+for i = 1:size(gts_missed_small,1)
+    pos = gts_missed_small(i,1:4);
+    rect = rectangle('Position', pos, 'EdgeColor', colors(2), 'LineWidth', 2);
+    %waitforbuttonpress; %pause(0.2);
+end
 
-ymins = gts_missed_small(:,2);
-ymaxs = gts_missed_small(:,2) + gts_missed_small(:,4);
-xmins = gts_missed_small(:,1);
-xmaxs = gts_missed_small(:,1) + gts_missed_small(:,3);
-histogram(ymins);
+% ymins = gts_missed_small(:,2);
+% ymaxs = gts_missed_small(:,2) + gts_missed_small(:,4);
+% xmins = gts_missed_small(:,1);
+% xmaxs = gts_missed_small(:,1) + gts_missed_small(:,3);
+% histogram(ymins);
 
 

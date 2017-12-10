@@ -7,6 +7,7 @@ image_dir = '../../data/kitti/data_object_image_2/training/image_2/';
 anno_dir = '../../data/kitti/data_object_label_2/training/label_2/';
 cropped_image_dir = '../../data/kitti/data_object_image_2/training/image_2_central/';
 cropped_anno_dir = '../../data/kitti/data_object_label_2/training/label_2_central/';
+extreme_resolution = 5;     % minimal width/height of new bbs
 
 for ind = 1:size(imgindex_list, 1)
     if mod(ind, 20) == 0
@@ -93,14 +94,16 @@ for ind = 1:size(imgindex_list, 1)
     poss_resized(:,3) = poss_resized_centered(:,3) .* 2;
     poss_resized(:,4) = poss_resized_centered(:,4) .* 2;
 
-    % remove bbs with width or height < 0
-    removed_ind1 = poss_resized(:,3) <= 0;
-    removed_ind2 = poss_resized(:,4) <= 0;
+    % remove bbs with width or height < extreme_resolution
+    removed_ind1 = (poss_resized(:,3) <= extreme_resolution);
+    removed_ind2 = (poss_resized(:,4) <= extreme_resolution);
     removed_ind = removed_ind1 | removed_ind2;
-    poss_resized(removed_ind, :) = [];
 
 %     % visualize
 %     for i = 1:size(poss_resized,1)
+%         if removed_ind(i) == 1
+%             continue
+%         end
 %         x = poss_resized(i,1);
 %         y = poss_resized(i,2);
 %         w = poss_resized(i,3);
@@ -112,7 +115,6 @@ for ind = 1:size(imgindex_list, 1)
     % save image and annotation file
     imwrite(resized, strcat(cropped_image_dir, imgindex, '.png'));
     fileID = fopen(strcat(cropped_anno_dir, imgindex, '.txt'), 'w');
-    j = 1;
     for i = 1 : size(annos{1,1}, 1)
         if removed_ind(i) == 1
             continue
@@ -120,14 +122,12 @@ for ind = 1:size(imgindex_list, 1)
         fprintf(fileID,'%s %.2f %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n', ...
         annos{1,1}{i}, annos{1,2}(i), annos{1,3}(i), ...
         occlude_level_new(i), ...
-        poss_resized(j,1), poss_resized(j,2), poss_resized(j,1)+poss_resized(j,3), poss_resized(j,2)+poss_resized(j,4), ...
+        poss_resized(i,1), poss_resized(i,2), poss_resized(i,1)+poss_resized(i,3), poss_resized(i,2)+poss_resized(i,4), ...
         annos{1,9}(i), annos{1,10}(i), annos{1,11}(i), ...
         annos{1,12}(i), annos{1,13}(i), annos{1,14}(i), ...
         annos{1,15}(i));
-        j = j + 1;
     end
     fclose(fileID);
-
 end
 
 fprintf('Done\n');

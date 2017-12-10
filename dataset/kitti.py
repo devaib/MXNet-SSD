@@ -89,7 +89,7 @@ class Kitti(Imdb):
         """
         assert self.image_set is not None, "Dataset not initialized"
         name = self.image_set_index[index]
-        image_file = os.path.join(self.data_path, 'image_2', name + self.extension)
+        image_file = os.path.join(self.data_path, 'image_2_central', name + self.extension)
         assert os.path.exists(image_file), 'Path does not exist: {}'.format(image_file)
         return image_file
 
@@ -122,7 +122,7 @@ class Kitti(Imdb):
         ----------
         full path of annotation file
         """
-        label_file = os.path.join(self.kitti_path, 'data_object_label_2', 'training', 'label_2', index + '.txt')
+        label_file = os.path.join(self.kitti_path, 'data_object_label_2', 'training', 'label_2_central', index + '.txt')
         assert os.path.exists(label_file), 'Path does not exist: {}'.format(label_file)
         return label_file
 

@@ -117,16 +117,16 @@ if __name__ == '__main__':
         mode = 2
     else:
         # 0 - show detections (demo)
-        # 1 - record detections (in order to get roc or precision-recall curve)
+        # 1 - record detections in to_file
         # 2 - record anchors (don't visualize detection result)
         mode = 0
 
     if mode == 0:
         #imgnames = ['006667', '003937', '001433', '006472', '004238']
-        imgnames = ['007109']
+        imgnames = ['003937']
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
-        to_file = './data/kitti/results/dts_fourth_layer_customized.txt'    # skip layer defined in multibox_detection.cu
+        to_file = './data/kitti/results/dts_all_layer_customized_central.txt'    # skip layer defined in multibox_detection.cu
         with open(val_path) as f:
             imgnames = [idx.rstrip() for idx in f.readlines()]
 
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     args.mean_g = 117
     args.mean_b = 104
     args.thresh = 0.5
-    args.nms = 0.5
+    args.nms = 0.45
     args.force_nms = True
     args.show_timer = True
     args.deploy_net = False
@@ -180,8 +180,8 @@ if __name__ == '__main__':
     elif mode == 1:
         detector.detect_and_record(image_list, to_file, args.dir, args.extension,
                                    class_names, args.thresh, args.show_timer)
-    # keep records of scores and position for each anchor box,
-    # multibox_detecion.cc should be compiled with DEBUG defined
+    # keep records of scores and position for each anchor box (in cpu mode),
+    # multibox_detecion.cc should be compiled with DEBUG defined in config.mk
     elif mode == 2:
         detector.detect_and_record_anchors(image_list, args.dir, args.extension,
                                            class_names, args.thresh, args.show_timer)
