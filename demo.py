@@ -117,13 +117,13 @@ if __name__ == '__main__':
         mode = 2
     else:
         # 0 - show detections (demo)
-        # 1 - record detections in to_file
+        # 1 - record detections in to_file (default anchor box position, no shifts or transformations)
         # 2 - record anchors (don't visualize detection result)
         mode = 0
 
     if mode == 0:
         #imgnames = ['006667', '003937', '001433', '006472', '004238']
-        imgnames = ['003937']
+        imgnames = ['007330']
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
         to_file = './data/kitti/results/dts_all_layer_customized_central.txt'    # skip layer defined in multibox_detection.cu
@@ -137,14 +137,15 @@ if __name__ == '__main__':
     args.dir = None
     args.ext = None
     args.epoch = 120
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_central')
     args.data_shape = [350, 1200]
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104
     args.thresh = 0.5
     args.nms = 0.45
-    args.force_nms = True
+    #args.force_nms = True
+    args.force_nms = False
     args.show_timer = True
     args.deploy_net = False
     args.class_names = 'Car'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'

@@ -59,11 +59,11 @@ if __name__ == '__main__':
     args.rec_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.list_path = ""
     args.network = 'resnet101_test'
-    args.batch_size = 4
+    args.batch_size = 1
     args.num_class = 1
     args.class_names = 'Car'  #'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
     args.epoch = 120
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_central')
     args.gpus = '0'
     args.cpu = None
     args.data_shape = [350, 1200]
@@ -77,13 +77,13 @@ if __name__ == '__main__':
     args.use_voc07_metric = True
     args.deploy_net = False
 
-    # second network
+    # write outputs from two networks
     use_sub_network = False
     if use_sub_network:
-        args.rec_path1 = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+        args.rec_path1 = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val_central.rec')
         args.network1 = 'resnet101_test'
         args.epoch1 = 120
-        args.prefix1 = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+        args.prefix1 = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_central')
         args.data_shape1 = [350, 1200]
 
     # choose ctx
@@ -127,8 +127,8 @@ if __name__ == '__main__':
                      use_difficult=args.use_difficult, class_names=class_names,
                      voc07_metric=args.use_voc07_metric,
                      use_second_network=use_sub_network,
-                     network1=network1, rec_path1=args.rec_path1, epoch1=args.epoch1,
-                     prefix1=args.prefix1, data_shape1=args.data_shape1)
+                     net1=network1, path_imgrec1=args.rec_path1, epoch1=args.epoch1,
+                     model_prefix1=args.prefix1, data_shape1=args.data_shape1)
     else:
         # single network
         evaluate_net(network, args.rec_path, num_class,

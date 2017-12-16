@@ -11,6 +11,7 @@ tools/caffe_converter/*.caffemodel
 matlab/caltechUSA/results/*
 matlab/caltechUSA/data-USA/*
 matlab/kitti/results/*
+matlab/kitti/outputs/*
 matlab/kitti/anchors/*
 matlab/kitti/anchors_customized/*
 mxnet/
