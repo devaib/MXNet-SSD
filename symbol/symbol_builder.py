@@ -165,3 +165,22 @@ def get_symbol(network, num_classes, from_layers, num_filters, sizes, ratios,
         name="detection", nms_threshold=nms_thresh, force_suppress=force_suppress,
         variances=(0.1, 0.1, 0.2, 0.2), nms_topk=nms_topk)
     return out
+
+# customized for debug
+def get_symbol_m(network, num_classes, from_layers, num_filters, sizes, ratios,
+               strides, pads, normalizations=-1, steps=[], min_filter=128,
+               nms_thresh=0.5, force_suppress=False, nms_topk=400, **kwargs):
+    body = import_module(network).get_symbol(num_classes, **kwargs)
+    # layers = multi_layer_feature(body, from_layers, num_filters, strides, pads,
+    #     min_filter=min_filter)
+    #
+    # loc_preds, cls_preds, anchor_boxes = multibox_layer(layers, \
+    #     num_classes, sizes=sizes, ratios=ratios, normalization=normalizations, \
+    #     num_channels=num_filters, clip=False, interm_layer=0, steps=steps)
+    #
+    # cls_prob = mx.symbol.SoftmaxActivation(data=cls_preds, mode='channel', \
+    #     name='cls_prob')
+    # out = mx.contrib.symbol.MultiBoxDetection(*[cls_prob, loc_preds, anchor_boxes], \
+    #     name="detection", nms_threshold=nms_thresh, force_suppress=force_suppress,
+    #     variances=(0.1, 0.1, 0.2, 0.2), nms_topk=nms_topk)
+    return body

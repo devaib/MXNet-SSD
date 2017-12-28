@@ -66,6 +66,19 @@ def get_config(network, data_shape, **kwargs):
         normalizations = -1
         steps = []
         return locals()
+    elif network == 'resnetsub101_test':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnetsub'
+        from_layers = ['_plus45', '_plus15', '', '']
+        num_filters = [-1, -1, 512, 256]
+        strides = [-1, -1, 2, 2]
+        pads = [-1, -1, 1, 1]
+        sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
     elif network == 'resnet101_test':
         num_layers = 101
         image_shape = '3,224,224'
@@ -76,6 +89,19 @@ def get_config(network, data_shape, **kwargs):
         pads = [-1, -1, 1, 1]
         sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
         ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
+    elif network == 'resnet101_test_one_layer':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnet'
+        from_layers = ['_plus12']
+        num_filters = [-1]
+        strides = [-1]
+        pads = [-1]
+        sizes = [[.03, .0548]]
+        ratios = [[1,2,.5]]
         normalizations = -1
         steps = []
         return locals()
@@ -219,3 +245,12 @@ def get_symbol(network, data_shape, **kwargs):
     config = get_config(network, data_shape, **kwargs).copy()
     config.update(kwargs)
     return symbol_builder.get_symbol(**config)
+
+# for debug
+def get_symbol_m(network, data_shape, **kwargs):
+    if network.startswith('legacy'):
+        logging.warn('Using legacy model.')
+        return symbol_builder.import_module(network).get_symbol(**kwargs)
+    config = get_config(network, data_shape, **kwargs).copy()
+    config.update(kwargs)
+    return symbol_builder.get_symbol_m(**config)

@@ -58,12 +58,12 @@ if __name__ == '__main__':
 
     args.rec_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.list_path = ""
-    args.network = 'resnet101_test'
+    args.network = 'resnet101_test_one_layer'
     args.batch_size = 1
     args.num_class = 1
     args.class_names = 'Car'  #'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
     args.epoch = 120
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_central')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_small')
     args.gpus = '0'
     args.cpu = None
     args.data_shape = [350, 1200]
@@ -78,12 +78,12 @@ if __name__ == '__main__':
     args.deploy_net = False
 
     # write outputs from two networks
-    use_sub_network = False
+    use_sub_network = True
     if use_sub_network:
-        args.rec_path1 = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val_central.rec')
-        args.network1 = 'resnet101_test'
+        args.rec_path1 = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+        args.network1 = 'resnet101_test_one_layer'
         args.epoch1 = 120
-        args.prefix1 = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_central')
+        args.prefix1 = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_small')
         args.data_shape1 = [350, 1200]
 
     # choose ctx

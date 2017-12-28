@@ -90,7 +90,8 @@ class Kitti(Imdb):
         """
         assert self.image_set is not None, "Dataset not initialized"
         name = self.image_set_index[index]
-        image_file = os.path.join(self.data_path, 'image_2'+self.suffix, name + self.extension)
+        # image_file = os.path.join(self.data_path, 'image_2'+self.suffix, name + self.extension)
+        image_file = os.path.join(self.data_path, 'image_2', name + self.extension)
         assert os.path.exists(image_file), 'Path does not exist: {}'.format(image_file)
         return image_file
 

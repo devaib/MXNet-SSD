@@ -136,11 +136,10 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
         else:
             metric1 = MApMetric(ovp_thresh, use_difficult, class_names)
 
-        filepath = '/home/binghao//workspace/MXNet-SSD/matlab/kitti/outputs/ssd/'
-        filepath1 = '/home/binghao//workspace/MXNet-SSD/matlab/kitti/outputs/ssd_central/'
-        mod.score_m(filepath, eval_iter, metric, num_batch=None)
+        # filepath = '/home/binghao/workspace/MXNet-SSD/matlab/kitti/outputs/ssd/'
+        filepath1 = '/home/binghao/workspace/MXNet-SSD/matlab/kitti/outputs/ssd_small/'
+        # mod.score_m(filepath, eval_iter, metric, num_batch=None)
         mod1.score_m(filepath1, eval_iter1, metric1, num_batch=None)
-
 
 
 

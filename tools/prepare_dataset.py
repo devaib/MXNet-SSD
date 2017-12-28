@@ -114,8 +114,8 @@ if __name__ == '__main__':
     args.dataset = 'kitti'
     args.set = 'val'
     args.shuffle = False
-    suffixs = ['', '_central']
-    suffix = suffixs[1]
+    suffixs = ['', '_central', '_small']
+    suffix = suffixs[2]
     args.target = os.path.join(curr_path, '..', 'data', 'kitti',
                                'rec', args.set + suffix + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')

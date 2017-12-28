@@ -1,22 +1,18 @@
 clc; clear; close all;
 disp('===== Priorbox Generation Demo =====');
 
-sizes = [.1,  .141; 
-         .2,  .272; 
-         .37, .447; 
-         .54, .619; 
-         .71, .79; 
-         .88, .961];
+sizes = [.03, .0548;
+        .1, .1732;
+        .3, .3873;
+        .5, .5916];
 ratios = [1,2,.5,-1,-1; 
     1,2,.5,3,1./3; 
     1,2,.5,3,1./3; 
-    1,2,.5,3,1./3; 
-    1,2,.5,-1,-1; 
-    1,2,.5,-1,-1];
+    1,2,.5,3,1./3];
 
 w = -1 .* ones(size(sizes, 1), size(sizes,2)+size(ratios,2)-1);
 h = -1 .* ones(size(sizes, 1), size(sizes,2)+size(ratios,2)-1);
-for i = 1:6
+for i = 1:size(sizes, 1)
     size_i = sizes(i, :);
     ratio = ratios(i, :);
 

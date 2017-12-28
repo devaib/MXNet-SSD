@@ -109,17 +109,18 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train_central.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val_central.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.val_list = ""
-    args.network = 'resnet101_test'
+    args.network = 'resnetsub101_test'
     args.batch_size = 4
-    args.resume = 65
+    args.resume = -1
     args.finetune = -1
-    args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    # args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.pretrained = False
     args.epoch = 0
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-sub')
     args.gpus = '0'
     args.begin_epoch = 0
     args.end_epoch = 120

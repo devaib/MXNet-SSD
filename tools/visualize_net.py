@@ -11,20 +11,21 @@ import json
 parser = argparse.ArgumentParser(description='network visualization')
 parser.add_argument('--network', type=str, default='vgg16_reduced',
                     help = 'the cnn to use')
-parser.add_argument('--num-classes', type=int, default=20,
+parser.add_argument('--num-classes', type=int, default=1,
                     help='the number of classes')
 parser.add_argument('--data-shape', type=int, default=300,
                     help='set image\'s shape')
 parser.add_argument('--train', action='store_true', default=False, help='show train net')
 args = parser.parse_args()
 
-args.network = 'resnet101_test'
+args.network = 'resnetsub101_test'
 args.num_classes = 1
 args.data_shape = (350, 1200)
 args.train = False
 
 
 if not args.train:
+    # net = symbol_factory.get_symbol(args.network, args.data_shape, num_classes=args.num_classes)
     net = symbol_factory.get_symbol(args.network, args.data_shape, num_classes=args.num_classes)
     if isinstance(args.data_shape, int):
         a = mx.viz.plot_network(net, shape={"data":(1,3,args.data_shape,args.data_shape)}, \
@@ -41,3 +42,4 @@ else:
     with open("{}_network.txt".format(args.network), "w") as outfile:
         parsed = json.loads(net.tojson())
         json.dump(parsed, outfile, indent=4, sort_keys=True)
+

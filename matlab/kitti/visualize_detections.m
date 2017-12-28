@@ -6,11 +6,13 @@ function visualize_detections()
     gts_file = '../../data/kitti/results/imginfos_valset.txt';  % load ground truth from validation set
     dts_file = strcat('../../data/kitti/results/dts_',layer_name{5},'_layer', suffix1, '.txt');
     dts_central_file = strcat('../../data/kitti/results/dts_',layer_name{5},'_layer', suffix2, '.txt');
+    dts_small_file = strcat('../../data/kitti/results/dts_one_layer_customized_small_objects.txt');
     val_file = '/home/binghao/workspace/MXNet-SSD/data/kitti/data_object_image_2/training/val.txt';
     f = fopen(val_file); val_list = textscan(f,'%s','delimiter','\n'); fclose(f);
     f = fopen(gts_file); gt_infos = textscan(f,'%s %f %f %f %f %f %f','delimiter',','); fclose(f);
     f = fopen(dts_file); dt_infos = textscan(f,'%s %f %f %f %f %f','delimiter',','); fclose(f);
     f = fopen(dts_central_file); dt_central_infos = textscan(f,'%s %f %f %f %f %f','delimiter',','); fclose(f);
+    f = fopen(dts_small_file); dt_small_infos = textscan(f,'%s %f %f %f %f %f','delimiter',','); fclose(f);
     cropped_image_dir = '../../data/kitti/data_object_image_2/training/image_2/';
     
     val_lst = val_list{1,1};
@@ -26,7 +28,13 @@ function visualize_detections()
     ws_central = dt_central_infos{1,4};
     hs_central = dt_central_infos{1,5};
     scores_central = dt_central_infos{1,6};
-    i = 1; k = 1;
+    imgindices_small = dt_small_infos{1,1};
+    xs_small = dt_small_infos{1,2};
+    ys_small = dt_small_infos{1,3};
+    ws_small = dt_small_infos{1,4};
+    hs_small = dt_small_infos{1,5};
+    scores_small = dt_small_infos{1,6};
+    i = 1; k = 1; s = 1;
     for ind = 1 : size(val_lst, 1)
         imgindex = val_lst{ind}
         j = i;
@@ -67,9 +75,25 @@ function visualize_detections()
         end
         k = m;
         
+        p = s;
+        while strcmp(imgindices_small{p}, imgindex) == 1
+            p = p + 1;
+        end
+        for ss = s:(p-1)
+            x = xs_small(ss); y = ys_small(ss); w = ws_small(ss); h = hs_small(ss); score = scores_small(ss);
+            pos = [x, y, w, h];
+            rect3 = rectangle('Position', pos, 'EdgeColor', 'b', 'LineWidth', 2);
+%             label_text = sprintf('%.2f', score);
+%             txt1 = text(x,y+h+12,label_text,'color','b',...
+%             'BackgroundColor','k','HorizontalAlignment','center',...
+%             'VerticalAlignment','bottom','FontWeight','bold',...
+%             'FontSize',6);
+        end
+        s = p;
+        
         waitforbuttonpress;
         %saveas(fig, strcat(imgindex, '.jpg'));
-        delete(rect1); delete(txt1);delete(rect2); delete(txt2); close;
+        delete(rect1); delete(txt1);delete(rect2); delete(txt2); delete(rect3); close;
     end
 
 %     % load gts of validation set

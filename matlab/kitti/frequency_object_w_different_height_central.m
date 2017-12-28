@@ -1,5 +1,5 @@
 function frequency_object_w_different_height_central()
-    layer_id = 2; % 1/2/3/4- show pairwise comparison between layer 1/2/3/4 and gts, 5 - show all
+    layer_id = 1; % 1/2/3/4- show pairwise comparison between layer 1/2/3/4 and gts, 5 - show all
     suffix1 = '_customized';
     suffix2 = '_customized_central';
     % load gts of validation set
