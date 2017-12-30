@@ -111,27 +111,28 @@ def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_n
     flat1 = mx.symbol.Flatten(data=pool1)
 
     # sub network 2
+    prefix = 'sub_'             # differentiate sub-networks
     if height <= 32:            # such as cifar10
         body2 = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
-                                  no_bias=True, name="conv0_2", workspace=workspace)
+                                  no_bias=True, name=prefix + "conv0", workspace=workspace)
     else:                       # often expected to be 224 such as imagenet
         body2 = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
-                                  no_bias=True, name="conv0_2", workspace=workspace)
-        body2 = mx.sym.BatchNorm(data=body2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name='bn0_2')
-        body2 = mx.sym.Activation(data=body2, act_type='relu', name='relu0_2')
+                                  no_bias=True, name=prefix + "conv0", workspace=workspace)
+        body2 = mx.sym.BatchNorm(data=body2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn0')
+        body2 = mx.sym.Activation(data=body2, act_type='relu', name=prefix + 'relu0')
         body_sub2 = mx.symbol.Pooling(data=body2, kernel=(3, 3), stride=(2,2), pad=(1,1), pool_type='max')
 
     for i in range(num_stages):
         body_sub2 = residual_unit(body_sub2, filter_list[i + 1], (1 if i == 0 else 2, 1 if i == 0 else 2), False,
-                                  name='stage%d_unit%d_2' % (i + 1, 1), bottle_neck=bottle_neck, workspace=workspace,
+                                  name=prefix + 'stage%d_unit%d' % (i + 1, 1), bottle_neck=bottle_neck, workspace=workspace,
                                   memonger=memonger)
         for j in range(units[i] - 1):
             body_sub2 = residual_unit(body_sub2, filter_list[i + 1], (1, 1), True,
-                                      name='stage%d_unit%d_2' % (i + 1, j + 2),
+                                      name=prefix + 'stage%d_unit%d' % (i + 1, j + 2),
                                       bottle_neck=bottle_neck, workspace=workspace, memonger=memonger)
-    bn2 = mx.sym.BatchNorm(data=body_sub2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name='bn1_2')
-    relu2 = mx.sym.Activation(data=bn2, act_type='relu', name='relu1_2')
-    pool2 = mx.symbol.Pooling(data=relu2, global_pool=True, kernel=(7, 7), pool_type='avg', name='pool1_2')
+    bn2 = mx.sym.BatchNorm(data=body_sub2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn1')
+    relu2 = mx.sym.Activation(data=bn2, act_type='relu', name=prefix + 'relu1')
+    pool2 = mx.symbol.Pooling(data=relu2, global_pool=True, kernel=(7, 7), pool_type='avg', name=prefix + 'pool1')
     flat2 = mx.symbol.Flatten(data=pool2)
 
     flat = mx.symbol.Concat(flat1, flat2, dim=0, name='subs-concat')
