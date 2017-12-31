@@ -16,4 +16,16 @@ pretrained_sub = os.path.join(os.getcwd(),'..', 'model', 'resnet101', 'resnet-10
 epoch_sub = 1
 sym_sub, arg_params_sub, aux_params_sub = mx.model.load_checkpoint(pretrained_sub, epoch_sub)
 
+# copy params to sub-network
+new_arg_params = {}
+for k, v in arg_params.iteritems():
+    new_k = 'sub_' + k
+    new_arg_params[k] = v
+    new_arg_params[new_k] = v
+
+# save a model to mymodel-symbol.json and mymodel-0100.params
+# prefix = 'mymodel'
+# iteration = 100
+# model.save(prefix, iteration)
+
 print 0

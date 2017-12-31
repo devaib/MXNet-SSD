@@ -26,7 +26,13 @@ def convert_pretrained(name, args):
     ---------
     processed arguments as dict
     """
-    return args
+    # copy params to sub-network
+    new_arg_params = {}
+    for k, v in args.iteritems():
+        new_k = 'sub_' + k
+        new_arg_params[k] = v
+        new_arg_params[new_k] = v
+    return new_arg_params
 
 def get_lr_scheduler(learning_rate, lr_refactor_step, lr_refactor_ratio,
                      num_example, batch_size, begin_epoch):
@@ -149,6 +155,11 @@ def train_net(net, train_path, num_classes, batch_size,
     log_file : str
         log to file if enabled
     """
+    if net == 'resnetsub101_test' and resume == -1 and pretrained is not False:
+        convert_model = True
+    else:
+        convert_model = False
+
     # set up logger
     logging.basicConfig()
     logger = logging.getLogger()
@@ -218,7 +229,8 @@ def train_net(net, train_path, num_classes, batch_size,
         logger.info("Start training with {} from pretrained model {}"
             .format(ctx_str, pretrained))
         _, args, auxs = mx.model.load_checkpoint(pretrained, epoch)
-        args = convert_pretrained(pretrained, args)
+        if convert_model:
+            args = convert_pretrained(pretrained, args)
     else:
         logger.info("Experimental: start training from scratch with {}"
             .format(ctx_str))

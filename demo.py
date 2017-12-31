@@ -110,7 +110,7 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet101_test_one_layer'
+    args.network = 'resnetsub101_test'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
 
     if args.mode == 2:
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         # 0 - show detections (demo)
         # 1 - record detections in to_file (default anchor box position, no shifts or transformations)
         # 2 - record anchors (don't visualize detection result)
-        mode = 1
+        mode = 0
 
     if mode == 0:
         # imgnames = ['006667', '003937', '001433', '006472', '004238']
@@ -136,8 +136,8 @@ if __name__ == '__main__':
 
     args.dir = None
     args.ext = None
-    args.epoch = 120
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.epoch = 144
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-sub')
     args.data_shape = [350, 1200]
     args.mean_r = 123
     args.mean_g = 117
