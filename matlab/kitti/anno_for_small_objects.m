@@ -4,7 +4,8 @@ imgname_list_file = '../../data/kitti/data_object_image_2/training/train_total.t
 f = fopen(imgname_list_file); imgindex_list_cell = textscan(f, '%s'); fclose(f);
 imgindex_list = imgindex_list_cell{1,1};
 anno_dir = '../../data/kitti/data_object_label_2/training/label_2/';
-small_object_anno_dir = '../../data/kitti/data_object_label_2/training/label_2_small/';
+% small_object_anno_dir = '../../data/kitti/data_object_label_2/training/label_2_small/';
+large_object_anno_dir = '../../data/kitti/data_object_label_2/training/label_2_large/';
 height_limit = 40;
 
 for ind = 1:size(imgindex_list, 1)
@@ -22,7 +23,8 @@ for ind = 1:size(imgindex_list, 1)
         x = annos{1,5}(i);
         y = annos{1,6}(i);
         h = annos{1,8}(i)-annos{1,6}(i);
-        if h > height_limit
+        % if h > height_limit
+        if h <= height_limit
             removed_ind = [removed_ind, 1];
         else
             removed_ind = [removed_ind, 0];
@@ -30,7 +32,8 @@ for ind = 1:size(imgindex_list, 1)
     end
 
     % save image and annotation file
-    fileID = fopen(strcat(small_object_anno_dir, imgindex, '.txt'), 'w');
+    % fileID = fopen(strcat(small_object_anno_dir, imgindex, '.txt'), 'w');
+    fileID = fopen(strcat(large_object_anno_dir, imgindex, '.txt'), 'w');
     for i = 1 : size(annos{1,1}, 1)
         if removed_ind(i) == 1
             continue

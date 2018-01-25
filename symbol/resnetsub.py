@@ -3,7 +3,7 @@ Resnet with 2 sub networks
 """
 import mxnet as mx
 
-def residual_unit(data, num_filter, stride, dim_match, name, bottle_neck=True, bn_mom=0.9, workspace=256, memonger=False, sub_network=False):
+def residual_unit(data, num_filter, stride, dim_match, name, bottle_neck=True, bn_mom=0.9, workspace=256, memonger=False):
     """Return ResNet Unit symbol for building ResNet
     Parameters
     ----------
@@ -22,9 +22,6 @@ def residual_unit(data, num_filter, stride, dim_match, name, bottle_neck=True, b
     workspace : int
         Workspace used in convolution operator
     """
-    if sub_network:
-        name = 'sub_' + name
-
     if bottle_neck:
         # the same as https://github.com/facebook/fb.resnet.torch#notes, a bit difference with origin paper
         bn1 = mx.sym.BatchNorm(data=data, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=name + '_bn1')
@@ -128,11 +125,11 @@ def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_n
     for i in range(num_stages):
         body_sub2 = residual_unit(body_sub2, filter_list[i + 1], (1 if i == 0 else 2, 1 if i == 0 else 2), False,
                                   name=prefix + 'stage%d_unit%d' % (i + 1, 1), bottle_neck=bottle_neck, workspace=workspace,
-                                  memonger=memonger, sub_network=True)
+                                  memonger=memonger)
         for j in range(units[i] - 1):
             body_sub2 = residual_unit(body_sub2, filter_list[i + 1], (1, 1), True,
                                       name=prefix + 'stage%d_unit%d' % (i + 1, j + 2),
-                                      bottle_neck=bottle_neck, workspace=workspace, memonger=memonger, sub_network=True)
+                                      bottle_neck=bottle_neck, workspace=workspace, memonger=memonger)
     bn2 = mx.sym.BatchNorm(data=body_sub2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn1')
     relu2 = mx.sym.Activation(data=bn2, act_type='relu', name=prefix + 'relu1')
     pool2 = mx.symbol.Pooling(data=relu2, global_pool=True, kernel=(7, 7), pool_type='avg', name=prefix + 'pool1')

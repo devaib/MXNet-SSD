@@ -109,21 +109,21 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train_large.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val_large.rec')
     args.val_list = ""
-    args.network = 'resnetsub101_test'
+    args.network = 'resnet101_test_last_three_layer'
     args.batch_size = 4
-    args.resume = 146
+    args.resume = -1
     args.finetune = -1
     args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
-    # args.pretrained = False
+    #args.pretrained = False
     args.epoch = 0
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-sub')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large')
     args.gpus = '0'
     args.begin_epoch = 0
-    args.end_epoch = 240
+    args.end_epoch = 120
     args.frequent = 20
     args.data_shape = [350, 1200]
     #args.data_shape = 300
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     args.mean_b = 104
     #args.lr_refactor_step = '80, 160'
     #args.lr_refactor_step = '40, 80'
-    args.lr_refactor_step = '90, 160'
+    args.lr_refactor_step = '80'
     args.lr_refactor_ratio = 0.1
     args.freeze_pattern = ""    # TODO: find out influence
     args.log_file = 'train.log'

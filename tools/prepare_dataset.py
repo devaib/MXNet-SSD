@@ -112,10 +112,10 @@ if __name__ == '__main__':
 
     # customized
     args.dataset = 'kitti'
-    args.set = 'val'
+    args.set = 'train'
     args.shuffle = False
-    suffixs = ['', '_central', '_small']
-    suffix = suffixs[2]
+    suffixs = ['', '_central', '_small', '_large']
+    suffix = suffixs[3]
     args.target = os.path.join(curr_path, '..', 'data', 'kitti',
                                'rec', args.set + suffix + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')

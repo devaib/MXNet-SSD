@@ -30,23 +30,23 @@ switch mode
     imshow(img,'parent',h(1).axes); axis(h(1).axes,'image','off'); hold(h(1).axes, 'on');
     imshow(img,'parent',h(2).axes); axis(h(2).axes,'image','off'); hold(h(2).axes, 'on');
     
-    % title
-    text(size(img,2)/2,3,sprintf('2D Bounding Boxes'),'parent',h(1).axes,'color','g','HorizontalAlignment','center','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    text(size(img,2)/2,3,sprintf('3D Bounding Boxes'),'parent',h(2).axes,'color','g','HorizontalAlignment','center','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    
-    % legend
-    text(0,00,'Not occluded','parent',h(1).axes,'color','g','HorizontalAlignment','left','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    text(0,30,'Partly occluded','parent',h(1).axes,'color','y','HorizontalAlignment','left','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    text(0,60,'Fully occluded','parent',h(1).axes,'color','r','HorizontalAlignment','left','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    text(0,90,'Unknown','parent',h(1).axes,'color','w','HorizontalAlignment','left','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    text(0,120,'Don''t care region','parent',h(1).axes,'color','c','HorizontalAlignment','left','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-
-    % frame number
-    text(size(img,2),0,sprintf('%s set frame %d/%d',data_set,img_idx,nimages-1), 'parent', h(1).axes,'color','g','HorizontalAlignment','right','VerticalAlignment','top','FontSize',14,'FontWeight','bold','BackgroundColor','black');
-    
-    % usage instructions
-    text(size(img,2)/2,size(img,1),sprintf('''SPACE'': Next Image  |  ''-'': Previous Image  |  ''x'': +1000  |  ''y'': -1000 | ''q'': quit'), 'parent', h(2).axes,'color','g','HorizontalAlignment','center','VerticalAlignment','bottom','FontSize',14,'FontWeight','bold', 'BackgroundColor','black');
-    
+%     % title
+%     text(size(img,2)/2,3,sprintf('2D Bounding Boxes'),'parent',h(1).axes,'color','g','HorizontalAlignment','center','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     text(size(img,2)/2,3,sprintf('3D Bounding Boxes'),'parent',h(2).axes,'color','g','HorizontalAlignment','center','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     
+%     % legend
+%     text(0,00,'Not occluded','parent',h(1).axes,'color','g','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     text(0,30,'Partly occluded','parent',h(1).axes,'color','y','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     text(0,60,'Fully occluded','parent',h(1).axes,'color','r','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     text(0,90,'Unknown','parent',h(1).axes,'color','w','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     text(0,120,'Don''t care region','parent',h(1).axes,'color','c','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+% 
+%     % frame number
+%     text(size(img,2),0,sprintf('%s set frame %d/%d',data_set,img_idx,nimages-1), 'parent', h(1).axes,'color','g','HorizontalAlignment','right','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+%     
+%     % usage instructions
+%     text(size(img,2)/2,size(img,1),sprintf('''SPACE'': Next Image  |  ''-'': Previous Image  |  ''x'': +1000  |  ''y'': -1000 | ''q'': quit'), 'parent', h(2).axes,'color','g','HorizontalAlignment','center','VerticalAlignment','bottom','FontSize',8,'FontWeight','bold', 'BackgroundColor','black');
+%     
   case 'my_init'
     fig = figure(1);
     img = imread(sprintf('%s/%06d.png',image_dir,0));
@@ -67,11 +67,11 @@ switch mode
     imshow(img,'parent',h(1).axes); axis(h(1).axes,'image','on'); hold(h(1).axes, 'on');
     
     % legend
-    text(0,00,'Not occluded','parent',h(1).axes,'color','g','HorizontalAlignment','left','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black');
-    text(0,30,'Partly occluded','parent',h(1).axes,'color','y','HorizontalAlignment','left','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black');
-    text(0,60,'Fully occluded','parent',h(1).axes,'color','r','HorizontalAlignment','left','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black');
-    text(0,90,'Unknown','parent',h(1).axes,'color','w','HorizontalAlignment','left','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black');
-    text(0,120,'Don''t care region','parent',h(1).axes,'color','c','HorizontalAlignment','left','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black');
+    text(0,00,'Not occluded','parent',h(1).axes,'color','g','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+    text(0,30,'Partly occluded','parent',h(1).axes,'color','y','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+    text(0,60,'Fully occluded','parent',h(1).axes,'color','r','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+    text(0,90,'Unknown','parent',h(1).axes,'color','w','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
+    text(0,120,'Don''t care region','parent',h(1).axes,'color','c','HorizontalAlignment','left','VerticalAlignment','top','FontSize',8,'FontWeight','bold','BackgroundColor','black');
 
     % frame number
     text(size(img,2),0,sprintf('%s set frame %d/%d',data_set,img_idx,nimages-1), 'parent', h(1).axes,'color','g','HorizontalAlignment','right','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black');
