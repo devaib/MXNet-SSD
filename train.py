@@ -109,18 +109,18 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train_large.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val_large.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
     args.val_list = ""
-    args.network = 'resnet101_test_last_three_layer'
+    args.network = 'resnetsub101_test'
     args.batch_size = 4
     args.resume = -1
     args.finetune = -1
-    args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-sub')
     #args.pretrained = False
-    args.epoch = 0
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large')
+    args.epoch = 17
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large&small')
     args.gpus = '0'
     args.begin_epoch = 0
     args.end_epoch = 120
@@ -128,6 +128,7 @@ if __name__ == '__main__':
     args.data_shape = [350, 1200]
     #args.data_shape = 300
     args.label_width = 350
+    #args.learning_rate = 0.004
     args.learning_rate = 0.0004
     args.momentum = 0.9
     args.weight_decay = 0.0005

@@ -110,8 +110,8 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet101_test'
-    #args.network = 'resnetsub101_test'
+    #args.network = 'resnet101_test'
+    args.network = 'resnetsub101_test'
     #args.network = 'resnet101_test_last_three_layer'
     #args.network = 'resnet101_test_one_layer'
     imgpath = './data/kitti/data_object_image_2/training/image_2/'
@@ -139,11 +139,12 @@ if __name__ == '__main__':
 
     args.dir = None
     args.ext = None
-    args.epoch = 120
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_customized')
+    args.epoch = 17
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_customized')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-sub')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_small')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large&small')
     args.data_shape = [350, 1200]
     args.mean_r = 123
     args.mean_g = 117
