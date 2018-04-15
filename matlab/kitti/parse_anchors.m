@@ -6,10 +6,14 @@ anchors_dir = './anchors_customized/';
 feature_map_height = [22 22 11 6];
 feature_map_width = [75 75 38 19];
 anchors_per_location = [4 6 6 6];
+% anchors_dir = './anchors/';
+% feature_map_height = [22 22 11 6 3 2];
+% feature_map_width = [75 75 38 19 10 5];
+% anchors_per_location = [4 6 6 6 4 4];
 num_anchors = sum(feature_map_height .* feature_map_width .* anchors_per_location);
 activated_anchors = zeros(num_anchors, 1);
 files = dir(strcat(anchors_dir, '*.txt'));
-imagenum = 32;  % number of the imagce
+imagenum = 32;  % number of the image
 mode = 0;   % 0 - parse anchors, 1 - demo
 
 % demo mode, show valid anchors, only parse one file

@@ -4,7 +4,9 @@ clear; close; clc;
 val_file = '../../data/kitti/data_object_image_2/training/val.txt';
 gts_file = '../../data/kitti/results/gts.txt';
 dts_file = '../../data/kitti/results/dts.txt';
-% dts_file = '../../data/kitti/results/dts_all_layer_customized.txt';
+dts1_file = '../../data/kitti/results/dts_all_layer_customized.txt';
+dts2_file = '../../data/kitti/results/dts_two_stream_one_shared_stages.txt';
+dts3_file = '../../data/kitti/results/dts_two_stream_two_shared_stages.txt';
 % List of experiment settings: { name, hr, vr, ar, overlap, filter }
 %  name     - experiment name
 %  hr       - height range to test
@@ -36,8 +38,13 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 nn=1000; clrs=zeros(nn,3);
 for ii=1:nn, clrs(ii,:)=max(.3,mod([78 121 42]*(ii+1),255)/255); end
 algs = {
-  'SSD-ResNet101',               0, clrs(1,:),   '-'};
+  'SSD',                0,  clrs(2,:),  '-'
+  'SSD-customized',     0,  clrs(1,:),  '-'
+  'SSD-two-stream*',    0,  clrs(3,:),  '-'
+  'SSD-two-stream**',   0,  clrs(4,:),  '-'};
 algs=cell2struct(algs',{'name','resize','color','style'});
+exps = exps(2);
+algs = algs(:);
 
 % remaining parameters and constants
 aspectRatio = .41;        % default aspect ratio for all bbs
@@ -50,7 +57,7 @@ samples = 10.^(-2:.25:0); % samples for computing area under the curve
 lims = [2e-4 50 .035 1];  % axis limits for ROC plots
 bbsShow = 0;              % if true displays sample bbs for each alg/exp
 bbsType = 'fp';           % type of bbs to display (fp/tp/fn/dt)
-algo_name = 'SSD-ResNet101';
+%algo_name = 'SSD-ResNet101';
 
 % load val list, gts and dts files
 f = fopen(val_file);             
@@ -62,6 +69,15 @@ fclose(f);
 f = fopen(dts_file);             
 dts_scan = textscan(f,'%s %d %d %d %d %f','delimiter',',');
 fclose(f);
+f = fopen(dts1_file);             
+dts1_scan = textscan(f,'%s %d %d %d %d %f','delimiter',',');
+fclose(f);
+f = fopen(dts2_file);             
+dts2_scan = textscan(f,'%s %d %d %d %d %f','delimiter',',');
+fclose(f);
+f = fopen(dts3_file);             
+dts3_scan = textscan(f,'%s %d %d %d %d %f','delimiter',',');
+fclose(f);
 
 % construct gts, dts
 val_list = val_scan{1,1};
@@ -69,9 +85,18 @@ gts_index = gts_scan{1,1}; gts_x = gts_scan{1,2}; gts_y = gts_scan{1,3};
 gts_w = gts_scan{1,4}; gts_h = gts_scan{1,5};
 dts_index = dts_scan{1,1}; dts_x = dts_scan{1,2}; dts_y = dts_scan{1,3};
 dts_w = dts_scan{1,4}; dts_h = dts_scan{1,5}; dts_score = dts_scan{1,6};
+dts1_index = dts1_scan{1,1}; dts1_x = dts1_scan{1,2}; dts1_y = dts1_scan{1,3};
+dts1_w = dts1_scan{1,4}; dts1_h = dts1_scan{1,5}; dts1_score = dts1_scan{1,6};
+dts2_index = dts2_scan{1,1}; dts2_x = dts2_scan{1,2}; dts2_y = dts2_scan{1,3};
+dts2_w = dts2_scan{1,4}; dts2_h = dts2_scan{1,5}; dts2_score = dts2_scan{1,6};
+dts3_index = dts3_scan{1,1}; dts3_x = dts3_scan{1,2}; dts3_y = dts3_scan{1,3};
+dts3_w = dts3_scan{1,4}; dts3_h = dts3_scan{1,5}; dts3_score = dts3_scan{1,6};
 num_val = size(val_list, 1);
 gts = cell(1,num_val);
 dts = cell(1,num_val);
+dts1 = cell(1,num_val);
+dts2 = cell(1,num_val);
+dts3 = cell(1,num_val);
 for i_val = 1:num_val
     index = val_list(i_val, 1);
     
@@ -90,18 +115,39 @@ for i_val = 1:num_val
     dts{1,i_val}(:,3) = double(dts_w(ind_dts));
     dts{1,i_val}(:,4) = double(dts_h(ind_dts));
     dts{1,i_val}(:,5) = double(dts_score(ind_dts));
+    
+    ind_dts1 = find(strcmp(dts1_index, index));
+    dts1{1,i_val}(:,1) = double(dts1_x(ind_dts1));
+    dts1{1,i_val}(:,2) = double(dts1_y(ind_dts1));
+    dts1{1,i_val}(:,3) = double(dts1_w(ind_dts1));
+    dts1{1,i_val}(:,4) = double(dts1_h(ind_dts1));
+    dts1{1,i_val}(:,5) = double(dts1_score(ind_dts1));    
+    
+    ind_dts2 = find(strcmp(dts2_index, index));
+    dts2{1,i_val}(:,1) = double(dts2_x(ind_dts2));
+    dts2{1,i_val}(:,2) = double(dts2_y(ind_dts2));
+    dts2{1,i_val}(:,3) = double(dts2_w(ind_dts2));
+    dts2{1,i_val}(:,4) = double(dts2_h(ind_dts2));
+    dts2{1,i_val}(:,5) = double(dts2_score(ind_dts2));
+    
+    ind_dts3 = find(strcmp(dts3_index, index));
+    dts3{1,i_val}(:,1) = double(dts3_x(ind_dts3));
+    dts3{1,i_val}(:,2) = double(dts3_y(ind_dts3));
+    dts3{1,i_val}(:,3) = double(dts3_w(ind_dts3));
+    dts3{1,i_val}(:,4) = double(dts3_h(ind_dts3));
+    dts3{1,i_val}(:,5) = double(dts3_score(ind_dts3));
 end
 
 dataName='KITTI';
 plotName=[fileparts(mfilename('fullpath')) '/results/' dataName];
 if(~exist(plotName,'dir')), mkdir(plotName); end
-gts = {gts}; dts = {dts};
-gName = [plotName '/gt' '.mat'];
-aName = [plotName '/dt-' algo_name '.mat'];
+gts = {gts}; dts = {dts, dts1, dts2, dts3};
+%gName = [plotName '/gt' '.mat'];
+%aName = [plotName '/dt-' algo_name '.mat'];
 %save(aName,'dts','-v6');
 %save(gName,'gts','-v6');
-algo = algo_name;
-res = evalAlgs( plotName, algo, exps, gts, dts );
+%algo = algo_name;
+res = evalAlgs( plotName, algs, exps, gts, dts );
 
 % plot curves and bbs
 plotExps( res, plotRoc, plotAlg, plotNum, plotName, ...
@@ -110,7 +156,7 @@ plotBbs( res, plotName, bbsShow, bbsType );
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function res = evalAlgs( plotName, algo, exps, gts, dts )
+function res = evalAlgs( plotName, algs, exps, gts, dts )
 % Evaluate every algorithm on each experiment
 %
 % OUTPUTS
@@ -121,12 +167,12 @@ function res = evalAlgs( plotName, algo, exps, gts, dts )
 %   .dtr    - [n x 1] dt result bbs for each frame [x y w h score match]
 fprintf('Evaluating: %s\n',plotName); nGt=length(gts); nDt=length(dts);
 res=repmat(struct('stra',[],'stre',[],'gtr',[],'dtr',[]),nGt,nDt);
-nGt = 1; nDt = 1;
+%nGt = 1; nDt = 1;
 for g=1:nGt
   for d=1:nDt
     gt=gts{g}; dt=dts{d}; n=length(gt); assert(length(dt)==n);
-    %stra=algs(d).name; stre=exps(g).name;
-    stra=algo; stre='';
+    stra=algs(d).name; stre=exps(g).name;
+    %stra=algo; stre='';
     %fName = [plotName '/ev-' stra '.mat'];
     %if(exist(fName,'file')), R=load(fName); res(g,d)=R.R; continue; end
     fprintf('\tExp %i/%i, Alg %i/%i: %s\n',g,nGt,d,nDt,stra);
@@ -179,10 +225,12 @@ for p=1:nPlots
     colors1=uniqueColors(1,max(10,nGt)); styles1=repmat({'-','--'},1,nGt);
   else
     xs1=xs(p,:); ys1=ys(p,:); fName1=[fName stre{p}]; lgd1=stra;
-    for d=1:nDt, lgd1{d}=sprintf('%2i%% %s',scores1(p,d),stra{d}); end
-    kp=[find(strcmp(stra,'VJ')) find(strcmp(stra,'HOG')) 1 1];
-    [~,ord]=sort(scores(p,:)); kp=ord==kp(1)|ord==kp(2);
-    j=find(cumsum(~kp)>=plotNum-2); kp(1:j(1))=1; ord=fliplr(ord(kp));
+    for d=1:nDt, lgd1{d}=sprintf('%s',stra{d}); end
+    %kp=[find(strcmp(stra,'VJ')) find(strcmp(stra,'HOG')) 1 1];
+    kp=[find(strcmp(stra,'SSD')) 1 1];
+%     [~,ord]=sort(scores(p,:)); kp=ord==kp(1)|ord==kp(2);
+%     j=find(cumsum(~kp)>=plotNum-2); kp(1:j(1))=1; ord=fliplr(ord(kp));
+    ord = [1 2 3 4];
     xs1=xs1(ord); ys1=ys1(ord); lgd1=lgd1(ord); colors1=colors(ord,:);
     styles1=styles(ord); f=fopen([fName1 '.txt'],'w');
     for d=1:nDt, fprintf(f,'%s %f\n',stra{d},scores(p,d)); end; fclose(f);

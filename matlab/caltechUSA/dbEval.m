@@ -55,6 +55,8 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 n=1000; clrs=zeros(n,3);
 for i=1:n, clrs(i,:)=max(.3,mod([78 121 42]*(i+1),255)/255); end
 algs = {
+  'Two-Stream-Conv',  0, clrs(68,:),  '-'
+  'SSD',              0, clrs(67,:),  '-'
   'VJ',               0, clrs(1,:),   '-'
   'HOG',              1, clrs(2,:),   '--'
   'FtrMine',          1, clrs(3,:),   '-'

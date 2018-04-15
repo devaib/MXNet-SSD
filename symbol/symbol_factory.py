@@ -66,6 +66,32 @@ def get_config(network, data_shape, **kwargs):
         normalizations = -1
         steps = []
         return locals()
+    elif network == 'resnetsub101_two_shared':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnetsub_two_shared'
+        from_layers = ['_plus38', '_plus15', '', '']  # 45 - 3 - 4
+        num_filters = [-1, -1, 512, 256]
+        strides = [-1, -1, 2, 2]
+        pads = [-1, -1, 1, 1]
+        sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
+    elif network == 'resnetsub101_one_shared':
+        num_layers = 101
+        image_shape = '3,224,224'
+        network = 'resnetsub_one_shared'
+        from_layers = ['_plus42', '_plus15', '', '']
+        num_filters = [-1, -1, 512, 256]
+        strides = [-1, -1, 2, 2]
+        pads = [-1, -1, 1, 1]
+        sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
     elif network == 'resnetsub101_test':
         num_layers = 101
         image_shape = '3,224,224'

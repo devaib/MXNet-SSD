@@ -7,6 +7,7 @@ sys.path.append(os.path.join(curr_path, '..'))
 from dataset.pascal_voc import PascalVoc
 from dataset.mscoco import Coco
 from dataset.kitti import Kitti
+from dataset.caltech_pedestrian import CaltechPedestrian
 from dataset.concat_db import ConcatDB
 
 def load_pascal(image_set, year, devkit_path, shuffle=False):
@@ -87,6 +88,18 @@ def load_kitti(image_set, kitti_path, suffix='', shuffle=False):
     else:
         return imdbs[0]
 
+def load_caltech(image_set, caltech_path, shuffle=False):
+    image_set = [y.strip() for y in image_set.split(',')]
+    assert image_set, "No image_set specified"
+    imdbs = []
+    for s in image_set:
+        imdbs.append(CaltechPedestrian(s, caltech_path, shuffle, is_train=True))
+    if len(imdbs) > 1:
+        return ConcatDB(imdbs, shuffle)
+    else:
+        return imdbs[0]
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Prepare lists for dataset')
     parser.add_argument('--dataset', dest='dataset', help='dataset to use',
@@ -111,14 +124,22 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.dataset = 'kitti'
-    args.set = 'train'
+    # args.dataset = 'kitti'
+    # args.set = 'train'
+    # args.shuffle = False
+    # suffixs = ['', '_central', '_small', '_large']
+    # suffix = suffixs[3]
+    # args.target = os.path.join(curr_path, '..', 'data', 'kitti',
+    #                            'rec', args.set + suffix + '.lst')
+    # args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
+
+    args.dataset = 'caltech'
+    args.set = 'val'
     args.shuffle = False
-    suffixs = ['', '_central', '_small', '_large']
-    suffix = suffixs[3]
-    args.target = os.path.join(curr_path, '..', 'data', 'kitti',
-                               'rec', args.set + suffix + '.lst')
-    args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
+    args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
+                               'rec', args.set + '-large' + '.lst')
+    args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
+    suffix = ""
 
     if args.dataset == 'pascal':
         db = load_pascal(args.set, args.year, args.root_path, args.shuffle)
@@ -132,6 +153,11 @@ if __name__ == '__main__':
         db = load_kitti(args.set, args.root_path, suffix, args.shuffle)
         print("saving list to disk...")
         db.save_imglist(args.target, root=args.root_path)
+    elif args.dataset == 'caltech':
+        db = load_caltech(args.set, args.root_path, args.shuffle)
+        print("saving list to disk...")
+        db.save_imglist(args.target, root=args.root_path)
+
 
     else:
         raise NotImplementedError("No implementation for dataset: " + args.dataset)

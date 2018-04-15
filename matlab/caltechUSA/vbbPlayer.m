@@ -26,7 +26,7 @@ function vbbPlayer( s, v )
 % Copyright 2014 Piotr Dollar.  [pdollar-at-gmail.com]
 % Licensed under the Simplified BSD License [see external/bsd.txt]
 
-[pth,setIds,vidIds] = dbInfo;
+[pth,setIds,vidIds] = dbInfo('UsaTrain');
 
 if(nargin<1 ||isempty(s)), s=randint2(1,1,[1 length(setIds)]); end
 if(nargin<2 ||isempty(v)), v=randint2(1,1,[1 length(vidIds{s})]); end

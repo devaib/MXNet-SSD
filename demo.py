@@ -4,6 +4,8 @@ import mxnet as mx
 import numpy as np
 import os
 import sys
+import glob
+
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 from detect.detector import Detector
 from symbol.symbol_factory import get_symbol
@@ -110,86 +112,131 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    #args.network = 'resnet101_test'
-    args.network = 'resnetsub101_test'
-    #args.network = 'resnet101_test_last_three_layer'
-    #args.network = 'resnet101_test_one_layer'
-    imgpath = './data/kitti/data_object_image_2/training/image_2/'
+    #args.network = 'resnet101'
+    args.network = 'resnetsub101_two_shared'
+    #imgpath = './data/kitti/data_object_image_2/training/image_2/'
+    # imgpath = './data/caltech-pedestrian-dataset-converter/data/images/'
 
     if args.mode == 2:
-        mode = 2
+        mode = 1
     else:
-        # 0 - show detections (demo)
-        # 1 - record detections in to_file (default anchor box position, no shifts or transformations)
-        # 2 - record anchors (don't visualize detection result)
-        mode = 0
+        # 0 -   show detections (demo)
+        # 1 -   record detections in to_file
+        # 2 -   record anchors (don't visualize detection result,
+        #       default anchor box position, no shifts or transformations)
+        # 3 -   same as 1, but on Caltech Pedestrian
+        mode = 3
 
     if mode == 0:
-        imgnames = ['006667', '001671', '005589', '001264', '003507', '004370']
-        # imgnames = ['003507']
+        #imgnames = ['006667', '001671', '005589', '001264', '003507', '004370']
+        imgnames = ['set00_V001_1783', 'set07_V002_1809','set07_V003_1341']
+        #set00_V001_1783
+        #set07_V002_1809
+        #set07_V003_1341
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
-        to_file = './data/kitti/results/dts_one_layer_customized_small_objects.txt'    # skip layer defined in multibox_detection.cu
         with open(val_path) as f:
             imgnames = [idx.rstrip() for idx in f.readlines()]
 
-    if mode == 0 or mode == 1:
-        ext = '.png'
-        args.images = ', '.join([imgpath + s + ext for s in imgnames])
+    # Caltech
+    elif mode == 3:
+        caltechPath = './data/caltech-pedestrian-dataset-converter/data/test-images/'
+        sets = ['set' + setNum for setNum in ['06', '07', '08', '09', '10']]            # set06 - set10
+        videos = ['V' + videoNum for videoNum in [str(x).zfill(3) for x in range(20)]]  # V000  - V019
 
-    args.dir = None
-    args.ext = None
-    args.epoch = 17
-    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_customized')
-    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-sub')
-    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large')
-    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_small')
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101_large&small')
-    args.data_shape = [350, 1200]
-    args.mean_r = 123
-    args.mean_g = 117
-    args.mean_b = 104
-    args.thresh = 0.5
-    args.nms = 0.45
-    #args.force_nms = True
-    args.force_nms = False
-    args.show_timer = True
-    args.deploy_net = False
-    args.class_names = 'Car'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
-    if mode == 0 or mode == 1:
-        args.cpu = False
-        args.gpu_id = 0
-    if mode == 2:
-        args.cpu = True
-        ctx = mx.cpu()
+        #s = sets[0]
+        #v = videos[0]
+        #imgpath = os.path.join(caltechPath, s, v)
+        for s in sets:
+            for v in videos:
+                val_path = caltechPath + s + v
+                imgpath = os.path.join(caltechPath, s, v)
+                if not os.path.exists(imgpath):
+                    continue
+                print("{} {}".format(s, v))
 
-    #print("Generating detection results for {} images".format(len(imgnames)))
+                image_list = []
+                for f in os.listdir(imgpath):
+                    if f.endswith(".png"):
+                        image_list.append(f)
 
-    # parse image list
-    image_list = [i.strip() for i in args.images.split(',')]
-    assert len(image_list) > 0, "No valid image specified to detect"
+                # Sorting
+                import re
 
-    network = None if args.deploy_net else args.network
-    class_names = parse_class_names(args.class_names)
-    if args.prefix.endswith('_'):
-        prefix = args.prefix + args.network + '_' + str(args.data_shape)
-    else:
-        prefix = args.prefix
+                def atoi(text):
+                    return int(text) if text.isdigit() else text
 
-    detector = get_detector(network, prefix, args.epoch,
-                            args.data_shape,
-                            (args.mean_r, args.mean_g, args.mean_b),
-                            ctx, len(class_names), args.nms_thresh, args.force_nms)
-    # run detection demo
-    if mode == 0:
-        detector.detect_and_visualize(image_list, args.dir, args.extension,
-                                      class_names, args.thresh, args.show_timer)
-    # keep records of valid detection
-    elif mode == 1:
-        detector.detect_and_record(image_list, to_file, args.dir, args.extension,
-                                   class_names, args.thresh, args.show_timer)
-    # keep records of scores and position for each anchor box (in cpu mode),
-    # multibox_detecion.cc should be compiled with DEBUG defined in config.mk
-    elif mode == 2:
-        detector.detect_and_record_anchors(image_list, args.dir, args.extension,
-                                           class_names, args.thresh, args.show_timer)
+                def natural_keys(text):
+                    return [atoi(c) for c in re.split('(\d+)', text)]
+
+                image_list.sort(key=natural_keys)
+
+                args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
+
+                toFilePath = './data/caltechUSA-two-stream/results/{}'.format(s, v)
+                if not os.path.exists(toFilePath):
+                    os.makedirs(toFilePath)
+                to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
+
+                #if mode == 0 or mode == 1:
+                #    ext = '.png'
+                #    args.images = ', '.join([imgpath + s + ext for s in imgnames])
+
+                args.dir = None
+                args.ext = None
+                args.epoch = 10
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-two-stream-caltech')
+                args.data_shape = [480, 640]
+                args.mean_r = 123
+                args.mean_g = 117
+                args.mean_b = 104
+                args.thresh = 0.10
+                args.nms = 0.45
+                #args.force_nms = True
+                args.force_nms = False
+                args.show_timer = True
+                args.deploy_net = False
+                args.class_names = 'Person'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+                if mode == 0 or mode == 1 or mode == 3:
+                    args.cpu = False
+                    args.gpu_id = 0
+                if mode == 2:
+                    args.cpu = True
+                    ctx = mx.cpu()
+
+                #print("Generating detection results for {} images".format(len(imgnames)))
+
+                # parse image list
+                image_list = [i.strip() for i in args.images.split(',')]
+                assert len(image_list) > 0, "No valid image specified to detect"
+
+                network = None if args.deploy_net else args.network
+                class_names = parse_class_names(args.class_names)
+                if args.prefix.endswith('_'):
+                    prefix = args.prefix + args.network + '_' + str(args.data_shape)
+                else:
+                    prefix = args.prefix
+
+                if "detector" not in locals():
+                    detector = get_detector(network, prefix, args.epoch,
+                                            args.data_shape,
+                                            (args.mean_r, args.mean_g, args.mean_b),
+                                            ctx, len(class_names), args.nms_thresh, args.force_nms)
+                # run detection demo
+                if mode == 0:
+                    detector.detect_and_visualize(image_list, args.dir, args.extension,
+                                                  class_names, args.thresh, args.show_timer)
+                # keep records of valid detection
+                elif mode == 1:
+                    detector.detect_and_record(image_list, to_file, args.dir, args.extension,
+                                               class_names, args.thresh, args.show_timer)
+                # keep records of scores and position for each anchor box (in cpu mode),
+                # multibox_detecion.cc should be compiled with DEBUG defined in config.mk
+                elif mode == 2:
+                    detector.detect_and_record_anchors(image_list, args.dir, args.extension,
+                                                       class_names, args.thresh, args.show_timer)
+
+                # for Caltech
+                elif mode == 3:
+                    detector.detect_and_record(image_list, to_file, args.dir, args.extension,
+                                               class_names, args.thresh, args.show_timer)
