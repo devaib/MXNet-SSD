@@ -34,13 +34,13 @@ def convert_pretrained(name, args):
                                                                                             epoch_customized)
 
     # pretrained SSD_small
-    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_small')
-    epoch_small = 120
+    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-caltech-small')
+    epoch_small = 7
     sym_small, arg_params_small, aux_params_small = mx.model.load_checkpoint(pretrained_small, epoch_small)
 
     # pretrained SSD_large
-    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_large')
-    epoch_large = 120
+    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-caltech-large')
+    epoch_large = 3
     sym_large, arg_params_large, aux_params_large = mx.model.load_checkpoint(pretrained_large, epoch_large)
 
     """
@@ -137,40 +137,75 @@ def convert_pretrained(name, args):
     new_arg_params = {}
 
     # large multi_feat 1 -> 2, 2 -> 3
-    new_arg_params['multi_feat_2_conv_1x1_conv_bias'] = arg_params_large['multi_feat_1_conv_1x1_conv_bias']
-    new_arg_params['multi_feat_2_conv_1x1_conv_weight'] = arg_params_large['multi_feat_1_conv_1x1_conv_weight']
-    new_arg_params['multi_feat_2_conv_3x3_conv_bias'] = arg_params_large['multi_feat_1_conv_3x3_conv_bias']
-    new_arg_params['multi_feat_2_conv_3x3_conv_weight'] = arg_params_large['multi_feat_1_conv_3x3_conv_weight']
-    new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_loc_pred_conv_bias']
-    new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_loc_pred_conv_weight']
-    new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_cls_pred_conv_bias']
-    new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_cls_pred_conv_weight']
+    #new_arg_params['multi_feat_2_conv_1x1_conv_bias'] = arg_params_large['multi_feat_1_conv_1x1_conv_bias']
+    #new_arg_params['multi_feat_2_conv_1x1_conv_weight'] = arg_params_large['multi_feat_1_conv_1x1_conv_weight']
+    #new_arg_params['multi_feat_2_conv_3x3_conv_bias'] = arg_params_large['multi_feat_1_conv_3x3_conv_bias']
+    #new_arg_params['multi_feat_2_conv_3x3_conv_weight'] = arg_params_large['multi_feat_1_conv_3x3_conv_weight']
+    #new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
+    #    'multi_feat_1_conv_3x3_relu_loc_pred_conv_bias']
+    #new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
+    #    'multi_feat_1_conv_3x3_relu_loc_pred_conv_weight']
+    #new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
+    #    'multi_feat_1_conv_3x3_relu_cls_pred_conv_bias']
+    #new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
+    #    'multi_feat_1_conv_3x3_relu_cls_pred_conv_weight']
+    #new_arg_params['multi_feat_3_conv_1x1_conv_bias'] = arg_params_large['multi_feat_2_conv_1x1_conv_bias']
+    #new_arg_params['multi_feat_3_conv_1x1_conv_weight'] = arg_params_large['multi_feat_2_conv_1x1_conv_weight']
+    #new_arg_params['multi_feat_3_conv_3x3_conv_bias'] = arg_params_large['multi_feat_2_conv_3x3_conv_bias']
+    #new_arg_params['multi_feat_3_conv_3x3_conv_weight'] = arg_params_large['multi_feat_2_conv_3x3_conv_weight']
+    #new_arg_params['multi_feat_3_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
+    #    'multi_feat_2_conv_3x3_relu_loc_pred_conv_bias']
+    #new_arg_params['multi_feat_3_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
+    #    'multi_feat_2_conv_3x3_relu_loc_pred_conv_weight']
+    #new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
+    #    'multi_feat_2_conv_3x3_relu_cls_pred_conv_bias']
+    #new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
+    #    'multi_feat_2_conv_3x3_relu_cls_pred_conv_weight']
 
-    new_arg_params['multi_feat_3_conv_1x1_conv_bias'] = arg_params_large['multi_feat_2_conv_1x1_conv_bias']
-    new_arg_params['multi_feat_3_conv_1x1_conv_weight'] = arg_params_large['multi_feat_2_conv_1x1_conv_weight']
-    new_arg_params['multi_feat_3_conv_3x3_conv_bias'] = arg_params_large['multi_feat_2_conv_3x3_conv_bias']
-    new_arg_params['multi_feat_3_conv_3x3_conv_weight'] = arg_params_large['multi_feat_2_conv_3x3_conv_weight']
-    new_arg_params['multi_feat_3_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
+    #arg_params_large.pop('multi_feat_1_conv_1x1_conv_bias')
+    #arg_params_large.pop('multi_feat_1_conv_1x1_conv_weight')
+    #arg_params_large.pop('multi_feat_1_conv_3x3_conv_bias')
+    #arg_params_large.pop('multi_feat_1_conv_3x3_conv_weight')
+    #arg_params_large.pop('multi_feat_1_conv_3x3_relu_loc_pred_conv_bias')
+    #arg_params_large.pop('multi_feat_1_conv_3x3_relu_loc_pred_conv_weight')
+    #arg_params_large.pop('multi_feat_1_conv_3x3_relu_cls_pred_conv_bias')
+    #arg_params_large.pop('multi_feat_1_conv_3x3_relu_cls_pred_conv_weight')
+
+    #arg_params_large.pop('multi_feat_2_conv_1x1_conv_bias')
+    #arg_params_large.pop('multi_feat_2_conv_1x1_conv_weight')
+    #arg_params_large.pop('multi_feat_2_conv_3x3_conv_bias')
+    #arg_params_large.pop('multi_feat_2_conv_3x3_conv_weight')
+    #arg_params_large.pop('multi_feat_2_conv_3x3_relu_loc_pred_conv_bias')
+    #arg_params_large.pop('multi_feat_2_conv_3x3_relu_loc_pred_conv_weight')
+    #arg_params_large.pop('multi_feat_2_conv_3x3_relu_cls_pred_conv_bias')
+    #arg_params_large.pop('multi_feat_2_conv_3x3_relu_cls_pred_conv_weight')
+
+    # for 4-feature-layer large stream
+    new_arg_params['multi_feat_2_conv_1x1_conv_bias'] = arg_params_large['multi_feat_2_conv_1x1_conv_bias']
+    new_arg_params['multi_feat_2_conv_1x1_conv_weight'] = arg_params_large['multi_feat_2_conv_1x1_conv_weight']
+    new_arg_params['multi_feat_2_conv_3x3_conv_bias'] = arg_params_large['multi_feat_2_conv_3x3_conv_bias']
+    new_arg_params['multi_feat_2_conv_3x3_conv_weight'] = arg_params_large['multi_feat_2_conv_3x3_conv_weight']
+    new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
         'multi_feat_2_conv_3x3_relu_loc_pred_conv_bias']
-    new_arg_params['multi_feat_3_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
+    new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
         'multi_feat_2_conv_3x3_relu_loc_pred_conv_weight']
-    new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
+    new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
         'multi_feat_2_conv_3x3_relu_cls_pred_conv_bias']
-    new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
+    new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
         'multi_feat_2_conv_3x3_relu_cls_pred_conv_weight']
 
-    arg_params_large.pop('multi_feat_1_conv_1x1_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_1x1_conv_weight')
-    arg_params_large.pop('multi_feat_1_conv_3x3_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_3x3_conv_weight')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_loc_pred_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_loc_pred_conv_weight')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_cls_pred_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_cls_pred_conv_weight')
+    new_arg_params['multi_feat_3_conv_1x1_conv_bias'] = arg_params_large['multi_feat_3_conv_1x1_conv_bias']
+    new_arg_params['multi_feat_3_conv_1x1_conv_weight'] = arg_params_large['multi_feat_3_conv_1x1_conv_weight']
+    new_arg_params['multi_feat_3_conv_3x3_conv_bias'] = arg_params_large['multi_feat_3_conv_3x3_conv_bias']
+    new_arg_params['multi_feat_3_conv_3x3_conv_weight'] = arg_params_large['multi_feat_3_conv_3x3_conv_weight']
+    new_arg_params['multi_feat_3_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_loc_pred_conv_bias']
+    new_arg_params['multi_feat_3_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_loc_pred_conv_weight']
+    new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_cls_pred_conv_bias']
+    new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_cls_pred_conv_weight']
 
     arg_params_large.pop('multi_feat_2_conv_1x1_conv_bias')
     arg_params_large.pop('multi_feat_2_conv_1x1_conv_weight')
@@ -180,6 +215,15 @@ def convert_pretrained(name, args):
     arg_params_large.pop('multi_feat_2_conv_3x3_relu_loc_pred_conv_weight')
     arg_params_large.pop('multi_feat_2_conv_3x3_relu_cls_pred_conv_bias')
     arg_params_large.pop('multi_feat_2_conv_3x3_relu_cls_pred_conv_weight')
+
+    arg_params_large.pop('multi_feat_3_conv_1x1_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_1x1_conv_weight')
+    arg_params_large.pop('multi_feat_3_conv_3x3_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_3x3_conv_weight')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_loc_pred_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_loc_pred_conv_weight')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_cls_pred_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_cls_pred_conv_weight')
 
     arg_params_small.pop('bn_data_beta')
     arg_params_small.pop('bn_data_gamma')
@@ -192,6 +236,12 @@ def convert_pretrained(name, args):
     arg_params_small.pop('_plus12_cls_pred_conv_weight')
     arg_params_small.pop('_plus12_loc_pred_conv_bias')
     arg_params_small.pop('_plus12_loc_pred_conv_weight')
+
+    # for 4 layer large stream
+    arg_params_large.pop('_plus12_cls_pred_conv_bias')
+    arg_params_large.pop('_plus12_cls_pred_conv_weight')
+    arg_params_large.pop('_plus12_loc_pred_conv_bias')
+    arg_params_large.pop('_plus12_loc_pred_conv_weight')
 
     for k, v in arg_params_large.iteritems():
         new_arg_params[k] = v

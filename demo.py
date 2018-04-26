@@ -113,6 +113,7 @@ if __name__ == '__main__':
 
     # customized
     #args.network = 'resnet101'
+    #args.network = 'resnet50_test'
     args.network = 'resnetsub101_two_shared'
     #imgpath = './data/kitti/data_object_image_2/training/image_2/'
     # imgpath = './data/caltech-pedestrian-dataset-converter/data/images/'
@@ -173,7 +174,7 @@ if __name__ == '__main__':
 
                 args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
 
-                toFilePath = './data/caltechUSA-two-stream/results/{}'.format(s, v)
+                toFilePath = './data/Caltech-ResNet101-Two-Stream-Two-Shared/results/{}'.format(s, v)
                 if not os.path.exists(toFilePath):
                     os.makedirs(toFilePath)
                 to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
@@ -184,13 +185,13 @@ if __name__ == '__main__':
 
                 args.dir = None
                 args.ext = None
-                args.epoch = 10
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101-two-stream-caltech')
+                args.epoch = 14
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
                 args.data_shape = [480, 640]
                 args.mean_r = 123
                 args.mean_g = 117
                 args.mean_b = 104
-                args.thresh = 0.10
+                args.thresh = 0.15
                 args.nms = 0.45
                 #args.force_nms = True
                 args.force_nms = False
@@ -240,3 +241,4 @@ if __name__ == '__main__':
                 elif mode == 3:
                     detector.detect_and_record(image_list, to_file, args.dir, args.extension,
                                                class_names, args.thresh, args.show_timer)
+

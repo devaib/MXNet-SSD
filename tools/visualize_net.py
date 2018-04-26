@@ -18,9 +18,9 @@ parser.add_argument('--data-shape', type=int, default=300,
 parser.add_argument('--train', action='store_true', default=False, help='show train net')
 args = parser.parse_args()
 
-args.network = 'resnetsub101_two_shared'
+args.network = 'resnet101_two_stream'
 args.num_classes = 1
-args.data_shape = (350, 1200)
+args.data_shape = (480, 640)
 args.train = False
 
 
