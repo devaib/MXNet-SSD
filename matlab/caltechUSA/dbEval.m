@@ -55,10 +55,16 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 n=1000; clrs=zeros(n,3);
 for i=1:n, clrs(i,:)=max(.3,mod([78 121 42]*(i+1),255)/255); end
 algs = {
-  'ResNet50-Two-Shared', 0, clrs(70,:), '-'
-  'ResNet50',         0, clrs(69,:),  '-'
-  'ResNet101',        0, clrs(68,:),  '-'
-  'Two-Stream-Conv',  0, clrs(67,:),  '-'
+    %'test3', 0, clrs(76,:), '-'
+    'ResNet50-Two-Stream', 0, clrs(72,:), '-'
+    %'test1', 0, clrs(74,:), '-'
+    %'test', 0, clrs(73,:), '--'
+  %'Two-Stream-ResNet101', 0, clrs(72,:), '-'
+  %'Two-Stream-ResNet50-no-sharing', 0, clrs(71,:), '-'
+  %'ResNet50-Two-Shared', 0, clrs(70,:), '--'
+  'ResNet50',         0, clrs(67,:),  '--'
+  %'ResNet101',        0, clrs(68,:),  '-'
+  %'Two-Stream-ResNet50',  0, clrs(67,:),  '-'
   'VJ',               0, clrs(1,:),   '-'
   'HOG',              1, clrs(2,:),   '--'
   'FtrMine',          1, clrs(3,:),   '-'
@@ -210,7 +216,7 @@ for g=1:nGt
     for f=1:n, bb=dt{f}; dt{f}=bb(bb(:,4)>=hr(1) & bb(:,4)<hr(2),:); end
     [gtr,dtr] = bbGt('evalRes',gt,dt,exps(g).overlap);
     R=struct('stra',stra,'stre',stre,'gtr',{gtr},'dtr',{dtr});
-    res(g,d)=R; save(fName,'R');
+    res(g,d)=R; %save(fName,'R');
   end
 end
 end
@@ -265,7 +271,8 @@ for p=1:nPlots
   % plot curves and finalize display
   figure(1); clf; grid on; hold on; n=length(xs1); h=zeros(1,n);
   for i=1:n, h(i)=plot(xs1{i},ys1{i},'Color',colors1(i,:),...
-      'LineStyle',styles1{i},'LineWidth',2); end
+        'LineStyle',styles1{i},'LineWidth',2);
+  end
   if( plotRoc )
     yt=[.05 .1:.1:.5 .64 .8]; ytStr=int2str2(yt*100,2);
     for i=1:length(yt), ytStr{i}=['.' ytStr{i}]; end
@@ -401,7 +408,7 @@ for page=1:min(pPage,ceil(n/mRows/nCols))
   h=figureResized(.9,1); clf; montage2(Is,prm); hold on;
   bbApply('draw',bbN,bbCol,2,bbLst); bbApply('draw',bboN,bboCol,2,bboLst);
   savefig([fName int2str2(page-1,2)],h,'png','-r200','-fonts'); close(h);
-  if(0), save([fName int2str2(page-1,2) '.mat'],'Is'); end
+  %if(0), save([fName int2str2(page-1,2) '.mat'],'Is'); end
 end
 end
 
@@ -486,6 +493,6 @@ for i=1:nAlg
       end
     end
   end
-  dt=dt(1:k); dts{i}=dt; save(aName,'dt','-v6');
+  dt=dt(1:k); dts{i}=dt; %save(aName,'dt','-v6');
 end
 end

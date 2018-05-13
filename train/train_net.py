@@ -28,19 +28,18 @@ def convert_pretrained(name, args):
     processed arguments as dict
     """
     # pretrained SSD_customized
-    pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_customized')
-    epoch_customized = 120
-    sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized,
-                                                                                            epoch_customized)
+    #pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_customized')
+    #epoch_customized = 120
+    #sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
 
     # pretrained SSD_small
-    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-caltech-small')
-    epoch_small = 7
+    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-Small-Stream')
+    epoch_small = 10
     sym_small, arg_params_small, aux_params_small = mx.model.load_checkpoint(pretrained_small, epoch_small)
 
     # pretrained SSD_large
-    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-caltech-large')
-    epoch_large = 3
+    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-Large-Stream')
+    epoch_large = 2
     sym_large, arg_params_large, aux_params_large = mx.model.load_checkpoint(pretrained_large, epoch_large)
 
     """
@@ -67,7 +66,6 @@ def convert_pretrained(name, args):
         new_arg_params[new_k] = v
     """
 
-    """
     # copy params to sub-network: SSD_large + SSD_small
     new_arg_params = {}
 
@@ -118,21 +116,21 @@ def convert_pretrained(name, args):
 
     arg_params_small.pop('bn_data_beta')
     arg_params_small.pop('bn_data_gamma')
-    new_arg_params['_plus45_cls_pred_conv_bias'] = arg_params_small['_plus12_cls_pred_conv_bias']
-    new_arg_params['_plus45_cls_pred_conv_weight'] = arg_params_small['_plus12_cls_pred_conv_weight']
-    new_arg_params['_plus45_loc_pred_conv_bias'] = arg_params_small['_plus12_loc_pred_conv_bias']
-    new_arg_params['_plus45_loc_pred_conv_weight'] = arg_params_small['_plus12_loc_pred_conv_weight']
-    arg_params_small.pop('_plus12_cls_pred_conv_bias')
-    arg_params_small.pop('_plus12_cls_pred_conv_weight')
-    arg_params_small.pop('_plus12_loc_pred_conv_bias')
-    arg_params_small.pop('_plus12_loc_pred_conv_weight')
+    new_arg_params['_plus62_cls_pred_conv_bias'] = arg_params_small['_plus29_cls_pred_conv_bias']
+    new_arg_params['_plus62_cls_pred_conv_weight'] = arg_params_small['_plus29_cls_pred_conv_weight']
+    new_arg_params['_plus62_loc_pred_conv_bias'] = arg_params_small['_plus29_loc_pred_conv_bias']
+    new_arg_params['_plus62_loc_pred_conv_weight'] = arg_params_small['_plus29_loc_pred_conv_weight']
+    arg_params_small.pop('_plus29_cls_pred_conv_bias')
+    arg_params_small.pop('_plus29_cls_pred_conv_weight')
+    arg_params_small.pop('_plus29_loc_pred_conv_bias')
+    arg_params_small.pop('_plus29_loc_pred_conv_weight')
     for k, v in arg_params_large.iteritems():
         new_arg_params[k] = v
     for k, v in arg_params_small.iteritems():
         new_k = 'sub_' + k
         new_arg_params[new_k] = v
-    """
 
+    """
     # copy params to sub-network: SSD_large + SSD_small with shared one shared stage(using SSD_large network layers)
     new_arg_params = {}
 
@@ -248,6 +246,7 @@ def convert_pretrained(name, args):
     for k, v in arg_params_small.iteritems():
         new_k = 'sub_' + k
         new_arg_params[new_k] = v
+    """
 
     return new_arg_params
 
@@ -372,7 +371,8 @@ def train_net(net, train_path, num_classes, batch_size,
     log_file : str
         log to file if enabled
     """
-    if net == 'resnetsub101_test' or net == 'resnetsub101_one_shared' or net == 'resnetsub101_two_shared' \
+    if net == 'resnet101_two_stream' or net == 'resnetsub101_test' or \
+            net == 'resnetsub101_one_shared' or net == 'resnetsub101_two_shared' \
             and resume == -1 and pretrained is not False:
         convert_model = True
     else:
@@ -483,6 +483,7 @@ def train_net(net, train_path, num_classes, batch_size,
     else:
         valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
 
+    # messager is activated in base_module
     mod.fit(train_iter,
             val_iter,
             eval_metric=MultiBoxMetric(),

@@ -88,6 +88,10 @@ class CaltechPedestrian(Imdb):
         temp = []
         image_set_index = []
         max_objects = 0
+        lbl = 'person'
+        h_min = 50
+        v_min = 0.65
+        bnds = [5, 5, 635, 475]
         with open(self.annotation_file) as f:
             annotations = json.load(f)
             for setname in annotations.keys():
@@ -107,24 +111,40 @@ class CaltechPedestrian(Imdb):
                         image_set_index.append(setname + "_" + videoname + "_" + imagename)
                         label = []
                         for detection in image:
-                            # cls_name = detection['lbl']
-                            # if cls_name not in self.classes:
-                            #     continue
-                            # cls_id = self.classes.index(cls_name)
+                            # check label
+                            cls_name = detection['lbl']
+                            if not cls_name == 'person':
+                                continue
+
+                            # check height
+                            coord = detection['pos']
+                            if coord[3] < h_min:
+                                continue
+
+                            # check visiblity ratio
+                            coord_v = detection['posv']
+                            if (type(coord_v) is not list) or (type(coord) is not list):
+                                continue
+                            if not all(0 == v for v in coord_v):
+                                if (coord_v[2] * coord_v[3] / coord[2] / coord[3]) < v_min:
+                                    continue
+
+                            # check bounds
+                            if coord[0] < bnds[0]:
+                                continue
+                            if coord[1] < bnds[1]:
+                                continue
+                            if (coord[0] + coord[2]) > bnds[2]:
+                                continue
+                            if (coord[1] + coord[3]) > bnds[3]:
+                                continue
 
                             cls_id = 0
-                            coord = detection['pos']
 
                             # Filter objects (with width <= 20 or width > 20)
-                            if float(coord[2]) <= 20:
-                                continue
-                            # Filter occluded objects with occlusion over 60%
-                            if detection["occl"] == 1:
-                                coord_v = detection['posv']
-                                if (type(coord_v) is not list) or (type(coord) is not list):
-                                    continue
-                                if (coord_v[2] / coord[2]) < 0.8 or (coord_v[3] / coord[3]) < 0.8:
-                                    continue
+                            #if float(coord[2]) <= 20:
+                            #    continue
+                            # Filter occluded objects with occlusion over 65%
 
                             xmin = float(coord[0]) / width
                             ymin = float(coord[1]) / height

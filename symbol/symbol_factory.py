@@ -175,6 +175,7 @@ def get_config(network, data_shape, **kwargs):
         image_shape = '3,224,224'
         network = 'resnet'
         from_layers = ['_plus29', '_plus32', '', '', '', '']
+        #from_layers = ['_plus12', '_plus15', '', '', '', '']
         num_filters = [-1, -1, 512, 256, 256, 128]
         strides = [-1, -1, 2, 2, 2, 2]
         pads = [-1, -1, 1, 1, 1, 1]
