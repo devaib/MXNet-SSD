@@ -134,10 +134,10 @@ if __name__ == '__main__':
     # args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
     args.dataset = 'caltech'
-    args.set = 'val'
+    args.set = 'train'
     args.shuffle = False
     args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
-                               'rec_new', args.set + '.lst')
+                               'rec_all', args.set + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
     suffix = ""
 

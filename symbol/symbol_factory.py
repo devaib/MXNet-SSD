@@ -66,7 +66,7 @@ def get_config(network, data_shape, **kwargs):
         normalizations = -1
         steps = []
         return locals()
-    elif network == 'resnet50_test':
+    elif network == 'resnet50_customized':
         num_layers = 101
         image_shape = '3,224,224'
         network = 'resnet'

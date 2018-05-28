@@ -10,10 +10,10 @@ tools/caffe_converter/*.prototxt
 tools/caffe_converter/*.caffemodel
 matlab/caltechUSA/results/*
 matlab/caltechUSA/data-USA/*
+matlab/caltechUSA/anchors*
 matlab/kitti/results/*
 matlab/kitti/outputs/*
-matlab/kitti/anchors/*
-matlab/kitti/anchors_customized/*
+matlab/kitti/anchors*
 mxnet/
 .DS_Store
 .idea/

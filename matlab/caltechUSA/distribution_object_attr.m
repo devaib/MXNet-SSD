@@ -32,11 +32,16 @@ for i = 1 : 3
         attr = imginfo{1,i}{1,8};
     end
     subplot(3,1,i); 
-    edges = [0:0.01:1];
-    nBin = 20;
-    histogram(attr, edges);
+    %edges = [0:0.01:1];
+    %histogram(attr, edges);
+    histogram(attr, nBin)
     title(titles{1,i});
     [N, edges] = histcounts(attr, nBin);
+    average = mean(attr);
+    median_v = median(attr);
+    hold on;
+    line([average, average], ylim, 'LineWidth', 2, 'Color', 'r');
+    line([median_v, median_v], ylim, 'LineWidth', 2, 'Color', 'b');
 end
 
 end

@@ -109,16 +109,16 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_new', 'train.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'train.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_new', 'val.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'val.rec')
     args.val_list = ""
-    args.network = 'resnet50'
-    args.batch_size = 8
-    args.resume = 9
+    args.network = 'resnet50_customized'
+    args.batch_size = 12
+    args.resume = -1
     args.finetune = -1
     args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50')
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-customized', 'resnet-50')
     args.gpus = '0'
     args.epoch = 0
     args.begin_epoch = 0
@@ -132,11 +132,9 @@ if __name__ == '__main__':
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104
-    #args.lr_refactor_step = '80, 160'
-    #args.lr_refactor_step = '40, 80'
-    args.lr_refactor_step = '3, 5, 9'
+    args.lr_refactor_step = '3, 6, 12'
     args.lr_refactor_ratio = 0.1
-    args.freeze_pattern = ""    # TODO: find out influence
+    args.freeze_pattern = ""
     args.log_file = 'train.log'
     args.monitor = 0
     args.monitor_pattern = ".*"

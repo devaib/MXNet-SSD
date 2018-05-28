@@ -112,7 +112,7 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet101_test'
+    args.network = 'resnet50'
     #args.network = 'resnet50_test'
     #args.network = 'resnet101_two_stream'
     #imgpath = './data/kitti/data_object_image_2/training/image_2/'
@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
     # Caltech
     elif mode == 3:
-        caltechPath = './data/caltech-pedestrian-dataset-converter/data/test-images-new/'
+        caltechPath = './data/caltech-pedestrian-dataset-converter/data/test-images/'
         sets = ['set' + setNum for setNum in ['06', '07', '08', '09', '10']]            # set06 - set10
         videos = ['V' + videoNum for videoNum in [str(x).zfill(3) for x in range(20)]]  # V000  - V019
 
@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
                 args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
 
-                toFilePath = './data/ResNet101-with-thresh0_0/results/{}'.format(s, v)
+                toFilePath = './data/new/resnet-50_all/results/{}'.format(s, v)
                 if not os.path.exists(toFilePath):
                     os.makedirs(toFilePath)
                 to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
@@ -185,10 +185,10 @@ if __name__ == '__main__':
 
                 args.dir = None
                 args.ext = None
-                args.epoch = 9
+                args.epoch = 12
                 #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
                 #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_6_layers', 'caltech', 'resnet-101-caltech')
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
                 args.data_shape = [480, 640]
                 args.mean_r = 123
                 args.mean_g = 117

@@ -89,8 +89,9 @@ class CaltechPedestrian(Imdb):
         image_set_index = []
         max_objects = 0
         lbl = 'person'
-        h_min = 50
-        v_min = 0.65
+        # all: h=20, v=0.2; reasonalbe: h=50, v=0.65
+        h_min = 20
+        v_min = 0.2
         bnds = [5, 5, 635, 475]
         with open(self.annotation_file) as f:
             annotations = json.load(f)
@@ -116,8 +117,8 @@ class CaltechPedestrian(Imdb):
                             if not cls_name == 'person':
                                 continue
 
-                            # check height
                             coord = detection['pos']
+                            # check height
                             if coord[3] < h_min:
                                 continue
 
@@ -140,12 +141,6 @@ class CaltechPedestrian(Imdb):
                                 continue
 
                             cls_id = 0
-
-                            # Filter objects (with width <= 20 or width > 20)
-                            #if float(coord[2]) <= 20:
-                            #    continue
-                            # Filter occluded objects with occlusion over 65%
-
                             xmin = float(coord[0]) / width
                             ymin = float(coord[1]) / height
                             xmax = float(coord[0] + coord[2]) / width

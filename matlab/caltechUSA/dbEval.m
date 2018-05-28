@@ -55,16 +55,8 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 n=1000; clrs=zeros(n,3);
 for i=1:n, clrs(i,:)=max(.3,mod([78 121 42]*(i+1),255)/255); end
 algs = {
-    %'test3', 0, clrs(76,:), '-'
-    'ResNet50-Two-Stream', 0, clrs(72,:), '-'
-    %'test1', 0, clrs(74,:), '-'
-    %'test', 0, clrs(73,:), '--'
-  %'Two-Stream-ResNet101', 0, clrs(72,:), '-'
-  %'Two-Stream-ResNet50-no-sharing', 0, clrs(71,:), '-'
-  %'ResNet50-Two-Shared', 0, clrs(70,:), '--'
-  'ResNet50',         0, clrs(67,:),  '--'
-  %'ResNet101',        0, clrs(68,:),  '-'
-  %'Two-Stream-ResNet50',  0, clrs(67,:),  '-'
+  'ResNet50-all',    0, clrs(69,:),  '-'
+  'ResNet50-reasonable',         0, clrs(68,:),  '-'
   'VJ',               0, clrs(1,:),   '-'
   'HOG',              1, clrs(2,:),   '--'
   'FtrMine',          1, clrs(3,:),   '-'
@@ -146,6 +138,7 @@ dataNames = {'UsaTest','UsaTrain','InriaTest',...
 % select databases, experiments and algorithms for evaluation
 dataNames = dataNames(1); % select one or more databases for evaluation
 exps = exps(1);           % select one or more experiment for evaluation
+%exps = exps(2);
 algs = algs(:);           % select one or more algorithms for evaluation
 
 % remaining parameters and constants
