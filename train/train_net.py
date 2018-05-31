@@ -28,9 +28,9 @@ def convert_pretrained(name, args):
     processed arguments as dict
     """
     # pretrained SSD_customized
-    #pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_customized')
-    #epoch_customized = 120
-    #sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
+    pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_customized')
+    epoch_customized = 120
+    sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
 
     # pretrained SSD_small
     pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-Small-Stream')
@@ -372,7 +372,8 @@ def train_net(net, train_path, num_classes, batch_size,
         log to file if enabled
     """
     if net == 'resnet101_two_stream' or net == 'resnetsub101_test' or \
-            net == 'resnetsub101_one_shared' or net == 'resnetsub101_two_shared' \
+            net == 'resnetsub101_one_shared' or net == 'resnetsub101_two_shared' or \
+            net == 'resnet50_two_stream' \
             and resume == -1 and pretrained is not False:
         convert_model = True
     else:

@@ -2,6 +2,7 @@
 data/*
 !data/demo/
 model/*
+mxnet/*
 !model/README.md
 cache/*
 tools/caffe_converter/*.params
