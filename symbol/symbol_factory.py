@@ -109,7 +109,7 @@ def get_config(network, data_shape, **kwargs):
         num_layers = 50
         image_shape = '3,224,224'
         network = 'resnetsub'
-        from_layers = ['_plus45', '_plus15', '', '']  # 45 - 3 - 4
+        from_layers = ['_plus28', '_plus15', '', '']  # 31-(15-12)=28
         num_filters = [-1, -1, 512, 256]
         strides = [-1, -1, 2, 2]
         pads = [-1, -1, 1, 1]

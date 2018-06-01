@@ -109,17 +109,22 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'train.rec')
+    #args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'train.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_h-gt50_v-gt0.5', 'train.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'val.rec')
+    #args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'val.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_h-gt50_v-gt0.5', 'val.rec')
     args.val_list = ""
-    args.network = 'resnet50_two_stream'
-    args.batch_size = 8
+    #args.network = 'resnet50_two_stream'
+    args.network = 'resnet50_customized_last_three_layers'
+    #args.batch_size = 6
+    args.batch_size = 12
     args.resume = -1
     args.finetune = -1
-    #args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50')
-    args.pretrained = False
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream', 'resnet-50')
+    args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50')
+    #args.pretrained = False
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.5_customized-last-three-layers', 'resnet-50')
     args.gpus = '0'
     args.epoch = 0
     args.begin_epoch = 0

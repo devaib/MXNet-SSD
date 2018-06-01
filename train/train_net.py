@@ -28,18 +28,18 @@ def convert_pretrained(name, args):
     processed arguments as dict
     """
     # pretrained SSD_customized
-    pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101_customized')
-    epoch_customized = 120
-    sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
+    #pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream', 'resnet-50')
+    #epoch_customized = 1
+    #sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
 
     # pretrained SSD_small
-    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-Small-Stream')
-    epoch_small = 10
+    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_h-gt20-lt50_v-gt0.2_customized-first-layer', 'resnet-50')
+    epoch_small = 6
     sym_small, arg_params_small, aux_params_small = mx.model.load_checkpoint(pretrained_small, epoch_small)
 
     # pretrained SSD_large
-    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet101', 'resnet-101-Large-Stream')
-    epoch_large = 2
+    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.2_customized-last-three-layer', 'resnet-50')
+    epoch_large = 6
     sym_large, arg_params_large, aux_params_large = mx.model.load_checkpoint(pretrained_large, epoch_large)
 
     """
@@ -116,14 +116,14 @@ def convert_pretrained(name, args):
 
     arg_params_small.pop('bn_data_beta')
     arg_params_small.pop('bn_data_gamma')
-    new_arg_params['_plus62_cls_pred_conv_bias'] = arg_params_small['_plus29_cls_pred_conv_bias']
-    new_arg_params['_plus62_cls_pred_conv_weight'] = arg_params_small['_plus29_cls_pred_conv_weight']
-    new_arg_params['_plus62_loc_pred_conv_bias'] = arg_params_small['_plus29_loc_pred_conv_bias']
-    new_arg_params['_plus62_loc_pred_conv_weight'] = arg_params_small['_plus29_loc_pred_conv_weight']
-    arg_params_small.pop('_plus29_cls_pred_conv_bias')
-    arg_params_small.pop('_plus29_cls_pred_conv_weight')
-    arg_params_small.pop('_plus29_loc_pred_conv_bias')
-    arg_params_small.pop('_plus29_loc_pred_conv_weight')
+    new_arg_params['_plus28_cls_pred_conv_bias'] = arg_params_small['_plus12_cls_pred_conv_bias']
+    new_arg_params['_plus28_cls_pred_conv_weight'] = arg_params_small['_plus12_cls_pred_conv_weight']
+    new_arg_params['_plus28_loc_pred_conv_bias'] = arg_params_small['_plus12_loc_pred_conv_bias']
+    new_arg_params['_plus28_loc_pred_conv_weight'] = arg_params_small['_plus12_loc_pred_conv_weight']
+    arg_params_small.pop('_plus12_cls_pred_conv_bias')
+    arg_params_small.pop('_plus12_cls_pred_conv_weight')
+    arg_params_small.pop('_plus12_loc_pred_conv_bias')
+    arg_params_small.pop('_plus12_loc_pred_conv_weight')
     for k, v in arg_params_large.iteritems():
         new_arg_params[k] = v
     for k, v in arg_params_small.iteritems():
