@@ -112,7 +112,8 @@ if __name__ == '__main__':
         ctx = mx.gpu(args.gpu_id)
 
     # customized
-    args.network = 'resnet50'
+    #args.network = 'resnet50_customized'
+    args.network = 'resnet50_two_stream'
     #args.network = 'resnet50_test'
     #args.network = 'resnet101_two_stream'
     #imgpath = './data/kitti/data_object_image_2/training/image_2/'
@@ -174,7 +175,7 @@ if __name__ == '__main__':
 
                 args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
 
-                toFilePath = './data/new/resnet-50_all/results/{}'.format(s, v)
+                toFilePath = './data/new/resnet-50-Caltech_h-gt20_v-gt0.5_two-stream/results/{}'.format(s, v)
                 if not os.path.exists(toFilePath):
                     os.makedirs(toFilePath)
                 to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
@@ -185,15 +186,16 @@ if __name__ == '__main__':
 
                 args.dir = None
                 args.ext = None
-                args.epoch = 12
+                args.epoch = 13
                 #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
                 #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_6_layers', 'caltech', 'resnet-101-caltech')
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
+                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_h-gt20_v-gt0.5_two-stream', 'resnet-50')
                 args.data_shape = [480, 640]
                 args.mean_r = 123
                 args.mean_g = 117
                 args.mean_b = 104
-                args.thresh = 0.0
+                args.thresh = 0.15
                 args.nms = 0.45
                 #args.force_nms = True
                 args.force_nms = False

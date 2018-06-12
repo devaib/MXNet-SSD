@@ -55,18 +55,20 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-
-    args.rec_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'val.rec')
+    args.rec_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all', 'val.rec') 
     args.list_path = ""
-    args.network = 'resnet101'
-    args.batch_size = 1
+    #args.network = 'resnet50'
+    #args.network = 'resnet50_customized'
+    args.network = 'resnet50_two_stream'
+    args.batch_size = 128
     args.num_class = 1
-    args.class_names = 'Car'  #'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
-    args.epoch = 120
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'resnet-101')
+    args.class_names = 'person'  #'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+    args.epoch = 16
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
     args.gpus = '0'
     args.cpu = None
-    args.data_shape = [350, 1200]
+    args.data_shape = [480, 640]
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104

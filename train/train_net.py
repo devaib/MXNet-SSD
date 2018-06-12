@@ -38,8 +38,8 @@ def convert_pretrained(name, args):
     sym_small, arg_params_small, aux_params_small = mx.model.load_checkpoint(pretrained_small, epoch_small)
 
     # pretrained SSD_large
-    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.2_customized-last-three-layer', 'resnet-50')
-    epoch_large = 6
+    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.2_customized-last-three-layers', 'resnet-50')
+    epoch_large = 18
     sym_large, arg_params_large, aux_params_large = mx.model.load_checkpoint(pretrained_large, epoch_large)
 
     """

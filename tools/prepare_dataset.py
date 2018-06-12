@@ -137,7 +137,7 @@ if __name__ == '__main__':
     args.set = 'train'
     args.shuffle = True
     args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
-                               'rec_h-gt50_v-gt0.5', args.set + '.lst')
+                               'rec_h-gt20-lt50_v-gt0.2', args.set + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
     suffix = ""
 
@@ -169,6 +169,6 @@ if __name__ == '__main__':
     subprocess.check_call([os.path.join(remote_anaconda_path, "python"),
         os.path.join(curr_path, "..", "mxnet/tools/im2rec.py"),
         os.path.abspath(args.target), os.path.abspath(args.root_path),
-        "--shuffle", str(int(args.shuffle)), "--pack-label", "1"])
+        "--shuffle", str(int(args.shuffle)), "--pack-label", "1", "--num-thread", "20"])
 
     print("Record file {} generated...".format(args.target.split('.')[0] + '.rec'))

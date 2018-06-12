@@ -91,7 +91,7 @@ class CaltechPedestrian(Imdb):
         lbl = 'person'
         # all: h=20, v=0.2; reasonalbe: h=50, v=0.65
         h_thres = 50  # height threshold of two streams: large > 50, 20 < small <= 50
-        v_min = 0.5  # occlusion ratio: all - 0.2, reasonable - 0.5
+        v_min = 0.2  # occlusion ratio: all - 0.2, reasonable - 0.5
         bnds = [5, 5, 635, 475]
         with open(self.annotation_file) as f:
             annotations = json.load(f)
@@ -119,7 +119,9 @@ class CaltechPedestrian(Imdb):
 
                             coord = detection['pos']
                             # check height
-                            if coord[3] <= h_thres:
+                            if coord[3] <= 20:
+                                continue
+                            if coord[3] > h_thres:
                                 continue
 
                             # check visiblity ratio
