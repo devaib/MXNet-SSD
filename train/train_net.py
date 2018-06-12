@@ -27,10 +27,10 @@ def convert_pretrained(name, args):
     ---------
     processed arguments as dict
     """
-    # pretrained SSD_customized
-    #pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream', 'resnet-50')
-    #epoch_customized = 1
-    #sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
+    # pretrained SSD_two_stream_w_four_layers
+    pretrained_customized = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_all-two_stream_w_four_layers', 'resnet-50')
+    epoch_customized = 1
+    sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
 
     # pretrained SSD_small
     pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_h-gt20-lt50_v-gt0.2_customized-first-layer', 'resnet-50')
@@ -38,51 +38,14 @@ def convert_pretrained(name, args):
     sym_small, arg_params_small, aux_params_small = mx.model.load_checkpoint(pretrained_small, epoch_small)
 
     # pretrained SSD_large
-    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.2_customized-last-three-layers', 'resnet-50')
-    epoch_large = 18
+    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_all_four_layers', 'resnet-50')
+    epoch_large = 10
     sym_large, arg_params_large, aux_params_large = mx.model.load_checkpoint(pretrained_large, epoch_large)
-
-    """
-    # copy params to sub-network: SSD_customized + SSD_small
-    new_arg_params = {}
-    arg_params_customized.pop('_plus12_cls_pred_conv_bias')
-    arg_params_customized.pop('_plus12_cls_pred_conv_weight')
-    arg_params_customized.pop('_plus12_loc_pred_conv_bias')
-    arg_params_customized.pop('_plus12_loc_pred_conv_weight')
-    arg_params_small.pop('bn_data_beta')
-    arg_params_small.pop('bn_data_gamma')
-    new_arg_params['_plus45_cls_pred_conv_bias'] = arg_params_small['_plus12_cls_pred_conv_bias']
-    new_arg_params['_plus45_cls_pred_conv_weight'] = arg_params_small['_plus12_cls_pred_conv_weight']
-    new_arg_params['_plus45_loc_pred_conv_bias'] = arg_params_small['_plus12_loc_pred_conv_bias']
-    new_arg_params['_plus45_loc_pred_conv_weight'] = arg_params_small['_plus12_loc_pred_conv_weight']
-    arg_params_small.pop('_plus12_cls_pred_conv_bias')
-    arg_params_small.pop('_plus12_cls_pred_conv_weight')
-    arg_params_small.pop('_plus12_loc_pred_conv_bias')
-    arg_params_small.pop('_plus12_loc_pred_conv_weight')
-    for k, v in arg_params_customized.iteritems():
-        new_arg_params[k] = v
-    for k, v in arg_params_small.iteritems():
-        new_k = 'sub_' + k
-        new_arg_params[new_k] = v
-    """
 
     # copy params to sub-network: SSD_large + SSD_small
     new_arg_params = {}
 
-    # large multi_feat 1 -> 2, 2 -> 3
-    new_arg_params['multi_feat_2_conv_1x1_conv_bias'] = arg_params_large['multi_feat_1_conv_1x1_conv_bias']
-    new_arg_params['multi_feat_2_conv_1x1_conv_weight'] = arg_params_large['multi_feat_1_conv_1x1_conv_weight']
-    new_arg_params['multi_feat_2_conv_3x3_conv_bias'] = arg_params_large['multi_feat_1_conv_3x3_conv_bias']
-    new_arg_params['multi_feat_2_conv_3x3_conv_weight'] = arg_params_large['multi_feat_1_conv_3x3_conv_weight']
-    new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_loc_pred_conv_bias']
-    new_arg_params['multi_feat_2_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_loc_pred_conv_weight']
-    new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_cls_pred_conv_bias']
-    new_arg_params['multi_feat_2_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
-        'multi_feat_1_conv_3x3_relu_cls_pred_conv_weight']
-
+    # large multi_feat 2 -> 3, 3 -> 4
     new_arg_params['multi_feat_3_conv_1x1_conv_bias'] = arg_params_large['multi_feat_2_conv_1x1_conv_bias']
     new_arg_params['multi_feat_3_conv_1x1_conv_weight'] = arg_params_large['multi_feat_2_conv_1x1_conv_weight']
     new_arg_params['multi_feat_3_conv_3x3_conv_bias'] = arg_params_large['multi_feat_2_conv_3x3_conv_bias']
@@ -96,14 +59,18 @@ def convert_pretrained(name, args):
     new_arg_params['multi_feat_3_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
         'multi_feat_2_conv_3x3_relu_cls_pred_conv_weight']
 
-    arg_params_large.pop('multi_feat_1_conv_1x1_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_1x1_conv_weight')
-    arg_params_large.pop('multi_feat_1_conv_3x3_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_3x3_conv_weight')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_loc_pred_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_loc_pred_conv_weight')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_cls_pred_conv_bias')
-    arg_params_large.pop('multi_feat_1_conv_3x3_relu_cls_pred_conv_weight')
+    new_arg_params['multi_feat_4_conv_1x1_conv_bias'] = arg_params_large['multi_feat_3_conv_1x1_conv_bias']
+    new_arg_params['multi_feat_4_conv_1x1_conv_weight'] = arg_params_large['multi_feat_3_conv_1x1_conv_weight']
+    new_arg_params['multi_feat_4_conv_3x3_conv_bias'] = arg_params_large['multi_feat_3_conv_3x3_conv_bias']
+    new_arg_params['multi_feat_4_conv_3x3_conv_weight'] = arg_params_large['multi_feat_3_conv_3x3_conv_weight']
+    new_arg_params['multi_feat_4_conv_3x3_relu_loc_pred_conv_bias'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_loc_pred_conv_bias']
+    new_arg_params['multi_feat_4_conv_3x3_relu_loc_pred_conv_weight'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_loc_pred_conv_weight']
+    new_arg_params['multi_feat_4_conv_3x3_relu_cls_pred_conv_bias'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_cls_pred_conv_bias']
+    new_arg_params['multi_feat_4_conv_3x3_relu_cls_pred_conv_weight'] = arg_params_large[
+        'multi_feat_3_conv_3x3_relu_cls_pred_conv_weight']
 
     arg_params_large.pop('multi_feat_2_conv_1x1_conv_bias')
     arg_params_large.pop('multi_feat_2_conv_1x1_conv_weight')
@@ -113,6 +80,15 @@ def convert_pretrained(name, args):
     arg_params_large.pop('multi_feat_2_conv_3x3_relu_loc_pred_conv_weight')
     arg_params_large.pop('multi_feat_2_conv_3x3_relu_cls_pred_conv_bias')
     arg_params_large.pop('multi_feat_2_conv_3x3_relu_cls_pred_conv_weight')
+
+    arg_params_large.pop('multi_feat_3_conv_1x1_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_1x1_conv_weight')
+    arg_params_large.pop('multi_feat_3_conv_3x3_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_3x3_conv_weight')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_loc_pred_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_loc_pred_conv_weight')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_cls_pred_conv_bias')
+    arg_params_large.pop('multi_feat_3_conv_3x3_relu_cls_pred_conv_weight')
 
     arg_params_small.pop('bn_data_beta')
     arg_params_small.pop('bn_data_gamma')
@@ -129,6 +105,7 @@ def convert_pretrained(name, args):
     for k, v in arg_params_small.iteritems():
         new_k = 'sub_' + k
         new_arg_params[new_k] = v
+
 
     """
     # copy params to sub-network: SSD_large + SSD_small with shared one shared stage(using SSD_large network layers)
@@ -373,7 +350,7 @@ def train_net(net, train_path, num_classes, batch_size,
     """
     if net == 'resnet101_two_stream' or net == 'resnetsub101_test' or \
             net == 'resnetsub101_one_shared' or net == 'resnetsub101_two_shared' or \
-            net == 'resnet50_two_stream' \
+            net == 'resnet50_two_stream' or net == 'resnet50_two_stream_w_four_layers' \
             and resume == -1 and pretrained is not False:
         convert_model = True
     else:
