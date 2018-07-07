@@ -108,8 +108,8 @@ class CaltechPedestrian(Imdb):
                         # if self.is_train == False and float(imagename) > 10:
                         #     continue
                         # follow the established procedure
-                        #if ((int(imagename) + 1) % 30) != 0:
-                        #    continue
+                        if ((int(imagename) + 1) % 30) != 0:
+                            continue
                         image = annotations[setname][videoname]['frames'][imagename]
                         # actually image name
                         image_set_index.append(setname + "_" + videoname + "_" + imagename)
@@ -122,7 +122,7 @@ class CaltechPedestrian(Imdb):
 
                             coord = detection['pos']
                             # check height
-                            if coord[3] <= 20:
+                            if coord[3] <= h_thres:
                                 continue
                             if coord[3] > 50:
                                 continue
