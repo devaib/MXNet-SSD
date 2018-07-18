@@ -33,13 +33,13 @@ def convert_pretrained(name, args):
     #sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_customized, epoch_customized)
 
     # pretrained SSD_small
-    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_all_small_720', 'resnet-50')
+    pretrained_small = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_small_600', 'resnet-50')
     epoch_small = 8
     sym_small, arg_params_small, aux_params_small = mx.model.load_checkpoint(pretrained_small, epoch_small)
 
     # pretrained SSD_large
-    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_all_large_720', 'resnet-50')
-    epoch_large = 7
+    pretrained_large = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_large_600', 'resnet-50')
+    epoch_large = 8
     sym_large, arg_params_large, aux_params_large = mx.model.load_checkpoint(pretrained_large, epoch_large)
 
     """

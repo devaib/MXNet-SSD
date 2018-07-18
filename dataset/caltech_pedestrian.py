@@ -124,8 +124,8 @@ class CaltechPedestrian(Imdb):
                             # check height
                             if coord[3] <= 20:
                                 continue
-                            if coord[3] > 50:
-                                continue
+                            #if coord[3] > 50:
+                            #    continue
 
                             # check visiblity ratio
                             coord_v = detection['posv']

@@ -109,10 +109,10 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all_720', 'train.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all_600', 'train.rec')
     #args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_h-gt20-lt50_v-gt0.2_720', 'train.rec')
     args.train_list = ""
-    args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all_720', 'val.rec')
+    args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_all_600', 'val.rec')
     #args.val_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_h-gt20-lt50_v-gt0.2_720', 'val.rec')
     args.val_list = ""
     #args.network = 'resnet50'
@@ -121,22 +121,23 @@ if __name__ == '__main__':
     #args.network = 'resnet50_customized_last_three_layers'
     #args.network = 'resnet50_customized_first_layer'
     #args.network = 'resnet50_customized'
-    args.batch_size = 3
+    args.batch_size = 6
     #args.batch_size = 12
     args.resume = -1
     args.finetune = -1
     args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50')
     #args.pretrained = False
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_two_stream_720', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_two_stream_600', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.5_customized-last-three-layers', 'resnet-50')
-    args.gpus = '1'
+    args.gpus = '0, 1'
     args.epoch = 0
     args.begin_epoch = 0
     #args.end_epoch = 120
     args.end_epoch = 8
     args.frequent = 20
     #args.data_shape = [480, 640]
-    args.data_shape = [720, 960]
+    args.data_shape = [600, 800]
+    #args.data_shape = [720, 960]
     args.label_width = 350
     #args.learning_rate = 0.004
     args.learning_rate = 0.0004
@@ -150,7 +151,7 @@ if __name__ == '__main__':
     args.lr_refactor_step = '2, 4, 6'
     args.lr_refactor_ratio = 0.1
     args.freeze_pattern = ""
-    args.log_file = 'log/train_all_small_720.log'
+    args.log_file = 'log/train_two_stream_600.log'
     args.monitor = 0
     args.monitor_pattern = ".*"
     args.num_class = 1
