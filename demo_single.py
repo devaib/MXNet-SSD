@@ -110,8 +110,11 @@ if __name__ == '__main__':
 
     # customized
     args.network = 'resnet50'
-    # imgpath = './data/kitti/data_object_image_2/training/image_2/'
-    imgpath = './data/caltech-pedestrian-dataset-converter/data/test-images/set06/V000/'
+    #args.network = 'resnet50_two_stream_w_four_layers'
+    #args.network = 'resnet50_customized'
+    #imgpath = './data/kitti/data_object_image_2/training/image_2/'
+    #imgpath = './data/caltech-pedestrian-dataset-converter/data/test-images/set06/V000/'
+    imgpath = './data/caltech-pedestrian-dataset-converter/data/images/'
 
     if args.mode == 2:
         mode = 2
@@ -123,7 +126,9 @@ if __name__ == '__main__':
 
     if mode == 0:
         # imgnames = ['006667', '001671', '005589', '001264', '003507', '004370']
-        imgnames = ['180', '210', '270', '300', '330']
+        #imgnames = ['180', '210', '270', '300', '330']
+        imgnames = ['set00_V001_1783', 'set07_V002_1809','set07_V003_1341']
+        #imgnames = ['set07_V003_1341']
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
         to_file = './data/kitti/results/dts_one_layer_customized_small_objects.txt'    # skip layer defined in multibox_detection.cu
@@ -136,7 +141,8 @@ if __name__ == '__main__':
 
     args.dir = None
     args.ext = None
-    args.epoch = 13
+    args.epoch = 20
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-customized','w_stage4', 'resnet-50')
     args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
     args.data_shape = [480, 640]
     args.mean_r = 123

@@ -59,13 +59,14 @@ if __name__ == '__main__':
     args.list_path = ""
     #args.network = 'resnet50'
     #args.network = 'resnet50_customized'
-    args.network = 'resnet50_two_stream'
+    #args.network = 'resnet50_two_stream'
+    args.network = 'resnet50_two_stream_w_four_layers'
     args.batch_size = 128
     args.num_class = 1
     args.class_names = 'person'  #'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
-    args.epoch = 16
+    args.epoch = 5
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-two_stream_w_four_layers_bs12', 'resnet-50')
     args.gpus = '0'
     args.cpu = None
     args.data_shape = [480, 640]

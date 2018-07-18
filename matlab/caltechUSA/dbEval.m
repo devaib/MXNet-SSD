@@ -29,10 +29,10 @@ function dbEval
 exps = {
   'Reasonable',     [50 inf],  [.65 inf], 0,   .5,  1.25
   'All',            [20 inf],  [.2 inf],  0,   .5,  1.25
-  'Scale=large',    [100 inf], [inf inf], 0,   .5,  1.25
-  'Scale=near',     [80 inf],  [inf inf], 0,   .5,  1.25
-  'Scale=medium',   [30 80],   [inf inf], 0,   .5,  1.25
-  'Scale=far',      [20 30],   [inf inf], 0,   .5,  1.25
+  'Scale=large',    [100 inf], [.2 inf], 0,   .5,  1.25
+  'Scale=near',     [80 inf],  [.2 inf], 0,   .5,  1.25
+  'Scale=medium',   [30 80],   [.2 inf], 0,   .5,  1.25
+  'Scale=far',      [20 30],   [.2 inf], 0,   .5,  1.25
   'Occ=none',       [50 inf],  [inf inf], 0,   .5,  1.25
   'Occ=partial',    [50 inf],  [.65 1],   0,   .5,  1.25
   'Occ=heavy',      [50 inf],  [.2 .65],  0,   .5,  1.25
@@ -55,84 +55,21 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 n=1000; clrs=zeros(n,3);
 for i=1:n, clrs(i,:)=max(.3,mod([78 121 42]*(i+1),255)/255); end
 algs = {
-  'resnet-50-Caltech_h-gt20_v-gt0.5_two-stream', 0, clrs(73,:), '-'
-  'ResNet50-Customized-reasonable', 0, clrs(72,:), '-'
-  'ResNet50-Two-Stream', 0, clrs(71,:), '-'
-  'ResNet50-Customized-all', 0, clrs(70,:), '-'
-  'ResNet50-all',    0, clrs(69,:),  '-'
-  'ResNet50-reasonable',         0, clrs(68,:),  '-'
-%   'VJ',               0, clrs(1,:),   '-'
-%   'HOG',              1, clrs(2,:),   '--'
-%   'FtrMine',          1, clrs(3,:),   '-'
-%   'Shapelet',         0, clrs(4,:),   '--'
-%   'PoseInv',          1, clrs(5,:),   '-'
-%   'MultiFtr',         0, clrs(6,:),   '--'
-%   'MultiFtr+CSS',     0, clrs(7,:),   '-'
-%   'MultiFtr+Motion',  0, clrs(8,:),   '--'
-%   'HikSvm',           1, clrs(9,:),   '-'
-%   'Pls',              0, clrs(10,:),  '--'
-%   'HogLbp',           0, clrs(11,:),  '-'
-%   'LatSvm-V1',        0, clrs(12,:),  '--'
-%   'LatSvm-V2',        0, clrs(13,:),  '-'
-%   'ChnFtrs',          0, clrs(14,:),  '--'
-%   'FPDW',             0, clrs(15,:),  '-'
-%   'FeatSynth',        0, clrs(16,:),  '--'
-%   'MultiResC',        0, clrs(17,:),  '-'
-%   'CrossTalk',        0, clrs(18,:),  '--'
-%   'VeryFast',         0, clrs(19,:),  '-'
-%   'ConvNet',          0, clrs(20,:),  '--'
-%   'SketchTokens',     0, clrs(21,:),  '-'
-%   'Roerei',           0, clrs(22,:),  '--'
-%   'AFS',              1, clrs(23,:),  '-'
-%   'AFS+Geo',          1, clrs(23,:),  '--'
-%   'MLS',              1, clrs(24,:),  '-'
-%   'MT-DPM',           0, clrs(25,:),  '-'
-%   'MT-DPM+Context',   0, clrs(25,:),  '--'
-%   'DBN-Isol',         0, clrs(26,:),  '-'
-%   'DBN-Mut',          0, clrs(26,:),  '--'
-%   'MF+Motion+2Ped',   0, clrs(27,:),  '-'
-%   'MultiResC+2Ped',   0, clrs(27,:),  '--'
-%   'MOCO',             0, clrs(28,:),  '-'
-%   'ACF',              0, clrs(29,:),  '-'
-%   'ACF-Caltech',      0, clrs(29,:),  '--'
-%   'ACF+SDt',          0, clrs(30,:),  '-'
-%   'FisherBoost',      0, clrs(31,:),  '--'
-%   'pAUCBoost',        0, clrs(32,:),  '-'
-%   'Franken',          0, clrs(33,:),  '--'
-%   'JointDeep',        0, clrs(34,:),  '-'
-%   'MultiSDP',         0, clrs(35,:),  '--'
-%   'SDN',              0, clrs(36,:),  '-'
-%   'RandForest',       0, clrs(37,:),  '--'
-%   'WordChannels',     0, clrs(38,:),  '-'
-%   'InformedHaar',     0, clrs(39,:),  '--'
+  'ResNet50-Two-Stream-720', 0, clrs(80, :), '-'
+  'ResNet50-Two-Stream-600', 0, clrs(77, :), '-'
+  'ResNet50-two-stream', 0, clrs(74,:), '-'
+  'ResNet50-customized', 0, clrs(70,:), '-'
+  'ResNet50',    0, clrs(69,:),  '-'
+  'ACF++', 0, clrs(68,:), '--'
+  'HOG',              1, clrs(2,:),   '--'
 %   'SpatialPooling',   0, clrs(40,:),  '-'
-%   'SpatialPooling+',  0, clrs(42,:),  '--'
-%   'LDCF',             0, clrs(43,:),  '-'
-%   'ACF-Caltech+',     0, clrs(44,:),  '--'
-%   'Katamari',         0, clrs(45,:),  '-'
-%   'NAMC',             0, clrs(46,:),  '--'
-%   'FastCF',           0, clrs(47,:),  '-'
 %   'TA-CNN',           0, clrs(48,:),  '--'
-%   'SCCPriors',        0, clrs(49,:),  '-'
 %   'DeepParts',        0, clrs(50,:),  '--'
-%   'DeepCascade',      0, clrs(51,:),  '-'
-%   'DeepCascade+',     0, clrs(51,:),  '--'
-%   'LFOV',             0, clrs(52,:),  '-'
 %   'Checkerboards',    0, clrs(53,:),  '--'
-%   'Checkerboards+',   0, clrs(53,:),  '-'
 %   'CCF',              0, clrs(54,:),  '--'
 %   'CCF+CF',           0, clrs(54,:),  '-'
 %   'CompACT-Deep',     0, clrs(55,:),  '--'
-%   'SCF+AlexNet',      0, clrs(56,:),  '-'
-%   'SA-FastRCNN',      0, clrs(57,:),  '--'
 %   'RPN+BF',           0, clrs(58,:),  '-'
-%   'MS-CNN',           0, clrs(59,:),  '--'
-%   'ACF++',            0, clrs(60,:),  '-'
-%   'LDCF++',           0, clrs(61,:),  '--'
-%   'MRFC+Semantic',    0, clrs(63,:),  '--'
-%   'F-DNN',            0, clrs(64,:),  '-'
-%   'F-DNN+SS',         0, clrs(65,:),  '--'
-%   'UDN+',             0, clrs(66,:),  '-' 
 };
 algs=cell2struct(algs',{'name','resize','color','style'});
 
@@ -142,7 +79,7 @@ dataNames = {'UsaTest','UsaTrain','InriaTest',...
 
 % select databases, experiments and algorithms for evaluation
 dataNames = dataNames(1); % select one or more databases for evaluation
-exps = exps(1);           % select one or more experiment for evaluation
+exps = exps(6);           % select one or more experiment for evaluation
 algs = algs(:);           % select one or more algorithms for evaluation
 
 % remaining parameters and constants
@@ -150,7 +87,7 @@ aspectRatio = .41;        % default aspect ratio for all bbs
 bnds = [5 5 635 475];     % discard bbs outside this pixel range
 plotRoc = 1;              % if true plot ROC else PR curves
 plotAlg = 0;              % if true one plot per alg else one plot per exp
-plotNum = 15;             % only show best plotNum curves (and VJ and HOG)
+plotNum = 20;             % only show best plotNum curves (and VJ and HOG)
 samples = 10.^(-2:.25:0); % samples for computing area under the curve
 lims = [2e-4 50 .035 1];  % axis limits for ROC plots
 bbsShow = 0;              % if true displays sample bbs for each alg/exp

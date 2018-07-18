@@ -124,22 +124,25 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    # args.dataset = 'kitti'
-    # args.set = 'train'
-    # args.shuffle = False
-    # suffixs = ['', '_central', '_small', '_large']
-    # suffix = suffixs[3]
-    # args.target = os.path.join(curr_path, '..', 'data', 'kitti',
-    #                            'rec', args.set + suffix + '.lst')
-    # args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
+    args.dataset = 'kitti'
+    args.set = 'train_total'
+    args.shuffle = False
+    suffixs = ['', '_central', '_small', '_large']
+    suffix = suffixs[0]
+    args.target = os.path.join(curr_path, '..', 'data', 'kitti',
+                               'rec', args.set + suffix + '.lst')
+    args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
-    args.dataset = 'caltech'
-    args.set = 'train'
-    args.shuffle = True
-    args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
-                               'rec_h-gt20-lt50_v-gt0.2', args.set + '.lst')
-    args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
-    suffix = ""
+    #args.dataset = 'caltech'
+    #args.set = 'val'
+    #if args.set == 'train':
+    #    args.shuffle = True
+    #elif args.set == 'val':
+    #    args.shuffle = False
+    #args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
+    #                           'rec_all_600', args.set + '.lst')
+    #args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
+    #suffix = ""
 
     if args.dataset == 'pascal':
         db = load_pascal(args.set, args.year, args.root_path, args.shuffle)
@@ -169,6 +172,8 @@ if __name__ == '__main__':
     subprocess.check_call([os.path.join(remote_anaconda_path, "python"),
         os.path.join(curr_path, "..", "mxnet/tools/im2rec.py"),
         os.path.abspath(args.target), os.path.abspath(args.root_path),
-        "--shuffle", str(int(args.shuffle)), "--pack-label", "1", "--num-thread", "20"])
+        "--shuffle", str(int(args.shuffle)),
+        "--resize", "375",
+        "--pack-label", "1", "--num-thread", "20"])
 
     print("Record file {} generated...".format(args.target.split('.')[0] + '.rec'))
