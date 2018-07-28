@@ -128,13 +128,17 @@ class CaltechPedestrian_new(Imdb):
                                 if cls_name != "person":
                                     continue
                                 else:
+                                    # check height
+                                    if float(word[4]) > 50:
+                                        continue
+
                                     cls_id = 0
                                     xmin = float(words[1]) / width
                                     ymin = float(words[2]) / height
                                     xmax = float(float(words[1]) + float(words[3])) / width
                                     ymax = float(float(words[2]) + float(words[4])) / height
                                     label.append([cls_id, xmin, ymin, xmax, ymax])
-                                temp.append(np.array(label))
+                            temp.append(np.array(label))
                         # max_objects = max(max_objects, len(label))
         # assert max_objects > 0, "No objects found for any of the images"
         # assert max_objects <= self.config['padding'], "# obj exceed padding"

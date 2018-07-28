@@ -145,7 +145,7 @@ if __name__ == '__main__':
     # args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
     args.dataset = 'caltech_new'
-    args.set = 'val'
+    args.set = 'train'
     if args.set == 'train':
         args.shuffle = True
     elif args.set == 'val':
