@@ -8,6 +8,7 @@ from dataset.pascal_voc import PascalVoc
 from dataset.mscoco import Coco
 from dataset.kitti import Kitti
 from dataset.caltech_pedestrian import CaltechPedestrian
+from dataset.caltech_pedestrian_new import CaltechPedestrian_new
 from dataset.concat_db import ConcatDB
 
 def load_pascal(image_set, year, devkit_path, shuffle=False):
@@ -99,6 +100,16 @@ def load_caltech(image_set, caltech_path, shuffle=False):
     else:
         return imdbs[0]
 
+def load_caltech_new(image_set, caltech_path, shuffle=False):
+    image_set = [y.strip() for y in image_set.split(',')]
+    assert image_set, "No image_set specified"
+    imdbs = []
+    for s in image_set:
+        imdbs.append(CaltechPedestrian_new(s, caltech_path, shuffle, is_train=True))
+    if len(imdbs) > 1:
+        return ConcatDB(imdbs, shuffle)
+    else:
+        return imdbs[0]
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Prepare lists for dataset')
@@ -124,25 +135,25 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.dataset = 'kitti'
-    args.set = 'train_total'
-    args.shuffle = False
-    suffixs = ['', '_central', '_small', '_large']
-    suffix = suffixs[0]
-    args.target = os.path.join(curr_path, '..', 'data', 'kitti',
-                               'rec', args.set + suffix + '.lst')
-    args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
+    # args.dataset = 'kitti'
+    # args.set = 'train_total'
+    # args.shuffle = False
+    # suffixs = ['', '_central', '_small', '_large', '_small_total', '_large_total']
+    # suffix = suffixs[5]
+    # args.target = os.path.join(curr_path, '..', 'data', 'kitti',
+    #                            'rec', args.set + suffix + '.lst')
+    # args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
-    #args.dataset = 'caltech'
-    #args.set = 'val'
-    #if args.set == 'train':
-    #    args.shuffle = True
-    #elif args.set == 'val':
-    #    args.shuffle = False
-    #args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
-    #                           'rec_all_600', args.set + '.lst')
-    #args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
-    #suffix = ""
+    args.dataset = 'caltech_new'
+    args.set = 'val'
+    if args.set == 'train':
+        args.shuffle = True
+    elif args.set == 'val':
+        args.shuffle = False
+    args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
+                               'new_rec_all', args.set + '.lst')
+    args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
+    suffix = ""
 
     if args.dataset == 'pascal':
         db = load_pascal(args.set, args.year, args.root_path, args.shuffle)
@@ -160,6 +171,10 @@ if __name__ == '__main__':
         db = load_caltech(args.set, args.root_path, args.shuffle)
         print("saving list to disk...")
         db.save_imglist(args.target, root=args.root_path)
+    elif args.dataset == 'caltech_new':
+        db = load_caltech_new(args.set, args.root_path, args.shuffle)
+        print("saving list to disk...")
+        db.save_imglist(args.target, root=args.root_path)
 
 
     else:
@@ -173,7 +188,7 @@ if __name__ == '__main__':
         os.path.join(curr_path, "..", "mxnet/tools/im2rec.py"),
         os.path.abspath(args.target), os.path.abspath(args.root_path),
         "--shuffle", str(int(args.shuffle)),
-        "--resize", "375",
+        # "--resize", "375",
         "--pack-label", "1", "--num-thread", "20"])
 
     print("Record file {} generated...".format(args.target.split('.')[0] + '.rec'))
