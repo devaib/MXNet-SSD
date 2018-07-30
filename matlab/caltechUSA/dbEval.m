@@ -55,6 +55,7 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 n=1000; clrs=zeros(n,3);
 for i=1:n, clrs(i,:)=max(.3,mod([78 121 42]*(i+1),255)/255); end
 algs = {
+  'ResNet50-Two-Stream-New', 0, clrs(81, :), '-'
   'ResNet50-Two-Stream-720', 0, clrs(80, :), '-'
   'ResNet50-Two-Stream-600', 0, clrs(77, :), '-'
   'ResNet50-two-stream', 0, clrs(74,:), '-'
@@ -79,7 +80,7 @@ dataNames = {'UsaTest','UsaTrain','InriaTest',...
 
 % select databases, experiments and algorithms for evaluation
 dataNames = dataNames(1); % select one or more databases for evaluation
-exps = exps(6);           % select one or more experiment for evaluation
+exps = exps(2);           % select one or more experiment for evaluation
 algs = algs(:);           % select one or more algorithms for evaluation
 
 % remaining parameters and constants

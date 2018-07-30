@@ -7,7 +7,7 @@ import cv2
 import json
 
 
-class CaltechPedestrian_new(Imdb):
+class CaltechPedestrian_new10x(Imdb):
     """
     Implementation of Imdb for Caltech Pedestrian dataset
     Parameters:
@@ -20,16 +20,13 @@ class CaltechPedestrian_new(Imdb):
         if true, will load annotations
     """
     def __init__(self, imageset, caltech_path, shuffle=False, is_train=False):
-        super(CaltechPedestrian_new, self).__init__('caltech_pedestrain_new')
+        super(CaltechPedestrian_new10x, self).__init__('caltech_pedestrain_new')
         self.annotation_path = "/home/binghao/workspace/MXNet-SSD/data/caltech-pedestrian-dataset-converter"
         self.annotation_folder = "data"
         self.annotation_name = "annotations.json"
         self.annotation_file = os.path.join(self.annotation_path, self.annotation_folder, self.annotation_name)
-        self.new_anno_dir = os.path.join(self.annotation_path, "data/new/Caltech_new_annotations")
-        if imageset == "train":
-            self.new_anno_path = os.path.join(self.new_anno_dir, "anno_train_1xnew")
-        elif imageset == "val":
-            self.new_anno_path = os.path.join(self.new_anno_dir, "anno_test_1xnew")
+        self.new_anno_dir = os.path.join(self.annotation_path, "data/new/Caltech_10xtrain_aligned")
+        self.new_anno_path = os.path.join(self.new_anno_dir, 'anno_train10x_alignedby_RotatedFilters')
 
         # todo: figure out train and val sets
         self.trainset = ['set00', 'set01', 'set02', 'set03', 'set04', 'set05']
@@ -113,12 +110,12 @@ class CaltechPedestrian_new(Imdb):
                         # if self.is_train == False and float(imagename) > 10:
                         #     continue
                         # follow the established procedure
-                        if ((int(imagename) + 1) % 30) != 0:
+                        if ((int(imagename) + 1) % 3) != 0:
                             continue
                         image_set_index.append(setname + "_" + videoname + "_" + imagename)
 
                         imgname = 'I' + imagename.zfill(5)
-                        anno_path = os.path.join(self.new_anno_path, setname+"_"+videoname+"_"+imgname+".jpg.txt")
+                        anno_path = os.path.join(self.new_anno_path, setname+"_"+videoname+"_"+imgname+".txt")
                         with open(anno_path) as f:
                             lines = f.readlines()
                             label = []
@@ -129,7 +126,9 @@ class CaltechPedestrian_new(Imdb):
                                     continue
                                 else:
                                     # check height
-                                    if float(words[4]) > 50:
+                                    #if float(words[4]) > 50:
+                                    #    continue
+                                    if float(words[3]) == 0 or float(words[4]) == 0:
                                         continue
 
                                     cls_id = 0

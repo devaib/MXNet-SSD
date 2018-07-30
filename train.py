@@ -111,7 +111,7 @@ if __name__ == '__main__':
     # customized
     #args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train_total.rec')
     #args.train_path = os.path.join(os.getcwd(), 'data', 'kitti', 'rec', 'train_total_small_total.rec')
-    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'new_rec_all', 'train.rec')
+    args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'new10x_rec_all', 'train.rec')
     #args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_h-gt50_v-gt0.5', 'train.rec')
     #args.train_path = os.path.join(os.getcwd(), 'data', 'caltech-pedestrian-dataset-converter', 'rec_h-gt20-lt50_v-gt0.5', 'train.rec')
     args.train_list = ""
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     #args.pretrained = False
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_all', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_small', 'resnet-50')
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_new_all', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_new10x_all', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-two_stream_w_four_layers', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_h-gt20-lt50_v-gt0.5_customized-first-layer', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_h-gt50_v-gt0.5_customized-last-three-layers', 'resnet-50')
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     args.lr_refactor_step = '20, 40'
     args.lr_refactor_ratio = 0.1
     args.freeze_pattern = ""
-    args.log_file = 'log/caltech_new_all.log'
+    args.log_file = 'log/caltech_new10x_all.log'
     args.monitor = 0
     args.monitor_pattern = ".*"
     args.num_class = 1

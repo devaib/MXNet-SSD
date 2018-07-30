@@ -9,6 +9,7 @@ from dataset.mscoco import Coco
 from dataset.kitti import Kitti
 from dataset.caltech_pedestrian import CaltechPedestrian
 from dataset.caltech_pedestrian_new import CaltechPedestrian_new
+from dataset.caltech_pedestrian_new10x import CaltechPedestrian_new10x
 from dataset.concat_db import ConcatDB
 
 def load_pascal(image_set, year, devkit_path, shuffle=False):
@@ -111,6 +112,17 @@ def load_caltech_new(image_set, caltech_path, shuffle=False):
     else:
         return imdbs[0]
 
+def load_caltech_new10x(image_set, caltech_path, shuffle=False):
+    image_set = [y.strip() for y in image_set.split(',')]
+    assert image_set, "No image_set specified"
+    imdbs = []
+    for s in image_set:
+        imdbs.append(CaltechPedestrian_new10x(s, caltech_path, shuffle, is_train=True))
+    if len(imdbs) > 1:
+        return ConcatDB(imdbs, shuffle)
+    else:
+        return imdbs[0]
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Prepare lists for dataset')
     parser.add_argument('--dataset', dest='dataset', help='dataset to use',
@@ -144,14 +156,14 @@ if __name__ == '__main__':
     #                            'rec', args.set + suffix + '.lst')
     # args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
-    args.dataset = 'caltech_new'
+    args.dataset = 'caltech_new10x'
     args.set = 'train'
     if args.set == 'train':
         args.shuffle = True
     elif args.set == 'val':
         args.shuffle = False
     args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
-                               'new_rec_all', args.set + '.lst')
+                               'new10x_rec_all', args.set + '.lst')
     args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
     suffix = ""
 
@@ -173,6 +185,10 @@ if __name__ == '__main__':
         db.save_imglist(args.target, root=args.root_path)
     elif args.dataset == 'caltech_new':
         db = load_caltech_new(args.set, args.root_path, args.shuffle)
+        print("saving list to disk...")
+        db.save_imglist(args.target, root=args.root_path)
+    elif args.dataset == 'caltech_new10x':
+        db = load_caltech_new10x(args.set, args.root_path, args.shuffle)
         print("saving list to disk...")
         db.save_imglist(args.target, root=args.root_path)
 
