@@ -4,6 +4,7 @@ import numpy as np
 from timeit import default_timer as timer
 from dataset.testdb import TestDB
 from dataset.iterator import DetIter
+import os
 
 class Detector(object):
     """
@@ -149,6 +150,21 @@ class Detector(object):
                                     '{:.3f}'.format(score),
                                     bbox=dict(facecolor=colors[cls_id], alpha=0.5),
                                     fontsize=5, color='white')
+
+        '''
+        xmin = [276.1, 322.4, 379.7, 511.3]
+        ymin = [230.0, 196.2, 170.3, 177.4]
+        xmax = [406.3, 436.2, 489.0, 556.6]
+        ymax = [321.4, 293.0, 259.1, 211.4]
+        color_new = (0.928, 0.123, 0.123)
+        for i in range(4):
+            rect = plt.Rectangle((xmin[i], ymin[i]), xmax[i] - xmin[i],
+                                 ymax[i] - ymin[i], fill=False,
+                                 edgecolor=color_new,
+                                 linewidth=1.5)
+            plt.gca().add_patch(rect)
+        '''
+
         plt.show()
 
     def detect_and_visualize(self, im_list, root_dir=None, extension=None,
@@ -209,20 +225,31 @@ class Detector(object):
                     score = det[i, 1]
                     if score > thresh:
                         # assemble valid_det in [img_index, x, y, w, h, score] format
-                        x = int(det[i, 2] * width)
-                        y = int(det[i, 3] * height)
-                        w = int((det[i, 4] - det[i, 2]) * width)
-                        h = int((det[i, 5] - det[i, 3]) * height)
-                        valid_det = [imgindex, x, y, w, h, score]
+                        #x = int(det[i, 2] * width)
+                        #y = int(det[i, 3] * height)
+                        #w = int((det[i, 4] - det[i, 2]) * width)
+                        #h = int((det[i, 5] - det[i, 3]) * height)
+                        #valid_det = [imgindex, x, y, w, h, score]
+                        #valid_dets.append(valid_det)
+
+                        x = round(float(det[i, 2] * width), 2)
+                        y = round(float(det[i, 3] * height), 2)
+                        w = round(float((det[i, 4] - det[i, 2]) * width), 2)
+                        h = round(float((det[i, 5] - det[i, 3]) * height), 2)
+                        valid_det = ['Car', -1, -1, -10, x, y, x+w, y+h, -1, -1, -1, -1000, -1000, -1000, -10, score]
                         valid_dets.append(valid_det)
+
+
 
         # write to file
         import csv
         with open(to_file, 'w+') as f:
-            csv_writer = csv.writer(f)
+            #csv_writer = csv.writer(f)
+            #csv_writer.writerows(valid_dets)
+            csv_writer = csv.writer(f, delimiter=' ')
             csv_writer.writerows(valid_dets)
 
-        print('detect_and_record finished')
+        print('{} finished'.format(to_file))
 
     def detect_and_record_anchors(self, im_list, root_dir=None, extension=None,
                                   classes=[], thresh=0.6, show_timer=False):

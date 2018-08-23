@@ -1,14 +1,27 @@
 clc; clear; close all;
 disp('===== Priorbox Generation Demo =====');
 
-sizes = [.03, .0548;
-        .1, .1732;
-        .3, .3873;
-        .5, .5916];
+% sizes = [.03, .0548;
+%         .1, .1732;
+%         .3, .3873;
+%         .5, .5916];
+% ratios = [1,2,.5,-1,-1; 
+%     1,2,.5,3,1./3; 
+%     1,2,.5,3,1./3; 
+%     1,2,.5,3,1./3];
+
+sizes = [.1 .141;
+        .2 .272;
+        .37 .447;
+        .54 .619;
+        .71 .79;
+        .88 .961];
 ratios = [1,2,.5,-1,-1; 
     1,2,.5,3,1./3; 
     1,2,.5,3,1./3; 
-    1,2,.5,3,1./3];
+    1,2,.5,3,1./3;
+    1,2,.5,-1,-1;
+    1,2,.5,-1,-1];
 
 w = -1 .* ones(size(sizes, 1), size(sizes,2)+size(ratios,2)-1);
 h = -1 .* ones(size(sizes, 1), size(sizes,2)+size(ratios,2)-1);
@@ -38,8 +51,11 @@ img = imresize(img, [480, 640]);
 %feature_map_height = [19 19 10 5 3 2];
 %feature_map_width = [19 19 10 5 3 2];
 
-feature_map_height = [22 22 11 6 3 2];
-feature_map_width = [75 75 38 19 10 5];
+% feature_map_height = [22 22 11 6 3 2];
+% feature_map_width = [75 75 38 19 10 5];
+
+feature_map_height = [30 15 8 4 2 1];
+feature_map_width = [40 20 10 5 3 2];
     
 img_height = size(img, 1);
 img_width  = size(img, 2);
@@ -47,6 +63,7 @@ occ_col    = {'g','y','r','w','g','y'};
 for i = 1:size(sizes, 1)
     img = imread(sprintf('%s/%06d.png',image_dir,8));
     img = imresize(img, [480, 640]);
+    img = imread('/home/binghao/workspace/MXNet-SSD/data/caltech-pedestrian-dataset-converter/data/images/set00_V001_975.png');
     yy = round(linspace(1,size(img,1),feature_map_height(i)+1));
     xx = round(linspace(1,size(img,2),feature_map_width(i)+1)); 
     step_y = 1 / feature_map_height(i);
@@ -64,11 +81,11 @@ for i = 1:size(sizes, 1)
     center_x = center_x .* img_width;
     center_y = center_y .* img_height;
     imshow(img);hold on;
-    for y = 1:size(center_y,2)
-        for x = 1:size(center_x,2)
-             plot(center_x(x), center_y(y), 'rx');
-        end
-    end 
+%     for y = 1:size(center_y,2)
+%         for x = 1:size(center_x,2)
+%              plot(center_x(x), center_y(y), 'rx');
+%         end
+%     end 
    
     text(100, -20, sprintf('feature map size: %d x %d', feature_map_height(i), feature_map_width(i)),'color','g','HorizontalAlignment','left','VerticalAlignment','top','FontSize',10,'FontWeight','bold','BackgroundColor','black')
     for j = 1:size(sizes,2)+size(ratios,2)-1

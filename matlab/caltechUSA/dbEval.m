@@ -46,7 +46,7 @@ exps = {
   'Expand=125',     [50 inf],  [.65 inf], 0,   .5,  1.25
   'Expand=150',     [50 inf],  [.65 inf], 0,   .5,  1.50 };
 exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
-
+exps_ahead= 6;
 % List of algorithms: { name, resize, color, style }
 %  name     - algorithm name (defines data location)
 %  resize   - if true rescale height of each box by 100/128
@@ -55,22 +55,25 @@ exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
 n=1000; clrs=zeros(n,3);
 for i=1:n, clrs(i,:)=max(.3,mod([78 121 42]*(i+1),255)/255); end
 algs = {
-  'ResNet50-Two-Stream-New', 0, clrs(81, :), '-'
-  'ResNet50-Two-Stream-720', 0, clrs(80, :), '-'
-  'ResNet50-Two-Stream-600', 0, clrs(77, :), '-'
-  'ResNet50-two-stream', 0, clrs(74,:), '-'
-  'ResNet50-customized', 0, clrs(70,:), '-'
-  'ResNet50',    0, clrs(69,:),  '-'
+  'ResNet50-Cal-new', 0, clrs(92, :), '-'
+  'ResNet50-Cal-new-customized', 0, clrs(91, :), '-'
+  'ResNet50-Cal-new-two-stream', 0, clrs(90, :), '-'
+%   'ResNet50-Two-Stream-New', 0, clrs(81, :), '-'
+%   'ResNet50-Two-Stream-720', 0, clrs(80, :), '-'
+%   'ResNet50-Two-Stream-600', 0, clrs(77, :), '-'
+%   'ResNet50-two-stream', 0, clrs(74,:), '-'
+%   'ResNet50-Customized-600', 0, clrs(70,:), '-'
+%   'ResNet50-600',    0, clrs(69,:),  '-'
   'ACF++', 0, clrs(68,:), '--'
   'HOG',              1, clrs(2,:),   '--'
-%   'SpatialPooling',   0, clrs(40,:),  '-'
-%   'TA-CNN',           0, clrs(48,:),  '--'
-%   'DeepParts',        0, clrs(50,:),  '--'
-%   'Checkerboards',    0, clrs(53,:),  '--'
-%   'CCF',              0, clrs(54,:),  '--'
-%   'CCF+CF',           0, clrs(54,:),  '-'
-%   'CompACT-Deep',     0, clrs(55,:),  '--'
-%   'RPN+BF',           0, clrs(58,:),  '-'
+  'SpatialPooling',   0, clrs(40,:),  '-'
+  'TA-CNN',           0, clrs(48,:),  '--'
+  'DeepParts',        0, clrs(50,:),  '--'
+  'Checkerboards',    0, clrs(53,:),  '--'
+  'CCF',              0, clrs(54,:),  '--'
+  'CCF+CF',           0, clrs(54,:),  '-'
+  'CompACT-Deep',     0, clrs(55,:),  '--'
+  'RPN+BF',           0, clrs(58,:),  '-'
 };
 algs=cell2struct(algs',{'name','resize','color','style'});
 
@@ -80,7 +83,7 @@ dataNames = {'UsaTest','UsaTrain','InriaTest',...
 
 % select databases, experiments and algorithms for evaluation
 dataNames = dataNames(1); % select one or more databases for evaluation
-exps = exps(2);           % select one or more experiment for evaluation
+exps = exps(exps_ahead);           % select one or more experiment for evaluation
 algs = algs(:);           % select one or more algorithms for evaluation
 
 % remaining parameters and constants

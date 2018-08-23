@@ -325,6 +325,7 @@ def get_config(network, data_shape, **kwargs):
         steps = []
         return locals()
     elif network == 'mobilenet':
+        network = 'mobilenet'
         from_layers = ['activation22', 'activation26', '', '', '', '']
         num_filters = [-1, -1, 512, 256, 256, 128]
         strides = [-1, -1, 2, 2, 2, 2]
@@ -332,6 +333,28 @@ def get_config(network, data_shape, **kwargs):
         sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
         ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
             [1,2,.5], [1,2,.5]]
+        normalizations = -1
+        steps = []
+        return locals()
+    elif network == 'mobilenet_customized':
+        network = 'mobilenet'
+        from_layers = ['activation22', 'activation26', '', '']
+        num_filters = [-1, -1, 512, 256]
+        strides = [-1, -1, 2, 2]
+        pads = [-1, -1, 1, 1]
+        sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
+        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        normalizations = -1
+        steps = []
+        return locals()
+    elif network == 'mobilenet_first_layer':
+        network = 'mobilenet'
+        from_layers = ['activation22']
+        num_filters = [-1]
+        strides = [-1]
+        pads = [-1]
+        sizes = [[.03, .0548]]
+        ratios = [[1,2,.5]]
         normalizations = -1
         steps = []
         return locals()

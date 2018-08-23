@@ -115,8 +115,8 @@ if __name__ == '__main__':
     #args.network = 'resnet50_customized'
     #args.network = 'resnet50_two_stream'
     #args.network = 'resnet50_test'
-    #args.network = 'resnet50'
-    args.network = 'resnet50_two_stream_w_four_layers'
+    args.network = 'resnet50'
+    #args.network = 'resnet50_two_stream_w_four_layers'
     #args.network = 'resnet101_two_stream'
     #imgpath = './data/kitti/data_object_image_2/training/image_2/'
     # imgpath = './data/caltech-pedestrian-dataset-converter/data/images/'
@@ -144,109 +144,94 @@ if __name__ == '__main__':
 
     # Caltech
     elif mode == 3:
-        caltechPath = './data/caltech-pedestrian-dataset-converter/data/test-images/'
-        sets = ['set' + setNum for setNum in ['06', '07', '08', '09', '10']]            # set06 - set10
-        videos = ['V' + videoNum for videoNum in [str(x).zfill(3) for x in range(20)]]  # V000  - V019
+        kittiPath = './data/kitti/'
+        imgpath = os.path.join(kittiPath, 'data_object_image_2/testing/image_2')
 
-        #s = sets[0]
-        #v = videos[0]
-        #imgpath = os.path.join(caltechPath, s, v)
-        for s in sets:
-            for v in videos:
-                val_path = caltechPath + s + v
-                imgpath = os.path.join(caltechPath, s, v)
-                if not os.path.exists(imgpath):
-                    continue
-                print("{} {}".format(s, v))
+        img_list = []
+        for f in os.listdir(imgpath):
+            if f.endswith(".png"):
+                img_list.append(f)
 
-                image_list = []
-                for f in os.listdir(imgpath):
-                    if f.endswith(".png"):
-                        image_list.append(f)
+            # debugging
+            #img_list = ['005001.png', '005002.png']
 
-                # Sorting
-                import re
+        for i, image in enumerate(img_list):
+            #args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
+            print("processing {}/{} image".format(i+1, len(img_list)))
+            args.images = os.path.join(imgpath, image)
+            imgname = image.split('.')[0]
 
-                def atoi(text):
-                    return int(text) if text.isdigit() else text
+            toFilePath = './data/kitti/data_object_image_2/testing/car_result_original'
+            if not os.path.exists(toFilePath):
+                os.makedirs(toFilePath)
+            to_file = os.path.join(toFilePath, '{}.txt'.format(imgname))    # skip layer defined in multibox_detection.cu
 
-                def natural_keys(text):
-                    return [atoi(c) for c in re.split('(\d+)', text)]
+            #if mode == 0 or mode == 1:
+            #    ext = '.png'
+            #    args.images = ', '.join([imgpath + s + ext for s in imgnames])
 
-                image_list.sort(key=natural_keys)
+            args.dir = None
+            args.ext = None
+            args.epoch = 90
+            #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
+            #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_6_layers', 'caltech', 'resnet-101-caltech')
+            #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
+            args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_car_all', 'resnet-50')
+            args.data_shape = [375, 1242]
+            #args.data_shape = [480, 640]
+            #args.data_shape = [600, 800]
+            #args.data_shape = [720, 960]
+            args.mean_r = 123
+            args.mean_g = 117
+            args.mean_b = 104
+            args.thresh = 0.5
+            args.nms = 0.45
+            #args.force_nms = True
+            args.force_nms = False
+            args.show_timer = True
+            args.deploy_net = False
+            args.class_names = 'Car'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
+            if mode == 0 or mode == 1 or mode == 3:
+                args.cpu = False
+                args.gpu_id = 0
+            if mode == 2:
+                args.cpu = True
+                ctx = mx.cpu()
 
-                args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
+            #print("Generating detection results for {} images".format(len(imgnames)))
 
-                toFilePath = './data/new/resnet-50-Caltech_new_two_stream/results/{}'.format(s, v)
-                if not os.path.exists(toFilePath):
-                    os.makedirs(toFilePath)
-                to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
+            # parse image list
+            image_list = [i.strip() for i in args.images.split(',')]
+            assert len(image_list) > 0, "No valid image specified to detect"
 
-                #if mode == 0 or mode == 1:
-                #    ext = '.png'
-                #    args.images = ', '.join([imgpath + s + ext for s in imgnames])
+            network = None if args.deploy_net else args.network
+            class_names = parse_class_names(args.class_names)
+            if args.prefix.endswith('_'):
+                prefix = args.prefix + args.network + '_' + str(args.data_shape)
+            else:
+                prefix = args.prefix
 
-                args.dir = None
-                args.ext = None
-                args.epoch = 30
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_6_layers', 'caltech', 'resnet-101-caltech')
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_new_two_stream', 'resnet-50')
-                args.data_shape = [480, 640]
-                #args.data_shape = [600, 800]
-                #args.data_shape = [720, 960]
-                args.mean_r = 123
-                args.mean_g = 117
-                args.mean_b = 104
-                args.thresh = 0.1
-                args.nms = 0.45
-                #args.force_nms = True
-                args.force_nms = False
-                args.show_timer = True
-                args.deploy_net = False
-                args.class_names = 'Person'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
-                if mode == 0 or mode == 1 or mode == 3:
-                    args.cpu = False
-                    args.gpu_id = 0
-                if mode == 2:
-                    args.cpu = True
-                    ctx = mx.cpu()
+            if "detector" not in locals():
+                detector = get_detector(network, prefix, args.epoch,
+                                        args.data_shape,
+                                        (args.mean_r, args.mean_g, args.mean_b),
+                                        ctx, len(class_names), args.nms_thresh, args.force_nms)
+            # run detection demo
+            if mode == 0:
+                detector.detect_and_visualize(image_list, args.dir, args.extension,
+                                              class_names, args.thresh, args.show_timer)
+            # keep records of valid detection
+            elif mode == 1:
+                detector.detect_and_record(image_list, to_file, args.dir, args.extension,
+                                           class_names, args.thresh, args.show_timer)
+            # keep records of scores and position for each anchor box (in cpu mode),
+            # multibox_detecion.cc should be compiled with DEBUG defined in config.mk
+            elif mode == 2:
+                detector.detect_and_record_anchors(image_list, args.dir, args.extension,
+                                                   class_names, args.thresh, args.show_timer)
 
-                #print("Generating detection results for {} images".format(len(imgnames)))
-
-                # parse image list
-                image_list = [i.strip() for i in args.images.split(',')]
-                assert len(image_list) > 0, "No valid image specified to detect"
-
-                network = None if args.deploy_net else args.network
-                class_names = parse_class_names(args.class_names)
-                if args.prefix.endswith('_'):
-                    prefix = args.prefix + args.network + '_' + str(args.data_shape)
-                else:
-                    prefix = args.prefix
-
-                if "detector" not in locals():
-                    detector = get_detector(network, prefix, args.epoch,
-                                            args.data_shape,
-                                            (args.mean_r, args.mean_g, args.mean_b),
-                                            ctx, len(class_names), args.nms_thresh, args.force_nms)
-                # run detection demo
-                if mode == 0:
-                    detector.detect_and_visualize(image_list, args.dir, args.extension,
-                                                  class_names, args.thresh, args.show_timer)
-                # keep records of valid detection
-                elif mode == 1:
-                    detector.detect_and_record(image_list, to_file, args.dir, args.extension,
-                                               class_names, args.thresh, args.show_timer)
-                # keep records of scores and position for each anchor box (in cpu mode),
-                # multibox_detecion.cc should be compiled with DEBUG defined in config.mk
-                elif mode == 2:
-                    detector.detect_and_record_anchors(image_list, args.dir, args.extension,
-                                                       class_names, args.thresh, args.show_timer)
-
-                # for Caltech
-                elif mode == 3:
-                    detector.detect_and_record(image_list, to_file, args.dir, args.extension,
-                                               class_names, args.thresh, args.show_timer)
+            # for Caltech
+            elif mode == 3:
+                detector.detect_and_record(image_list, to_file, args.dir, args.extension,
+                                           class_names, args.thresh, args.show_timer)
 

@@ -30,10 +30,15 @@ class Kitti(Imdb):
         self.classes = self._load_class_names(names,
                                               os.path.join(os.path.dirname(__file__), 'names'))
         # TODO: consider DontCare
-        self.class_dict = {'Car': 0,
-                           'Van': 0,
-                           'Truck': 0}
+        self.class_dict = {
+            'Car': 0,
+            'Van': 0,
+            #'Pedestrian': 0,
+        }
         '''
+        'Car': 0,
+        'Van': 1,
+        'Truck': 2
         'Pedestrian': 3,
         'Person_sitting': 4,
         'Cyclist': 5,
