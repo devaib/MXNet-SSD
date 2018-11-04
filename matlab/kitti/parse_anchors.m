@@ -2,14 +2,14 @@ clc; clear; close all;
 disp('===== Parsing <anchors>.txt and generate statistical results =====');
 
 threshold = 0.5;
-anchors_dir = './anchors_customized/';
-feature_map_height = [22 22 11 6];
-feature_map_width = [75 75 38 19];
-anchors_per_location = [4 6 6 6];
-% anchors_dir = './anchors/';
-% feature_map_height = [22 22 11 6 3 2];
-% feature_map_width = [75 75 38 19 10 5];
-% anchors_per_location = [4 6 6 6 4 4];
+% anchors_dir = './anchors_customized/';
+% feature_map_height = [22 22 11 6];
+% feature_map_width = [75 75 38 19];
+% anchors_per_location = [4 6 6 6];
+anchors_dir = './anchors/';
+feature_map_height = [22 22 11 6 3 2];
+feature_map_width = [75 75 38 19 10 5];
+anchors_per_location = [4 6 6 6 4 4];
 num_anchors = sum(feature_map_height .* feature_map_width .* anchors_per_location);
 activated_anchors = zeros(num_anchors, 1);
 files = dir(strcat(anchors_dir, '*.txt'));
@@ -130,8 +130,9 @@ for scale_ind = 1:size(feature_map_height, 2)
     figure;
     colormap('jet');
     imagesc(freq_map{1,scale_ind});
-    daspect([1 1 1]);
+    %daspect([1 1 1]);
     colorbar;
     title(sprintf('feature layer %d', scale_ind));
+    set(gcf,'units','points','position',[0,0,600,200])
 end
 

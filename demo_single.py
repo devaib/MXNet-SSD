@@ -110,15 +110,15 @@ if __name__ == '__main__':
 
     # customized
     #args.network = 'resnet50'
+    #args.network = 'resnet50_customized'
+    args.network = 'resnet50_two_stream_w_four_layers'
     #args.network = 'resnet50_customized_first_layer'
     #args.network = 'resnet50_four_layers'
-    args.network = 'resnet50_two_stream_w_four_layers'
-    #args.network = 'resnet50_customized'
+
     #imgpath = './data/kitti/data_object_image_2/training/image_2/'
-    #imgpath = './data/caltech-pedestrian-dataset-converter/data/test-images/set06/V000/'
+    imgpath = './data/caltech-pedestrian-dataset-converter/data/test-images/set10/V010/'
     #imgpath = './data/caltech-pedestrian-dataset-converter/data/images/'
-    #imgpath = './data/kitti/data_object_image_2/training/image_2/'
-    imgpath = './data/kitti/data_object_image_2/testing/image_2/'
+    #imgpath = './data/kitti/data_object_image_2/testing/image_2/'
 
     if args.mode == 2:
         mode = 2
@@ -131,7 +131,8 @@ if __name__ == '__main__':
     if mode == 0:
         #imgnames = ['set00_V001_1783', 'set07_V002_1809','set07_V003_1341']
         #imgnames = ['004692', '003156']
-        imgnames = ['000222', '000239', '000240', '000241']
+        #imgnames = ['000222', '000239', '000240', '000241']
+        imgnames = ['930']
     elif mode == 1:
         val_path = './data/kitti/data_object_image_2/training/val.txt'
         to_file = './data/kitti/results/dts_one_layer_customized_small_objects.txt'    # skip layer defined in multibox_detection.cu
@@ -144,18 +145,24 @@ if __name__ == '__main__':
 
     args.dir = None
     args.ext = None
-    args.epoch = 60
-    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-customized','w_stage4', 'resnet-50')
+    #args.epoch = 20
+    #args.epoch = 14
+    args.epoch = 5
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_car_two_stream', 'resnet-50')
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-customized','w_stage4', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all-two_stream_w_four_layers_bs12', 'resnet-50')
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all', 'resnet-50')
+    #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_car_two_stream', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_pedestrian_large', 'resnet-50')
-    #args.data_shape = [480, 640]
-    args.data_shape = [375, 1242]
+    args.data_shape = [480, 640]
+    #args.data_shape = [375, 1242]
     args.mean_r = 123
     args.mean_g = 117
     args.mean_b = 104
     args.thresh = 0.5
+    #args.thresh = 0.17
     args.nms = 0.45
+    #args.nms = 0.99
     args.force_nms = False
     args.show_timer = True
     args.deploy_net = False
@@ -166,6 +173,7 @@ if __name__ == '__main__':
     if mode == 2:
         args.cpu = True
         ctx = mx.cpu()
+    ctx = mx.cpu()
 
     # parse image list
     image_list = [i.strip() for i in args.images.split(',')]

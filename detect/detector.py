@@ -132,7 +132,8 @@ class Detector(object):
                 if score > thresh:
                     # if cls_id not in colors:
                     #     colors[cls_id] = (random.random(), random.random(), random.random())
-                    colors[cls_id] = (0.157, 0.443, 0.525)
+                    #colors[cls_id] = (0.157, 0.443, 0.525)
+                    colors[cls_id] = (0.9, 0, 0)
                     xmin = int(dets[i, 2] * width)
                     ymin = int(dets[i, 3] * height)
                     xmax = int(dets[i, 4] * width)
@@ -140,16 +141,18 @@ class Detector(object):
                     rect = plt.Rectangle((xmin, ymin), xmax - xmin,
                                          ymax - ymin, fill=False,
                                          edgecolor=colors[cls_id],
-                                         linewidth=1.5)
+                                         linewidth=2.5)
                     plt.gca().add_patch(rect)
                     class_name = str(cls_id)
                     if classes and len(classes) > cls_id:
                         class_name = classes[cls_id]
+                    """
                     plt.gca().text(xmin, ymin - 2,
                                     # '{:s} {:.3f}'.format(class_name, score),
                                     '{:.3f}'.format(score),
                                     bbox=dict(facecolor=colors[cls_id], alpha=0.5),
                                     fontsize=5, color='white')
+                    """
 
         '''
         xmin = [276.1, 322.4, 379.7, 511.3]

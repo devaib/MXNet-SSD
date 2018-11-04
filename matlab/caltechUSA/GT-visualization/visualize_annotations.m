@@ -14,7 +14,7 @@ function visualize_annotations(path_to_seq_files, set_n, video_n)
   if nargin < 1 || ...
       (nargin < 2 && ~exist(fullfile(path_to_seq_files, 'set00', 'V000.seq'), 'file'))
     fprintf('\n\nERROR: You need to supply the path to the videos directory of the caltech data,\nwhich contains the caltech video frames.\n\n');
-    fprintf('You can download it at\n  http://www.vision.caltech.edu/Image_Datasets/CaltechPedestrians/datasets/USA/\n\n');
+    fprintf('You can download it at\n  http:9\//www.vision.caltech.edu/Image_Datasets/CaltechPedestrians/datasets/USA/\n\n');
     return;
   end
   

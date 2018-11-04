@@ -40,8 +40,9 @@ for ii=1:nn, clrs(ii,:)=max(.3,mod([78 121 42]*(ii+1),255)/255); end
 algs = {
   'SSD',                0,  clrs(2,:),  '-'
   'SSD-customized',     0,  clrs(1,:),  '-'
-  'SSD-two-stream*',    0,  clrs(3,:),  '-'
-  'SSD-two-stream**',   0,  clrs(4,:),  '-'};
+%   'SSD-two-stream*',    0,  clrs(3,:),  '-'
+%   'SSD-two-stream**',   0,  clrs(4,:),  '-'
+  };
 algs=cell2struct(algs',{'name','resize','color','style'});
 exps = exps(2);
 algs = algs(:);
@@ -141,7 +142,7 @@ end
 dataName='KITTI';
 plotName=[fileparts(mfilename('fullpath')) '/results/' dataName];
 if(~exist(plotName,'dir')), mkdir(plotName); end
-gts = {gts}; dts = {dts, dts1, dts2, dts3};
+gts = {gts}; dts = {dts, dts1}; % dts = {dts, dts1, dts2, dts3};
 %gName = [plotName '/gt' '.mat'];
 %aName = [plotName '/dt-' algo_name '.mat'];
 %save(aName,'dts','-v6');
@@ -230,7 +231,7 @@ for p=1:nPlots
     kp=[find(strcmp(stra,'SSD')) 1 1];
 %     [~,ord]=sort(scores(p,:)); kp=ord==kp(1)|ord==kp(2);
 %     j=find(cumsum(~kp)>=plotNum-2); kp(1:j(1))=1; ord=fliplr(ord(kp));
-    ord = [1 2 3 4];
+    ord = [1 2 ]; % ord = [1 2 3 4];
     xs1=xs1(ord); ys1=ys1(ord); lgd1=lgd1(ord); colors1=colors(ord,:);
     styles1=styles(ord); f=fopen([fName1 '.txt'],'w');
     for d=1:nDt, fprintf(f,'%s %f\n',stra{d},scores(p,d)); end; fclose(f);

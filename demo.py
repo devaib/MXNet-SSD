@@ -113,8 +113,8 @@ if __name__ == '__main__':
 
     # customized
     #args.network = 'resnet50'
-    args.network = 'resnet50_customized'
-    #args.network = 'resnet50_two_stream'
+    #args.network = 'resnet50_customized'
+    args.network = 'resnet50_two_stream'
     #args.network = 'resnet50_test'
     #args.network = 'resnet50_two_stream_w_four_layers'
     #imgpath = './data/kitti/data_object_image_2/training/image_2/'
@@ -187,11 +187,11 @@ if __name__ == '__main__':
 
                 args.dir = None
                 args.ext = None
-                args.epoch = 60
+                args.epoch = 8
                 #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
                 #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_6_layers', 'caltech', 'resnet-101-caltech')
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_new10x_customized', 'resnet-50')
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
+                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_new10x_customized', 'resnet-50')
                 args.data_shape = [480, 640]
                 #args.data_shape = [600, 800]
                 #args.data_shape = [720, 960]

@@ -46,7 +46,7 @@ exps = {
   'Expand=125',     [50 inf],  [.65 inf], 0,   .5,  1.25
   'Expand=150',     [50 inf],  [.65 inf], 0,   .5,  1.50 };
 exps=cell2struct(exps',{'name','hr','vr','ar','overlap','filter'});
-exps_ahead= 6;
+exps_ahead= 2;
 % List of algorithms: { name, resize, color, style }
 %  name     - algorithm name (defines data location)
 %  resize   - if true rescale height of each box by 100/128
@@ -58,22 +58,23 @@ algs = {
   'ResNet50-Cal-new', 0, clrs(92, :), '-'
   'ResNet50-Cal-new-customized', 0, clrs(91, :), '-'
   'ResNet50-Cal-new-two-stream', 0, clrs(90, :), '-'
+  'resnet50', 0, clrs(93, :), '-'
 %   'ResNet50-Two-Stream-New', 0, clrs(81, :), '-'
 %   'ResNet50-Two-Stream-720', 0, clrs(80, :), '-'
 %   'ResNet50-Two-Stream-600', 0, clrs(77, :), '-'
 %   'ResNet50-two-stream', 0, clrs(74,:), '-'
 %   'ResNet50-Customized-600', 0, clrs(70,:), '-'
 %   'ResNet50-600',    0, clrs(69,:),  '-'
-  'ACF++', 0, clrs(68,:), '--'
-  'HOG',              1, clrs(2,:),   '--'
-  'SpatialPooling',   0, clrs(40,:),  '-'
-  'TA-CNN',           0, clrs(48,:),  '--'
-  'DeepParts',        0, clrs(50,:),  '--'
-  'Checkerboards',    0, clrs(53,:),  '--'
-  'CCF',              0, clrs(54,:),  '--'
-  'CCF+CF',           0, clrs(54,:),  '-'
-  'CompACT-Deep',     0, clrs(55,:),  '--'
-  'RPN+BF',           0, clrs(58,:),  '-'
+%   'ACF++', 0, clrs(68,:), '--'
+%   'HOG',              1, clrs(2,:),   '--'
+%   'SpatialPooling',   0, clrs(40,:),  '-'
+%   'TA-CNN',           0, clrs(48,:),  '--'
+%   'DeepParts',        0, clrs(50,:),  '--'
+%   'Checkerboards',    0, clrs(53,:),  '--'
+%   'CCF',              0, clrs(54,:),  '--'
+%   'CCF+CF',           0, clrs(54,:),  '-'
+%   'CompACT-Deep',     0, clrs(55,:),  '--'
+%   'RPN+BF',           0, clrs(58,:),  '-'
 };
 algs=cell2struct(algs',{'name','resize','color','style'});
 

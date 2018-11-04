@@ -1,5 +1,5 @@
 function frequency_object_w_different_height()
-    mode = 1; % 0 - show all, 1/2/3/4- show pairwise comparison between layer 1/2/3/4 and gts
+    mode = 0; % 0 - show all, 1/2/3/4- show pairwise comparison between layer 1/2/3/4 and gts
     suffix = '_customized';
     % load gts of validation set
     layer_name = {'first','second','third','fourth'};
@@ -52,25 +52,25 @@ function frequency_object_w_different_height()
     y_dts_customized = [y_dt5; y_dt6; y_dt7; y_dt8];
     assert(isequal(b_gt,b_dt1,b_dt2,b_dt3,b_dt4,b_dt5,b_dt6,b_dt7,b_dt8), 'bin dimension not match');
     bin = b_gt;
-%     if mode == 0
-%         b = bar(bin', [y_dt1; y_dt2; y_dt3; y_dt4; y_gt]', 'grouped');
-%         b(1).FaceColor = [0 0 .8];
-%         b(2).FaceColor = [0 .8 0];
-%         b(3).FaceColor = [.9 .9 0];
-%         b(4).FaceColor = [0 0 0];
-%         b(5).FaceColor = [1 0 0];
-%         set(gcf, 'Position', [100, 500, 1000, 500])
-%         xlim([0 400]);
-%         xlabel('object height');
-%         ylabel('num of object');
-%         legend(b, {'detections from layer1','detections from layer2','detections from layer3',...
-%             'detections from layer4','ground truth'});
-%         title('dts vs gts on each layer');
-%     else
+    if mode == 0
+        b = bar(bin', [y_dt1; y_dt2; y_dt3; y_dt4; y_gt]', 'grouped');
+        b(1).FaceColor = [0 .8 0];
+        b(2).FaceColor = [0 0 .8];
+        b(3).FaceColor = [.9 0 .9];
+        b(4).FaceColor = [.7 .7 0];
+        b(5).FaceColor = [1 0 0];
+        set(gcf, 'Position', [100, 500, 1000, 500])
+        xlim([0 400]);
+        xlabel('object height');
+        ylabel('num of object');
+        legend(b, {'detections from layer1','detections from layer2','detections from layer3',...
+            'detections from layer4','ground truth'});
+        title('dts vs gts on each layer');
+    else
         y_dt = y_dts(mode, :);
         y_dt_customized = y_dts_customized(mode, :);
         % b = bar(bin', [y_dt; y_dt_customized; y_gt]', 'grouped');
-        b = bar(bin', [y_dt_small; y_dt_customized; y_gt]', 'grouped');
+        b = bar(bin', [y_dt; y_dt_customized; y_gt]', 'grouped');
         b(1).FaceColor = [0 0 1];
         b(2).FaceColor = [0 .9 0];
         b(3).FaceColor = [1 0 0];
@@ -78,7 +78,9 @@ function frequency_object_w_different_height()
         xlim([0 400]);
         xlabel('object height');
         ylabel('num of object');
-        legend(b, {sprintf('detections from customized layer%d trained on small objects',mode),sprintf('detections from customized layer%d',mode),'ground truth'});
+        lgd = legend(b, {sprintf('detections from layer%d',mode),sprintf('detections from customized layer%d',mode),'ground truth'});
+        lgd.FontSize = 12;
         title(sprintf('dts from layer%d vs gts', mode));
-%     end
+        set(gcf,'units','points','position',[0,0,650,350]);
+    end
 end
