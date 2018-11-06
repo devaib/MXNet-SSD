@@ -26,7 +26,7 @@ args.train = False
 
 if not args.train:
     # net = symbol_factory.get_symbol(args.network, args.data_shape, num_classes=args.num_classes)
-    net = symbol_factory.get_symbol(args.network, args.data_shape, num_classes=args.num_classes)
+    net = symbol_factory.get_symbol_concat(args.network, args.data_shape, num_classes=args.num_classes)
     if isinstance(args.data_shape, int):
         a = mx.viz.plot_network(net, shape={"data":(1,3,args.data_shape,args.data_shape)}, \
             node_attrs={"shape":'rect', "fixedsize":'false'})
@@ -36,10 +36,21 @@ if not args.train:
 
     filename = "ssd_" + args.network + '_' + str(args.data_shape)
     a.render(osp.join(osp.dirname(__file__), filename))
+
 else:
-    net = symbol_factory.get_symbol_train(args.network, args.data_shape, num_classes=args.num_classes)
+    net = symbol_factory.get_symbol_train_concat(args.network, args.data_shape, num_classes=args.num_classes)
     # print(net.tojson())
     with open("{}_network.txt".format(args.network), "w") as outfile:
         parsed = json.loads(net.tojson())
         json.dump(parsed, outfile, indent=4, sort_keys=True)
+
+    if isinstance(args.data_shape, int):
+        a = mx.viz.plot_network(net, shape=None, \
+            node_attrs={"shape":'rect', "fixedsize":'false'})
+    elif isinstance(args.data_shape, tuple):
+        a = mx.viz.plot_network(net, shape=None, \
+            node_attrs={"shape":'rect', "fixedsize":'false'})
+
+    filename = "ssd_" + args.network + '_' + str(args.data_shape) + '_train'
+    a.render(osp.join(osp.dirname(__file__), filename))
 

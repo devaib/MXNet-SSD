@@ -97,13 +97,23 @@ class DetRecordIter(mx.io.DataIter):
             self.max_objects = (first_label.size - self.label_start) // self.label_object_width
             self.label_shape = (self.batch_size, self.max_objects, self.label_object_width)
             self.label_end = self.label_start + self.max_objects * self.label_object_width
-            self.provide_label = [('label', self.label_shape)]
+            #self.provide_label = [('label', self.label_shape)]
+            self.provide_label = [('label', self.label_shape), ('label2', self.label_shape)]
 
         # modify label
         label = self._batch.label[0].asnumpy()
         label = label[:, self.label_start:self.label_end].reshape(
             (self.batch_size, self.max_objects, self.label_object_width))
-        self._batch.label = [mx.nd.array(label)]
+
+        # central area label conversion
+        label2 = label
+        #get central area from label2
+        #y_min = (y_min - 0.25) * 2
+        #y_max = 1 - (0.75 - y_max) * 2
+
+
+        #self._batch.label = [mx.nd.array(label)]
+        self._batch.label = [mx.nd.array(label), mx.nd.array(label2)]
         return True
 
 class DetIter(mx.io.DataIter):

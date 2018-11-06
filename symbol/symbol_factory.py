@@ -134,13 +134,13 @@ def get_config(network, data_shape, **kwargs):
     elif network == 'resnet50_two_stream':
         num_layers = 50
         image_shape = '3,224,224'
-        network = 'resnetsub'
-        from_layers = ['_plus28', '_plus15', '', '']  # 31-(15-12)=28
+        network = 'resnetsub_concat'
+        from_layers = ['pad', '_plus15', '', '']  # 31-(15-12)=28 first layer
         num_filters = [-1, -1, 512, 256]
         strides = [-1, -1, 2, 2]
         pads = [-1, -1, 1, 1]
         sizes = [[.03, .0548], [.1, .1732], [.3, .3873], [.5, .5916]]
-        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
+        ratios = [[1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3]]
         normalizations = -1
         steps = []
         return locals()
@@ -362,6 +362,11 @@ def get_config(network, data_shape, **kwargs):
         msg = 'No configuration found for %s with data_shape %d' % (network, data_shape)
         raise NotImplementedError(msg)
 
+def get_symbol_train_concat(network, data_shape, **kwargs):
+    config = get_config(network, data_shape, **kwargs).copy()
+    config.update(kwargs)
+    return symbol_builder.get_symbol_train_concat(**config)
+
 def get_symbol_train(network, data_shape, **kwargs):
     """Wrapper for get symbol for train
 
@@ -399,6 +404,14 @@ def get_symbol(network, data_shape, **kwargs):
     config = get_config(network, data_shape, **kwargs).copy()
     config.update(kwargs)
     return symbol_builder.get_symbol(**config)
+
+def get_symbol_concat(network, data_shape, **kwargs):
+    if network.startswith('legacy'):
+        logging.warn('Using legacy model.')
+        return symbol_builder.import_module(network).get_symbol(**kwargs)
+    config = get_config(network, data_shape, **kwargs).copy()
+    config.update(kwargs)
+    return symbol_builder.get_symbol_concat(**config)
 
 # for debug
 def get_symbol_m(network, data_shape, **kwargs):
