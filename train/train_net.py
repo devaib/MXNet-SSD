@@ -13,14 +13,37 @@ from symbol.symbol_factory import get_symbol_train, get_symbol_train_concat
 
 
 def convert_pretrained_concat(name, args):
-    pretrained_resnet = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech_new_all', 'resnet-50')
-    epoch_resnet = 1
-    sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_resnet, epoch_resnet)
+    pretrained_resnet = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50')
+    epoch_resnet = 0
+    sym_resnet, arg_params_resnet, aux_params_resnet = mx.model.load_checkpoint(pretrained_resnet, epoch_resnet)
+
     pretrained_two_stream_concat = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech-test', 'resnet-50')
     epoch_test = 1
-    sym_customized, arg_params_customized, aux_params_customized = mx.model.load_checkpoint(pretrained_two_stream_concat, epoch_test)
+    sym_ts_concat, arg_params_ts_concat, aux_params_ts_concat = mx.model.load_checkpoint(pretrained_two_stream_concat, epoch_test)
 
-    new_arg_params = {}
+    for k in list(arg_params_ts_concat.keys()):
+        if k.startswith('sub_'):
+            k_origin = k[4:]
+            if k_origin in list(arg_params_resnet.keys()):
+                assert arg_params_ts_concat[k].shape == arg_params_resnet[k_origin].shape, 'arg params shape mismatch'
+                arg_params_ts_concat[k] = arg_params_resnet[k_origin]
+        else:
+            if k in list(arg_params_resnet.keys()):
+                assert arg_params_ts_concat[k].shape == arg_params_resnet[k].shape, 'arg params shape mismatch'
+                arg_params_ts_concat[k] = arg_params_resnet[k]
+
+    for k in list(aux_params_ts_concat.keys()):
+        if k.startswith('sub_'):
+            k_origin = k[4:]
+            if k_origin in list(aux_params_resnet.keys()):
+                assert aux_params_ts_concat[k].shape == aux_params_resnet[k_origin].shape, 'aux params shape mismatch'
+                aux_params_ts_concat[k] = aux_params_resnet[k_origin]
+        else:
+            if k in list(aux_params_resnet.keys()):
+                assert aux_params_ts_concat[k].shape == aux_params_resnet[k].shape, 'arg params shape mismatch'
+                aux_params_ts_concat[k] = aux_params_resnet[k]
+
+    return arg_params_ts_concat, aux_params_ts_concat
 
 def convert_pretrained(name, args):
     """
@@ -447,7 +470,7 @@ def train_net(net, train_path, num_classes, batch_size,
         if convert_model:
             args = convert_pretrained(pretrained, args)
         if convert_model_concat:
-            args = convert_pretrained_concat(pretrained, args)
+            args, auxs = convert_pretrained_concat(pretrained, args)
     else:
         logger.info("Experimental: start training from scratch with {}"
             .format(ctx_str))

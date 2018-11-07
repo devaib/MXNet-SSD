@@ -82,7 +82,8 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
             nms_thresh=nms_thresh, force_suppress=force_nms)
     if not 'label' in net.list_arguments():
         label = mx.sym.Variable(name='label')
-        net = mx.sym.Group([net, label])
+        label2 = mx.sym.Variable(name='label2')
+        net = mx.sym.Group([net, label, label2])
 
     # init module
     #mod = mx.mod.Module(net, label_names=('label',), logger=logger, context=ctx,

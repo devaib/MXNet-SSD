@@ -132,7 +132,8 @@ def resnetsub_concat(units, num_stages, filter_list, num_classes, image_shape, b
             body_sub2 = residual_unit(body_sub2, filter_list[i + 1], (1, 1), True,
                                       name=prefix + 'stage%d_unit%d' % (i + 1, j + 2),
                                       bottle_neck=bottle_neck, workspace=workspace, memonger=memonger)
-    # padding test
+
+    # padding test (truncated in concat training)
     conv_1x1 = conv_act_layer(body_sub2, 'multi_feat_pad_1_conv_1x1',
                               256, kernel=(1, 1), pad=(0, 0), stride=(1, 1), act_type='relu')
     conv_3x3 = conv_act_layer(conv_1x1, 'multi_feat_pad_2_conv_3x3',
