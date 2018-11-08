@@ -10,6 +10,8 @@ from train.metric import MultiBoxMetric
 from evaluate.eval_metric import MApMetric, VOC07MApMetric
 from config.config import cfg
 from symbol.symbol_factory import get_symbol_train, get_symbol_train_concat
+from dataset.caltech_pedestrian import CaltechPedestrian
+from tools.prepare_dataset import load_caltech
 
 
 def convert_pretrained_concat(name, args):
@@ -406,11 +408,12 @@ def train_net(net, train_path, num_classes, batch_size,
         logger.addHandler(fh)
 
     # check args
+    num_channel = 6
     if isinstance(data_shape, int):
-        data_shape = (3, data_shape, data_shape)
+        data_shape = (num_channel, data_shape, data_shape)
     if isinstance(data_shape, list):
-        data_shape = (3, data_shape[0], data_shape[1])
-    assert len(data_shape) == 3 and data_shape[0] == 3
+        data_shape = (num_channel, data_shape[0], data_shape[1])
+    #assert len(data_shape) == 3 and data_shape[0] == 3
     if prefix.endswith('_'):
         prefix += '_' + str(data_shape[1])
 
@@ -418,12 +421,29 @@ def train_net(net, train_path, num_classes, batch_size,
         mean_pixels = [mean_pixels, mean_pixels, mean_pixels]
     assert len(mean_pixels) == 3, "must provide all RGB mean values"
 
-    train_iter = DetRecordIter(train_path, batch_size, data_shape, mean_pixels=mean_pixels,
-        label_pad_width=label_pad_width, path_imglist=train_list, **cfg.train)
+    #train_iter = DetRecordIter(train_path, batch_size, data_shape, mean_pixels=mean_pixels,
+    #    label_pad_width=label_pad_width, path_imglist=train_list, **cfg.train)
+
+    # load imdb
+    curr_path = os.path.abspath(os.path.dirname(__file__))
+    imdb = load_caltech(image_set='train',
+                        caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
+                        shuffle=True)
+    train_iter = DetIter(imdb, batch_size, (data_shape[1], data_shape[2]), \
+                         mean_pixels=[128, 128, 128], rand_samplers=[], \
+                         rand_mirror=False, shuffle=False, rand_seed=None, \
+                         is_train=True, max_crop_trial=50)
 
     if val_path:
-        val_iter = DetRecordIter(val_path, batch_size, data_shape, mean_pixels=mean_pixels,
-            label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
+        #val_iter = DetRecordIter(val_path, batch_size, data_shape, mean_pixels=mean_pixels,
+        #    label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
+        imdb = load_caltech(image_set='val',
+                            caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
+                            shuffle=True)
+        val_iter = DetIter(imdb, batch_size, data_shape, \
+                           mean_pixels=[128, 128, 128], rand_samplers=[], \
+                           rand_mirror=False, shuffle=False, rand_seed=None, \
+                           is_train=False, max_crop_trial=50)
     else:
         val_iter = None
 

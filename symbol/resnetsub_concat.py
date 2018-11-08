@@ -87,12 +87,13 @@ def resnetsub_concat(units, num_stages, filter_list, num_classes, image_shape, b
     data = mx.sym.BatchNorm(data=data, fix_gamma=True, eps=2e-5, momentum=bn_mom, name='bn_data')
     (nchannel, height, width) = image_shape
 
+    data = mx.sym.split(data=data, axis=1, num_outputs=2, name='split')
     # sub network 1
     if height <= 32:            # such as cifar10
-        body = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
+        body = mx.sym.Convolution(data=data[0], num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
                                   no_bias=True, name="conv0", workspace=workspace)
     else:                       # often expected to be 224 such as imagenet
-        body = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
+        body = mx.sym.Convolution(data=data[0], num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
                                   no_bias=True, name="conv0", workspace=workspace)
         body = mx.sym.BatchNorm(data=body, fix_gamma=False, eps=2e-5, momentum=bn_mom, name='bn0')
         body = mx.sym.Activation(data=body, act_type='relu', name='relu0')
@@ -115,10 +116,10 @@ def resnetsub_concat(units, num_stages, filter_list, num_classes, image_shape, b
     # sub network 2
     prefix = 'sub_'             # differentiate sub-networks
     if height <= 32:            # such as cifar10
-        body2 = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
+        body2 = mx.sym.Convolution(data=data[1], num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
                                   no_bias=True, name=prefix + "conv0", workspace=workspace)
     else:                       # often expected to be 224 such as imagenet
-        body2 = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
+        body2 = mx.sym.Convolution(data=data[1], num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
                                   no_bias=True, name=prefix + "conv0", workspace=workspace)
         body2 = mx.sym.BatchNorm(data=body2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn0')
         body2 = mx.sym.Activation(data=body2, act_type='relu', name=prefix + 'relu0')
