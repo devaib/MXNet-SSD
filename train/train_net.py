@@ -5,12 +5,47 @@ import sys
 import os
 import importlib
 import re
-from dataset.iterator import DetRecordIter
+from dataset.iterator import DetRecordIter, DetIter
 from train.metric import MultiBoxMetric
 from evaluate.eval_metric import MApMetric, VOC07MApMetric
 from config.config import cfg
-from symbol.symbol_factory import get_symbol_train
+from symbol.symbol_factory import get_symbol_train, get_symbol_train_concat
+from dataset.caltech_pedestrian import CaltechPedestrian
+from tools.prepare_dataset import load_caltech
 
+
+def convert_pretrained_concat(name, args):
+    pretrained_resnet = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50')
+    epoch_resnet = 0
+    sym_resnet, arg_params_resnet, aux_params_resnet = mx.model.load_checkpoint(pretrained_resnet, epoch_resnet)
+
+    pretrained_two_stream_concat = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech-test', 'resnet-50')
+    epoch_test = 1
+    sym_ts_concat, arg_params_ts_concat, aux_params_ts_concat = mx.model.load_checkpoint(pretrained_two_stream_concat, epoch_test)
+
+    for k in list(arg_params_ts_concat.keys()):
+        if k.startswith('sub_'):
+            k_origin = k[4:]
+            if k_origin in list(arg_params_resnet.keys()):
+                assert arg_params_ts_concat[k].shape == arg_params_resnet[k_origin].shape, 'arg params shape mismatch'
+                arg_params_ts_concat[k] = arg_params_resnet[k_origin]
+        else:
+            if k in list(arg_params_resnet.keys()):
+                assert arg_params_ts_concat[k].shape == arg_params_resnet[k].shape, 'arg params shape mismatch'
+                arg_params_ts_concat[k] = arg_params_resnet[k]
+
+    for k in list(aux_params_ts_concat.keys()):
+        if k.startswith('sub_'):
+            k_origin = k[4:]
+            if k_origin in list(aux_params_resnet.keys()):
+                assert aux_params_ts_concat[k].shape == aux_params_resnet[k_origin].shape, 'aux params shape mismatch'
+                aux_params_ts_concat[k] = aux_params_resnet[k_origin]
+        else:
+            if k in list(aux_params_resnet.keys()):
+                assert aux_params_ts_concat[k].shape == aux_params_resnet[k].shape, 'arg params shape mismatch'
+                aux_params_ts_concat[k] = aux_params_resnet[k]
+
+    return arg_params_ts_concat, aux_params_ts_concat
 
 def convert_pretrained(name, args):
     """
@@ -350,11 +385,19 @@ def train_net(net, train_path, num_classes, batch_size,
     """
     if net == 'resnet101_two_stream' or net == 'resnetsub101_test' or \
             net == 'resnetsub101_one_shared' or net == 'resnetsub101_two_shared' or \
-            net == 'resnet50_two_stream' or net == 'resnet50_two_stream_w_four_layers' \
+            net == 'resnet50_two_stream_w_four_layers' \
             and resume == -1 and pretrained is not False:
         convert_model = True
     else:
         convert_model = False
+
+    if net == 'resnet50_two_stream' \
+            and resume == -1 \
+            and pretrained is not False:
+        convert_model_concat = True
+    else:
+        convert_model_concat = False
+
 
     # set up logger
     logging.basicConfig()
@@ -365,11 +408,12 @@ def train_net(net, train_path, num_classes, batch_size,
         logger.addHandler(fh)
 
     # check args
+    num_channel = 6
     if isinstance(data_shape, int):
-        data_shape = (3, data_shape, data_shape)
+        data_shape = (num_channel, data_shape, data_shape)
     if isinstance(data_shape, list):
-        data_shape = (3, data_shape[0], data_shape[1])
-    assert len(data_shape) == 3 and data_shape[0] == 3
+        data_shape = (num_channel, data_shape[0], data_shape[1])
+    #assert len(data_shape) == 3 and data_shape[0] == 3
     if prefix.endswith('_'):
         prefix += '_' + str(data_shape[1])
 
@@ -377,18 +421,36 @@ def train_net(net, train_path, num_classes, batch_size,
         mean_pixels = [mean_pixels, mean_pixels, mean_pixels]
     assert len(mean_pixels) == 3, "must provide all RGB mean values"
 
-    train_iter = DetRecordIter(train_path, batch_size, data_shape, mean_pixels=mean_pixels,
-        label_pad_width=label_pad_width, path_imglist=train_list, **cfg.train)
+    #train_iter = DetRecordIter(train_path, batch_size, data_shape, mean_pixels=mean_pixels,
+    #    label_pad_width=label_pad_width, path_imglist=train_list, **cfg.train)
+
+    # load imdb
+    curr_path = os.path.abspath(os.path.dirname(__file__))
+    imdb = load_caltech(image_set='train',
+                        caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
+                        shuffle=True)
+    train_iter = DetIter(imdb, batch_size, (data_shape[1], data_shape[2]), \
+                         mean_pixels=[128, 128, 128], rand_samplers=[], \
+                         rand_mirror=False, shuffle=False, rand_seed=None, \
+                         is_train=True, max_crop_trial=50)
 
     if val_path:
-        val_iter = DetRecordIter(val_path, batch_size, data_shape, mean_pixels=mean_pixels,
-            label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
+        #val_iter = DetRecordIter(val_path, batch_size, data_shape, mean_pixels=mean_pixels,
+        #    label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
+        imdb = load_caltech(image_set='val',
+                            caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
+                            shuffle=False)
+        val_iter = DetIter(imdb, batch_size, (data_shape[1], data_shape[2]), \
+                           mean_pixels=[128, 128, 128], rand_samplers=[], \
+                           rand_mirror=False, shuffle=False, rand_seed=None, \
+                           is_train=False, max_crop_trial=50)
     else:
         val_iter = None
 
     # load symbol
-    net = get_symbol_train(net, data_shape[1], num_classes=num_classes,
-        nms_thresh=nms_thresh, force_suppress=force_suppress, nms_topk=nms_topk)
+    #net = get_symbol_train(net, data_shape[1], num_classes=num_classes,
+    net = get_symbol_train_concat(net, data_shape[1], num_classes=num_classes,
+                           nms_thresh=nms_thresh, force_suppress=force_suppress, nms_topk=nms_topk)
 
     # define layers with fixed weight/bias
     if freeze_layer_pattern.strip():
@@ -427,6 +489,8 @@ def train_net(net, train_path, num_classes, batch_size,
         _, args, auxs = mx.model.load_checkpoint(pretrained, epoch)
         if convert_model:
             args = convert_pretrained(pretrained, args)
+        if convert_model_concat:
+            args, auxs = convert_pretrained_concat(pretrained, args)
     else:
         logger.info("Experimental: start training from scratch with {}"
             .format(ctx_str))
@@ -439,7 +503,8 @@ def train_net(net, train_path, num_classes, batch_size,
         logger.info("Freezed parameters: [" + ','.join(fixed_param_names) + ']')
 
     # init training module
-    mod = mx.mod.Module(net, label_names=('label',), logger=logger, context=ctx,
+    #mod = mx.mod.Module(net, label_names=('label',), logger=logger, context=ctx,
+    mod = mx.mod.Module(net, label_names=('label', 'label2'), logger=logger, context=ctx,
                         fixed_param_names=fixed_param_names)
 
     # fit parameters
@@ -457,9 +522,11 @@ def train_net(net, train_path, num_classes, batch_size,
 
     # run fit net, every n epochs we run evaluation network to get mAP
     if voc07_metric:
-        valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
+        #valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
+        valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[3, 7])
     else:
-        valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
+        #valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
+        valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[3, 7])
 
     # messager is activated in base_module
     mod.fit(train_iter,
