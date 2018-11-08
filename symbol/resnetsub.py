@@ -1,3 +1,4 @@
+
 """
 Resnet with 2 sub networks
 """
@@ -138,7 +139,6 @@ def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_n
     flat = mx.symbol.Concat(flat1, flat2, dim=0, name='concat')
 
     fc = mx.symbol.FullyConnected(data=flat, num_hidden=num_classes, name='fc')
-
 
     return mx.symbol.SoftmaxOutput(data=fc, name='softmax')
 

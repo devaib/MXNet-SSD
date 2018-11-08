@@ -31,7 +31,10 @@ class MApMetric(mx.metric.EvalMetric):
         self.ovp_thresh = ovp_thresh
         self.use_difficult = use_difficult
         self.class_names = class_names
-        self.pred_idx = int(pred_idx)
+        if type(pred_idx) == int:
+            self.pred_idx = [pred_idx]
+        else:
+            self.pred_idx = pred_idx
 
     def reset(self):
         """Clear the internal statistics to initial state."""
@@ -107,73 +110,74 @@ class MApMetric(mx.metric.EvalMetric):
             return ious
 
         # independant execution for each image
-        for i in range(labels[0].shape[0]):
-            # get as numpy arrays
-            label = labels[0][i].asnumpy()
-            pred = preds[self.pred_idx][i].asnumpy()
-            # calculate for each class
-            while (pred.shape[0] > 0):
-                cid = int(pred[0, 0])
-                indices = np.where(pred[:, 0].astype(int) == cid)[0]
-                if cid < 0:
+        for label_index in range(len(labels)): # traverse over labels
+            for i in range(labels[label_index].shape[0]):
+                # get as numpy arrays
+                label = labels[label_index][i].asnumpy()
+                pred = preds[self.pred_idx[label_index]][i].asnumpy()
+                # calculate for each class
+                while (pred.shape[0] > 0):
+                    cid = int(pred[0, 0])
+                    indices = np.where(pred[:, 0].astype(int) == cid)[0]
+                    if cid < 0:
+                        pred = np.delete(pred, indices, axis=0)
+                        continue
+                    dets = pred[indices]
                     pred = np.delete(pred, indices, axis=0)
-                    continue
-                dets = pred[indices]
-                pred = np.delete(pred, indices, axis=0)
-                # sort by score, desceding
-                dets = dets[dets[:,1].argsort()[::-1]]
-                records = np.hstack((dets[:, 1][:, np.newaxis], np.zeros((dets.shape[0], 1))))
-                # ground-truths
-                label_indices = np.where(label[:, 0].astype(int) == cid)[0]
-                gts = label[label_indices, :]
-                label = np.delete(label, label_indices, axis=0)
-                if gts.size > 0:
-                    found = [False] * gts.shape[0]
-                    for j in range(dets.shape[0]):
-                        # compute overlaps
-                        ious = iou(dets[j, 2:], gts[:, 1:5])
-                        ovargmax = np.argmax(ious)
-                        ovmax = ious[ovargmax]
-                        if ovmax > self.ovp_thresh:
-                            if (not self.use_difficult and
-                                gts.shape[1] >= 6 and
-                                gts[ovargmax, 5] > 0):
-                                pass
-                            else:
-                                if not found[ovargmax]:
-                                    records[j, -1] = 1  # tp
-                                    found[ovargmax] = True
+                    # sort by score, desceding
+                    dets = dets[dets[:,1].argsort()[::-1]]
+                    records = np.hstack((dets[:, 1][:, np.newaxis], np.zeros((dets.shape[0], 1))))
+                    # ground-truths
+                    label_indices = np.where(label[:, 0].astype(int) == cid)[0]
+                    gts = label[label_indices, :]
+                    label = np.delete(label, label_indices, axis=0)
+                    if gts.size > 0:
+                        found = [False] * gts.shape[0]
+                        for j in range(dets.shape[0]):
+                            # compute overlaps
+                            ious = iou(dets[j, 2:], gts[:, 1:5])
+                            ovargmax = np.argmax(ious)
+                            ovmax = ious[ovargmax]
+                            if ovmax > self.ovp_thresh:
+                                if (not self.use_difficult and
+                                    gts.shape[1] >= 6 and
+                                    gts[ovargmax, 5] > 0):
+                                    pass
                                 else:
-                                    # duplicate
-                                    records[j, -1] = 2  # fp
-                        else:
-                            records[j, -1] = 2 # fp
-                else:
-                    # no gt, mark all fp
-                    records[:, -1] = 2
+                                    if not found[ovargmax]:
+                                        records[j, -1] = 1  # tp
+                                        found[ovargmax] = True
+                                    else:
+                                        # duplicate
+                                        records[j, -1] = 2  # fp
+                            else:
+                                records[j, -1] = 2 # fp
+                    else:
+                        # no gt, mark all fp
+                        records[:, -1] = 2
 
-                # ground truth count
-                if (not self.use_difficult and gts.shape[1] >= 6):
-                    gt_count = np.sum(gts[:, 5] < 1)
-                else:
-                    gt_count = gts.shape[0]
+                    # ground truth count
+                    if (not self.use_difficult and gts.shape[1] >= 6):
+                        gt_count = np.sum(gts[:, 5] < 1)
+                    else:
+                        gt_count = gts.shape[0]
 
-                # now we push records to buffer
-                # first column: score, second column: tp/fp
-                # 0: not set(matched to difficult or something), 1: tp, 2: fp
-                records = records[np.where(records[:, -1] > 0)[0], :]
-                if records.size > 0:
-                    self._insert(cid, records, gt_count)
+                    # now we push records to buffer
+                    # first column: score, second column: tp/fp
+                    # 0: not set(matched to difficult or something), 1: tp, 2: fp
+                    records = records[np.where(records[:, -1] > 0)[0], :]
+                    if records.size > 0:
+                        self._insert(cid, records, gt_count)
 
-            # add missing class if not present in prediction
-            while (label.shape[0] > 0):
-                cid = int(label[0, 0])
-                label_indices = np.where(label[:, 0].astype(int) == cid)[0]
-                label = np.delete(label, label_indices, axis=0)
-                if cid < 0:
-                    continue
-                gt_count = label_indices.size
-                self._insert(cid, np.array([[0, 0]]), gt_count)
+                # add missing class if not present in prediction
+                while (label.shape[0] > 0):
+                    cid = int(label[0, 0])
+                    label_indices = np.where(label[:, 0].astype(int) == cid)[0]
+                    label = np.delete(label, label_indices, axis=0)
+                    if cid < 0:
+                        continue
+                    gt_count = label_indices.size
+                    self._insert(cid, np.array([[0, 0]]), gt_count)
 
     def _update(self):
         """ update num_inst and sum_metric """

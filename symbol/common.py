@@ -283,3 +283,152 @@ def multibox_layer(from_layers, num_classes, sizes=[.2, .95],
         num_args=len(anchor_layers), dim=1)
     anchor_boxes = mx.symbol.Reshape(data=anchor_boxes, shape=(0, -1, 4), name="multibox_anchors")
     return [loc_preds, cls_preds, anchor_boxes]
+
+def multibox_layer2(from_layers, num_classes, sizes=[.2, .95],
+                    ratios=[1], normalization=-1, num_channels=[],
+                    clip=False, interm_layer=0, steps=[]):
+    assert len(from_layers) > 0, "from_layers must not be empty list"
+    assert num_classes > 0, \
+        "num_classes {} must be larger than 0".format(num_classes)
+
+    assert len(ratios) > 0, "aspect ratios must not be empty list"
+    if not isinstance(ratios[0], list):
+        # provided only one ratio list, broadcast to all from_layers
+        ratios = [ratios] * len(from_layers)
+    assert len(ratios) == len(from_layers), \
+        "ratios and from_layers must have same length"
+
+    assert len(sizes) > 0, "sizes must not be empty list"
+    if len(sizes) == 2 and not isinstance(sizes[0], list):
+        # provided size range, we need to compute the sizes for each layer
+         assert sizes[0] > 0 and sizes[0] < 1
+         assert sizes[1] > 0 and sizes[1] < 1 and sizes[1] > sizes[0]
+         tmp = np.linspace(sizes[0], sizes[1], num=(len(from_layers)-1))
+         min_sizes = [start_offset] + tmp.tolist()
+         max_sizes = tmp.tolist() + [tmp[-1]+start_offset]
+         sizes = zip(min_sizes, max_sizes)
+    assert len(sizes) == len(from_layers), \
+        "sizes and from_layers must have same length"
+
+    if not isinstance(normalization, list):
+        normalization = [normalization] * len(from_layers)
+    assert len(normalization) == len(from_layers)
+
+    assert sum(x > 0 for x in normalization) <= len(num_channels), \
+        "must provide number of channels for each normalized layer"
+
+    if steps:
+        assert len(steps) == len(from_layers), "provide steps for all layers or leave empty"
+
+    loc_pred_layers = []
+    cls_pred_layers = []
+    anchor_layers = []
+    num_classes += 1 # always use background as label 0
+
+    for k, from_layer in enumerate(from_layers):
+        from_name = from_layer.name
+        # normalize
+        if normalization[k] > 0:
+            from_layer = mx.symbol.L2Normalization(data=from_layer, \
+                mode="channel", name="{}_norm".format(from_name))
+            scale = mx.symbol.Variable(name="{}_scale".format(from_name),
+                shape=(1, num_channels.pop(0), 1, 1),
+                init=mx.init.Constant(normalization[k]),
+                attr={'__wd_mult__': '0.1'})
+            from_layer = mx.symbol.broadcast_mul(lhs=scale, rhs=from_layer)
+        if interm_layer > 0:
+            from_layer = mx.symbol.Convolution(data=from_layer, kernel=(3,3), \
+                stride=(1,1), pad=(1,1), num_filter=interm_layer, \
+                name="{}_inter_conv".format(from_name))
+            from_layer = mx.symbol.Activation(data=from_layer, act_type="relu", \
+                name="{}_inter_relu".format(from_name))
+
+        # estimate number of anchors per location
+        # here I follow the original version in caffe
+        # TODO: better way to shape the anchors??
+        size = sizes[k]
+        assert len(size) > 0, "must provide at least one size"
+        size_str = "(" + ",".join([str(x) for x in size]) + ")"
+        ratio = ratios[k]
+        assert len(ratio) > 0, "must provide at least one ratio"
+        ratio_str = "(" + ",".join([str(x) for x in ratio]) + ")"
+        num_anchors = len(size) -1 + len(ratio)
+
+        # create location prediction layer
+        num_loc_pred = num_anchors * 4
+        bias = mx.symbol.Variable(name="{}_loc_pred_conv_bias".format(from_name),
+            init=mx.init.Constant(0.0), attr={'__lr_mult__': '2.0'})
+        loc_pred = mx.symbol.Convolution(data=from_layer, bias=bias, kernel=(3,3), \
+            stride=(1,1), pad=(1,1), num_filter=num_loc_pred, \
+            name="{}_loc_pred_conv".format(from_name))
+        loc_pred = mx.symbol.transpose(loc_pred, axes=(0,2,3,1))
+        loc_pred = mx.symbol.Flatten(data=loc_pred)
+        loc_pred_layers.append(loc_pred)
+
+        # create class prediction layer
+        num_cls_pred = num_anchors * num_classes
+        bias = mx.symbol.Variable(name="{}_cls_pred_conv_bias".format(from_name),
+            init=mx.init.Constant(0.0), attr={'__lr_mult__': '2.0'})
+        cls_pred = mx.symbol.Convolution(data=from_layer, bias=bias, kernel=(3,3), \
+            stride=(1,1), pad=(1,1), num_filter=num_cls_pred, \
+            name="{}_cls_pred_conv".format(from_name))
+        cls_pred = mx.symbol.transpose(cls_pred, axes=(0,2,3,1))
+        cls_pred = mx.symbol.Flatten(data=cls_pred)
+        cls_pred_layers.append(cls_pred)
+
+        # create anchor generation layer
+        if steps:
+            step = (steps[k], steps[k])
+        else:
+            step = '(-1.0, -1.0)'
+        anchors = mx.contrib.symbol.MultiBoxPrior(from_layer, sizes=size_str, ratios=ratio_str, \
+            clip=clip, name="{}_anchors2".format(from_name), steps=step)
+        anchors = mx.symbol.Flatten(data=anchors)
+        anchor_layers.append(anchors)
+
+    loc_preds = mx.symbol.Concat(*loc_pred_layers, num_args=len(loc_pred_layers), \
+        dim=1, name="multibox_loc_pred2")
+    cls_preds = mx.symbol.Concat(*cls_pred_layers, num_args=len(cls_pred_layers), \
+        dim=1)
+    cls_preds = mx.symbol.Reshape(data=cls_preds, shape=(0, -1, num_classes))
+    cls_preds = mx.symbol.transpose(cls_preds, axes=(0, 2, 1), name="multibox_cls_pred2")
+    anchor_boxes = mx.symbol.Concat(*anchor_layers, \
+        num_args=len(anchor_layers), dim=1)
+    anchor_boxes = mx.symbol.Reshape(data=anchor_boxes, shape=(0, -1, 4), name="multibox_anchors2")
+    return [loc_preds, cls_preds, anchor_boxes]
+
+
+def multi_layer_feature_concat(body, from_layers, num_filters, strides, pads, min_filter=128, f_layers=[], stream=''):
+    """
+    f_layers:   list
+        override from_layers
+    stream:     str
+        name of the stream
+    """
+    # arguments check
+    assert len(from_layers) > 0
+    assert isinstance(from_layers[0], str) and len(from_layers[0].strip()) > 0
+    assert len(from_layers) == len(num_filters) == len(strides) == len(pads)
+    assert len(f_layers) > 0
+    from_layers = f_layers
+
+    internals = body.get_internals()
+    layers = []
+    for k, params in enumerate(zip(from_layers, num_filters, strides, pads)):
+        from_layer, num_filter, s, p = params
+        if from_layer.strip():
+            # extract from base network
+            layer = internals[from_layer.strip() + '_output']
+            layers.append(layer)
+        else:
+            # attach from last feature layer
+            assert len(layers) > 0
+            assert num_filter > 0
+            layer = layers[-1]
+            num_1x1 = max(min_filter, num_filter // 2)
+            conv_1x1 = conv_act_layer(layer, 'multi_feat_{}_conv_1x1_{}'.format(k, stream),
+                num_1x1, kernel=(1, 1), pad=(0, 0), stride=(1, 1), act_type='relu')
+            conv_3x3 = conv_act_layer(conv_1x1, 'multi_feat_{}_conv_3x3_{}'.format(k, stream),
+                num_filter, kernel=(3, 3), pad=(p, p), stride=(s, s), act_type='relu')
+            layers.append(conv_3x3)
+    return layers

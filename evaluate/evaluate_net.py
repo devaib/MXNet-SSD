@@ -8,7 +8,7 @@ from dataset.iterator import DetRecordIter
 from config.config import cfg
 from evaluate.eval_metric import MApMetric, VOC07MApMetric
 import logging
-from symbol.symbol_factory import get_symbol
+from symbol.symbol_factory import get_symbol, get_symbol_concat
 
 def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
                  model_prefix, epoch, ctx=mx.cpu(), batch_size=1,
@@ -77,22 +77,27 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
     if net is None:
         net = load_net
     else:
-        net = get_symbol(net, data_shape[1], num_classes=num_classes,
+        #net = get_symbol(net, data_shape[1], num_classes=num_classes,
+        net = get_symbol_concat(net, data_shape[1], num_classes=num_classes,
             nms_thresh=nms_thresh, force_suppress=force_nms)
     if not 'label' in net.list_arguments():
         label = mx.sym.Variable(name='label')
-        net = mx.sym.Group([net, label])
+        label2 = mx.sym.Variable(name='label2')
+        net = mx.sym.Group([net, label, label2])
 
     # init module
-    mod = mx.mod.Module(net, label_names=('label',), logger=logger, context=ctx,
+    #mod = mx.mod.Module(net, label_names=('label',), logger=logger, context=ctx,
+    mod = mx.mod.Module(net, label_names=('label', 'label2'), logger=logger, context=ctx,
         fixed_param_names=net.list_arguments())
     mod.bind(data_shapes=eval_iter.provide_data, label_shapes=eval_iter.provide_label)
     mod.set_params(args, auxs, allow_missing=False, force_init=True)
 
     if voc07_metric:
-        metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names)
+        #metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=1)
+        metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[1, 2])
     else:
-        metric = MApMetric(ovp_thresh, use_difficult, class_names)
+        #metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=1)
+        metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[1, 2])
 
     # run evaluation
     if not use_second_network:

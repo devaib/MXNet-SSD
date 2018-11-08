@@ -2,6 +2,7 @@
 Resnet with 2 sub networks
 """
 import mxnet as mx
+from common import conv_act_layer
 
 def residual_unit(data, num_filter, stride, dim_match, name, bottle_neck=True, bn_mom=0.9, workspace=256, memonger=False):
     """Return ResNet Unit symbol for building ResNet
@@ -62,7 +63,7 @@ def residual_unit(data, num_filter, stride, dim_match, name, bottle_neck=True, b
             shortcut._set_attr(mirror_stage='True')
         return conv2 + shortcut
 
-def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_neck=True, bn_mom=0.9, workspace=256, memonger=False):
+def resnetsub_concat(units, num_stages, filter_list, num_classes, image_shape, bottle_neck=True, bn_mom=0.9, workspace=256, memonger=False):
     """Return Resnetsub symbol of
     Parameters
     ----------
@@ -86,12 +87,13 @@ def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_n
     data = mx.sym.BatchNorm(data=data, fix_gamma=True, eps=2e-5, momentum=bn_mom, name='bn_data')
     (nchannel, height, width) = image_shape
 
+    data = mx.sym.split(data=data, axis=1, num_outputs=2, name='split')
     # sub network 1
     if height <= 32:            # such as cifar10
-        body = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
+        body = mx.sym.Convolution(data=data[0], num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
                                   no_bias=True, name="conv0", workspace=workspace)
     else:                       # often expected to be 224 such as imagenet
-        body = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
+        body = mx.sym.Convolution(data=data[0], num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
                                   no_bias=True, name="conv0", workspace=workspace)
         body = mx.sym.BatchNorm(data=body, fix_gamma=False, eps=2e-5, momentum=bn_mom, name='bn0')
         body = mx.sym.Activation(data=body, act_type='relu', name='relu0')
@@ -109,14 +111,15 @@ def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_n
     # Although kernel is not used here when global_pool=True, we should put one
     pool1 = mx.symbol.Pooling(data=relu1, global_pool=True, kernel=(7, 7), pool_type='avg', name='pool1')
     flat1 = mx.symbol.Flatten(data=pool1)
+    fc1 = mx.symbol.FullyConnected(data=flat1, num_hidden=num_classes, name='fc1')
 
     # sub network 2
     prefix = 'sub_'             # differentiate sub-networks
     if height <= 32:            # such as cifar10
-        body2 = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
+        body2 = mx.sym.Convolution(data=data[1], num_filter=filter_list[0], kernel=(3, 3), stride=(1,1), pad=(1, 1),
                                   no_bias=True, name=prefix + "conv0", workspace=workspace)
     else:                       # often expected to be 224 such as imagenet
-        body2 = mx.sym.Convolution(data=data, num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
+        body2 = mx.sym.Convolution(data=data[1], num_filter=filter_list[0], kernel=(7, 7), stride=(2,2), pad=(3, 3),
                                   no_bias=True, name=prefix + "conv0", workspace=workspace)
         body2 = mx.sym.BatchNorm(data=body2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn0')
         body2 = mx.sym.Activation(data=body2, act_type='relu', name=prefix + 'relu0')
@@ -130,17 +133,28 @@ def resnetsub(units, num_stages, filter_list, num_classes, image_shape, bottle_n
             body_sub2 = residual_unit(body_sub2, filter_list[i + 1], (1, 1), True,
                                       name=prefix + 'stage%d_unit%d' % (i + 1, j + 2),
                                       bottle_neck=bottle_neck, workspace=workspace, memonger=memonger)
-    bn2 = mx.sym.BatchNorm(data=body_sub2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn1')
+
+    # padding test (truncated in concat training)
+    conv_1x1 = conv_act_layer(body_sub2, 'multi_feat_pad_1_conv_1x1',
+                              256, kernel=(1, 1), pad=(0, 0), stride=(1, 1), act_type='relu')
+    conv_3x3 = conv_act_layer(conv_1x1, 'multi_feat_pad_2_conv_3x3',
+                              512, kernel=(3, 3), pad=(1, 1), stride=(2, 2), act_type='relu')
+    pad2 = mx.symbol.Pad(data=conv_3x3, mode='constant', constant_value=0, pad_width=(0, 0, 0, 0, 4, 4, 5, 5), name='pad')
+
+    bn2 = mx.sym.BatchNorm(data=pad2, fix_gamma=False, eps=2e-5, momentum=bn_mom, name=prefix + 'bn1')
     relu2 = mx.sym.Activation(data=bn2, act_type='relu', name=prefix + 'relu1')
     pool2 = mx.symbol.Pooling(data=relu2, global_pool=True, kernel=(7, 7), pool_type='avg', name=prefix + 'pool1')
     flat2 = mx.symbol.Flatten(data=pool2)
 
+    fc2 = mx.symbol.FullyConnected(data=flat2, num_hidden=num_classes, name='fc2')
+
+    #ret = [mx.symbol.SoftmaxOutput(data=fc1, name='softmax'), mx.symbol.SoftmaxOutput(data=fc2, name='softmax')]
+    #return ret
+
     flat = mx.symbol.Concat(flat1, flat2, dim=0, name='concat')
-
     fc = mx.symbol.FullyConnected(data=flat, num_hidden=num_classes, name='fc')
-
-
     return mx.symbol.SoftmaxOutput(data=fc, name='softmax')
+
 
 def get_symbol(num_classes, num_layers, image_shape, conv_workspace=256, **kwargs):
     """
@@ -187,10 +201,10 @@ def get_symbol(num_classes, num_layers, image_shape, conv_workspace=256, **kwarg
         else:
             raise ValueError("no experiments done on num_layers {}, you can do it yourself".format(num_layers))
 
-    return resnetsub(units       = units,
-                  num_stages  = num_stages,
-                  filter_list = filter_list,
-                  num_classes = num_classes,
-                  image_shape = image_shape,
-                  bottle_neck = bottle_neck,
-                  workspace   = conv_workspace)
+    return resnetsub_concat(units=units,
+                            num_stages=num_stages,
+                            filter_list=filter_list,
+                            num_classes=num_classes,
+                            image_shape=image_shape,
+                            bottle_neck=bottle_neck,
+                            workspace=conv_workspace)

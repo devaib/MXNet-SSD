@@ -1,6 +1,7 @@
 import mxnet as mx
 import numpy as np
 import cv2
+import scipy.misc
 from tools.rand_sampler import RandSampler
 
 class DetRecordIter(mx.io.DataIter):
@@ -67,7 +68,12 @@ class DetRecordIter(mx.io.DataIter):
 
     @property
     def provide_data(self):
-        return self.rec.provide_data
+        #return self.rec.provide_data
+        _provide_data = self.rec.provide_data
+        (b, c, h, w) = _provide_data[0][1]
+        _provide_data[0][1] = (b, c*2, h, w)
+        _provide_data[0].shape = (b, c*2, h, w)
+        return _provide_data
 
     def reset(self):
         self.rec.reset()
@@ -97,13 +103,48 @@ class DetRecordIter(mx.io.DataIter):
             self.max_objects = (first_label.size - self.label_start) // self.label_object_width
             self.label_shape = (self.batch_size, self.max_objects, self.label_object_width)
             self.label_end = self.label_start + self.max_objects * self.label_object_width
-            self.provide_label = [('label', self.label_shape)]
+            #self.provide_label = [('label', self.label_shape)]
+            self.provide_label = [('label', self.label_shape), ('label2', self.label_shape)]
 
         # modify label
         label = self._batch.label[0].asnumpy()
         label = label[:, self.label_start:self.label_end].reshape(
             (self.batch_size, self.max_objects, self.label_object_width))
-        self._batch.label = [mx.nd.array(label)]
+
+        # central area label conversion
+        label2 = label
+        #get central area from label2
+        #y_min = (y_min - 0.25) * 2
+        #y_max = 1 - (0.75 - y_max) * 2
+
+        # process input data: B x 3 x H x W - B x 6 x H x W
+        data = self._batch.data[0].asnumpy()
+        (b, c, h, w) = data.shape
+        new_data = np.zeros([b, 2*c, h, w])
+        # resize for each image
+        data_resized = np.zeros([b, c, h, w])
+        for i in range(b):
+            im = data[i]
+            im_cv = np.transpose(im, (1, 2, 0))
+            im_cv = im_cv + 128
+            #cv2.imwrite('test.jpg', im_cv[...,::-1])
+
+
+            im_cropped = im_cv[h/4:h*3/4, :, :]
+            #cv2.imwrite('cropped.jpg', im_cropped[...,::-1])
+            im_resized = cv2.resize(im_cropped, dsize=(w, h), interpolation=cv2.INTER_CUBIC)
+            #cv2.imwrite('resized.jpg', im_resized[...,::-1])
+
+            im_minus = im_resized - 128
+            im_transback = np.transpose(im_minus, (2, 0, 1))
+            data_resized[i] = im_transback
+
+        new_data[:, :c, :, :] = data
+        new_data[:, c:, :, :] = data_resized
+
+        #self._batch.label = [mx.nd.array(label)]
+        self._batch.label = [mx.nd.array(label), mx.nd.array(label2)]
+        self._batch.data = [mx.nd.array(new_data)]
         return True
 
 class DetIter(mx.io.DataIter):
@@ -234,10 +275,60 @@ class DetIter(mx.io.DataIter):
             if self.is_train:
                 batch_label.append(label)
         self._data = {'data': batch_data}
+
+        # prepare additional data for concat
+        data = self._data['data'].asnumpy()
+        (b, c, h, w) = data.shape
+        new_data = np.zeros([b, 2*c, h, w])
+        # resize for each image
+        data_resized = np.zeros([b, c, h, w])
+        for i in range(b):
+            im = data[i]
+            im_cv = np.transpose(im, (1, 2, 0))
+            im_cv = im_cv + 128
+            im_cropped = im_cv[h/4:h*3/4, :, :]
+            im_resized = cv2.resize(im_cropped, dsize=(w, h), interpolation=cv2.INTER_CUBIC)
+            cv2.imwrite('test.jpg', im_cv[...,::-1])
+            cv2.imwrite('cropped.jpg', im_cropped[...,::-1])
+            cv2.imwrite('resized.jpg', im_resized[...,::-1])
+            im_minus = im_resized - 128
+            im_transback = np.transpose(im_minus, (2, 0, 1))
+            data_resized[i] = im_transback
+        new_data[:, :c, :, :] = data
+        new_data[:, c:, :, :] = data_resized
+        self._data = {'data': mx.io.array(new_data)}
+
+        # central area label conversion
+        b = data.shape[0]
+        label2 = np.copy(batch_label)
+        label1_pad = -1 * np.ones((b, 100, 5))
+        label2_pad = -1 * np.ones((b, 100, 5))
+        # adapt label coordinates
+        for b in range(len(label2)):
+            label_im = label2[b]
+            index = 0
+            for n in range(label_im.shape[0]):
+                invalid_label_index = []
+                label_bb = label_im[n]
+                [cls, xmin, ymin, xmax, ymax] = [i for i in label_bb]
+                if ymin >= 0.25 and ymax <= 0.75:
+                    ymin = (ymin - 0.25) * 2
+                    ymax = 1 - (0.75 - ymax) * 2
+                    label2_pad[b][index][:] = np.array([cls, xmin, ymin, xmax, ymax])
+                    i = i + 1
+
+        # pad label with 0
+        for i in range(len(batch_label)):
+            for j in range(len(batch_label[i])):
+                label1_pad[i][j] = batch_label[i][j]
+
         if self.is_train:
-            self._label = {'label': mx.nd.array(np.array(batch_label))}
+            #self._label = {'label': mx.nd.array(np.array(batch_label))}
+            self._label = {'label': mx.nd.array(np.array(label1_pad)),
+                           'label2': mx.nd.array(np.array(label2_pad))}
         else:
-            self._label = {'label': None}
+            #self._label = {'label': None}
+            self._label = {'label': None, 'label2': None}
 
     def _data_augmentation(self, data, label):
         """
