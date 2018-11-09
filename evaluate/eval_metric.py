@@ -16,7 +16,8 @@ class MApMetric(mx.metric.EvalMetric):
     pred_idx : int
         prediction index in network output list
     """
-    def __init__(self, ovp_thresh=0.5, use_difficult=False, class_names=None, pred_idx=0):
+    def __init__(self, ovp_thresh=0.5, use_difficult=False, class_names=None, pred_idx=0,
+                 output_names=None, label_names=None):
         super(MApMetric, self).__init__('mAP')
         if class_names is None:
             self.num = None
@@ -31,6 +32,8 @@ class MApMetric(mx.metric.EvalMetric):
         self.ovp_thresh = ovp_thresh
         self.use_difficult = use_difficult
         self.class_names = class_names
+        self.output_names = output_names
+        self.label_names = label_names
         if type(pred_idx) == int:
             self.pred_idx = [pred_idx]
         else:
@@ -109,6 +112,10 @@ class MApMetric(mx.metric.EvalMetric):
             ious[uni < 1e-12] = 0  # in case bad boxes
             return ious
 
+        """
+            labels  = [ label1, label2 ]
+            pred    = [ out1, out2 ]
+        """
         # independant execution for each image
         for label_index in range(len(labels)): # traverse over labels
             for i in range(labels[label_index].shape[0]):

@@ -315,7 +315,7 @@ class DetIter(mx.io.DataIter):
                     ymin = (ymin - 0.25) * 2
                     ymax = 1 - (0.75 - ymax) * 2
                     label2_pad[b][index][:] = np.array([cls, xmin, ymin, xmax, ymax])
-                    i = i + 1
+                    index = index + 1
 
         # pad label with 0
         for i in range(len(batch_label)):

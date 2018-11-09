@@ -10,7 +10,6 @@ from train.metric import MultiBoxMetric
 from evaluate.eval_metric import MApMetric, VOC07MApMetric
 from config.config import cfg
 from symbol.symbol_factory import get_symbol_train, get_symbol_train_concat
-from dataset.caltech_pedestrian import CaltechPedestrian
 from tools.prepare_dataset import load_caltech
 
 
@@ -426,10 +425,10 @@ def train_net(net, train_path, num_classes, batch_size,
 
     # load imdb
     curr_path = os.path.abspath(os.path.dirname(__file__))
-    imdb = load_caltech(image_set='train',
+    imdb_train = load_caltech(image_set='train',
                         caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
                         shuffle=True)
-    train_iter = DetIter(imdb, batch_size, (data_shape[1], data_shape[2]), \
+    train_iter = DetIter(imdb_train, batch_size, (data_shape[1], data_shape[2]), \
                          mean_pixels=[128, 128, 128], rand_samplers=[], \
                          rand_mirror=False, shuffle=False, rand_seed=None, \
                          is_train=True, max_crop_trial=50)
@@ -437,10 +436,10 @@ def train_net(net, train_path, num_classes, batch_size,
     if val_path:
         #val_iter = DetRecordIter(val_path, batch_size, data_shape, mean_pixels=mean_pixels,
         #    label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
-        imdb = load_caltech(image_set='val',
+        imdb_val = load_caltech(image_set='val',
                             caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
                             shuffle=False)
-        val_iter = DetIter(imdb, batch_size, (data_shape[1], data_shape[2]), \
+        val_iter = DetIter(imdb_val, batch_size, (data_shape[1], data_shape[2]), \
                            mean_pixels=[128, 128, 128], rand_samplers=[], \
                            rand_mirror=False, shuffle=False, rand_seed=None, \
                            is_train=False, max_crop_trial=50)
@@ -523,10 +522,12 @@ def train_net(net, train_path, num_classes, batch_size,
     # run fit net, every n epochs we run evaluation network to get mAP
     if voc07_metric:
         #valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
-        valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[3, 7])
+        valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[0, 1],
+                              output_names=['detection_output', 'detection2_output'], label_names=['label', 'label2'])
     else:
         #valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
-        valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[3, 7])
+        valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[0, 1],
+                             output_names=['detection_output', 'detection2_output'], label_names=['label', 'label2'])
 
     # messager is activated in base_module
     mod.fit(train_iter,

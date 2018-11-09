@@ -4,11 +4,12 @@ import sys
 import importlib
 import tools.find_mxnet
 import mxnet as mx
-from dataset.iterator import DetRecordIter
+from dataset.iterator import DetRecordIter, DetIter
 from config.config import cfg
 from evaluate.eval_metric import MApMetric, VOC07MApMetric
 import logging
 from symbol.symbol_factory import get_symbol, get_symbol_concat
+from tools.prepare_dataset import load_caltech
 
 def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
                  model_prefix, epoch, ctx=mx.cpu(), batch_size=1,
@@ -69,8 +70,16 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
     # model_prefix += '_' + str(data_shape[1])
 
     # iterator
-    eval_iter = DetRecordIter(path_imgrec, batch_size, data_shape,
-                              path_imglist=path_imglist, **cfg.valid)
+    #eval_iter = DetRecordIter(path_imgrec, batch_size, data_shape,
+    #                          path_imglist=path_imglist, **cfg.valid)
+    curr_path = os.path.abspath(os.path.dirname(__file__))
+    imdb_val = load_caltech(image_set='val',
+                            caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
+                            shuffle=False)
+    eval_iter = DetIter(imdb_val, batch_size, (data_shape[1], data_shape[2]), \
+                       mean_pixels=[128, 128, 128], rand_samplers=[], \
+                       rand_mirror=False, shuffle=False, rand_seed=None, \
+                       is_train=True, max_crop_trial=50)
     # model params
     load_net, args, auxs = mx.model.load_checkpoint(model_prefix, epoch)
     # network
@@ -94,10 +103,12 @@ def evaluate_net(net, path_imgrec, num_classes, mean_pixels, data_shape,
 
     if voc07_metric:
         #metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=1)
-        metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[1, 2])
+        metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[0, 1],
+                                output_names=['detection_output', 'detection2_output'], label_names=['label', 'label2'])
     else:
         #metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=1)
-        metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[1, 2])
+        metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[0, 1],
+                            output_names=['detection_output', 'detection2_output'], label_names=['label', 'label2'])
 
     # run evaluation
     if not use_second_network:
