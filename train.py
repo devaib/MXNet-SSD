@@ -126,7 +126,7 @@ if __name__ == '__main__':
     #args.network = 'resnet50_customized_first_layer'
     #args.network = 'resnet50_four_layers'
     args.batch_size = 4
-    args.resume = -1
+    args.resume = 3
     args.finetune = -1
     #args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50')
     args.pretrained = False

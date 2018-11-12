@@ -115,6 +115,7 @@ class MApMetric(mx.metric.EvalMetric):
         """
             labels  = [ label1, label2 ]
             pred    = [ out1, out2 ]
+            self.pred_idx = [ 0, 1 ]
         """
         # independant execution for each image
         for label_index in range(len(labels)): # traverse over labels

@@ -442,7 +442,7 @@ def train_net(net, train_path, num_classes, batch_size,
         val_iter = DetIter(imdb_val, batch_size, (data_shape[1], data_shape[2]), \
                            mean_pixels=[128, 128, 128], rand_samplers=[], \
                            rand_mirror=False, shuffle=False, rand_seed=None, \
-                           is_train=False, max_crop_trial=50)
+                           is_train=True, max_crop_trial=50)
     else:
         val_iter = None
 
@@ -523,11 +523,11 @@ def train_net(net, train_path, num_classes, batch_size,
     if voc07_metric:
         #valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
         valid_metric = VOC07MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[0, 1],
-                              output_names=['detection_output', 'detection2_output'], label_names=['label', 'label2'])
+                              output_names=['det_out_output', 'det_out2_output'], label_names=['label', 'label2'])
     else:
         #valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=3)
         valid_metric = MApMetric(ovp_thresh, use_difficult, class_names, pred_idx=[0, 1],
-                             output_names=['detection_output', 'detection2_output'], label_names=['label', 'label2'])
+                             output_names=['det_out_output', 'det_out2_output'], label_names=['label', 'label2'])
 
     # messager is activated in base_module
     mod.fit(train_iter,

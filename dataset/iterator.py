@@ -288,9 +288,9 @@ class DetIter(mx.io.DataIter):
             im_cv = im_cv + 128
             im_cropped = im_cv[h/4:h*3/4, :, :]
             im_resized = cv2.resize(im_cropped, dsize=(w, h), interpolation=cv2.INTER_CUBIC)
-            cv2.imwrite('test.jpg', im_cv[...,::-1])
-            cv2.imwrite('cropped.jpg', im_cropped[...,::-1])
-            cv2.imwrite('resized.jpg', im_resized[...,::-1])
+            #cv2.imwrite('test.jpg', im_cv[...,::-1])
+            #cv2.imwrite('cropped.jpg', im_cropped[...,::-1])
+            #cv2.imwrite('resized.jpg', im_resized[...,::-1])
             im_minus = im_resized - 128
             im_transback = np.transpose(im_minus, (2, 0, 1))
             data_resized[i] = im_transback
