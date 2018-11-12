@@ -18,7 +18,7 @@ def convert_pretrained_concat(name, args):
     epoch_resnet = 0
     sym_resnet, arg_params_resnet, aux_params_resnet = mx.model.load_checkpoint(pretrained_resnet, epoch_resnet)
 
-    pretrained_two_stream_concat = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech-test', 'resnet-50')
+    pretrained_two_stream_concat = os.path.join(os.getcwd(), '.', 'model', 'resnet50', 'resnet-50-Caltech-test', 'from_scratch', 'resnet-50')
     epoch_test = 1
     sym_ts_concat, arg_params_ts_concat, aux_params_ts_concat = mx.model.load_checkpoint(pretrained_two_stream_concat, epoch_test)
 
@@ -30,8 +30,11 @@ def convert_pretrained_concat(name, args):
                 arg_params_ts_concat[k] = arg_params_resnet[k_origin]
         else:
             if k in list(arg_params_resnet.keys()):
-                assert arg_params_ts_concat[k].shape == arg_params_resnet[k].shape, 'arg params shape mismatch'
-                arg_params_ts_concat[k] = arg_params_resnet[k]
+                if arg_params_ts_concat[k].shape == arg_params_resnet[k].shape:
+                    arg_params_ts_concat[k] = arg_params_resnet[k]
+                else:
+                    print k
+                    print(arg_params_ts_concat[k], arg_params_resnet[k])
 
     for k in list(aux_params_ts_concat.keys()):
         if k.startswith('sub_'):
@@ -41,8 +44,10 @@ def convert_pretrained_concat(name, args):
                 aux_params_ts_concat[k] = aux_params_resnet[k_origin]
         else:
             if k in list(aux_params_resnet.keys()):
-                assert aux_params_ts_concat[k].shape == aux_params_resnet[k].shape, 'arg params shape mismatch'
-                aux_params_ts_concat[k] = aux_params_resnet[k]
+                if aux_params_ts_concat[k].shape == aux_params_resnet[k].shape:
+                    aux_params_ts_concat[k] = aux_params_resnet[k]
+                else:
+                    print k
 
     return arg_params_ts_concat, aux_params_ts_concat
 
