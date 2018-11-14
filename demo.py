@@ -8,7 +8,7 @@ import glob
 
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 from detect.detector import Detector
-from symbol.symbol_factory import get_symbol
+from symbol.symbol_factory import get_symbol, get_symbol_concat
 
 def get_detector(net, prefix, epoch, data_shape, mean_pixels, ctx, num_class,
                  nms_thresh=0.5, force_nms=True, nms_topk=400):
@@ -37,8 +37,10 @@ def get_detector(net, prefix, epoch, data_shape, mean_pixels, ctx, num_class,
         force suppress different categories
     """
     if net is not None:
-        net = get_symbol(net, data_shape, num_classes=num_class, nms_thresh=nms_thresh,
+        #net = get_symbol(net, data_shape, num_classes=num_class, nms_thresh=nms_thresh,
+        net = get_symbol_concat(net, data_shape, num_classes=num_class, nms_thresh=nms_thresh,
             force_nms=force_nms, nms_topk=nms_topk)
+
     detector = Detector(net, prefix, epoch, data_shape, mean_pixels, ctx=ctx)
     return detector
 
@@ -176,7 +178,7 @@ if __name__ == '__main__':
 
                 args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
 
-                toFilePath = './data/new/resnet-50-Caltech_new10x_customized/{}'.format(s, v)
+                toFilePath = './data/caltech-pedestrian-dataset-converter/data/res/resnet-50-Caltech-test/{}'.format(s, v)
                 if not os.path.exists(toFilePath):
                     os.makedirs(toFilePath)
                 to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
@@ -187,11 +189,8 @@ if __name__ == '__main__':
 
                 args.dir = None
                 args.ext = None
-                args.epoch = 8
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_two_stream', 'resnet-101-two-stream-caltech')
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet101', 'legacy', 'caltech_6_layers', 'caltech', 'resnet-101-caltech')
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_all_customized-two-stream/weight_decay=0.0005&lr=0.004', 'resnet-50')
-                #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech_new10x_customized', 'resnet-50')
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech-test', 'resnet-50')
+                args.epoch = 10
                 args.data_shape = [480, 640]
                 #args.data_shape = [600, 800]
                 #args.data_shape = [720, 960]

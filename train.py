@@ -130,7 +130,7 @@ if __name__ == '__main__':
     args.finetune = -1
     args.pretrained = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50')
     #args.pretrained = False
-    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech-test', 'from_scratch', 'resnet-50')
+    args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech-test', 'resnet-50')
     #args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-KITTI_all', 'resnet-50')
     args.gpus = '0,1,2,3'
     args.epoch = 0

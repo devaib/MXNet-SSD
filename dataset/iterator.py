@@ -295,7 +295,8 @@ class DetIter(mx.io.DataIter):
             im_transback = np.transpose(im_minus, (2, 0, 1))
             data_resized[i] = im_transback
         new_data[:, :c, :, :] = data
-        new_data[:, c:, :, :] = data_resized
+        #new_data[:, c:, :, :] = data_resized
+        new_data[:, c:, :, :] = data  # test two same stream
         self._data = {'data': mx.io.array(new_data)}
 
         # central area label conversion
@@ -325,7 +326,8 @@ class DetIter(mx.io.DataIter):
         if self.is_train:
             #self._label = {'label': mx.nd.array(np.array(batch_label))}
             self._label = {'label': mx.nd.array(np.array(label1_pad)),
-                           'label2': mx.nd.array(np.array(label2_pad))}
+                           #'label2': mx.nd.array(np.array(label2_pad))}
+                           'label2': mx.nd.array(np.array(label1_pad))}
         else:
             #self._label = {'label': None}
             self._label = {'label': None, 'label2': None}

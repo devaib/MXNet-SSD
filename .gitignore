@@ -1,5 +1,5 @@
 # User defined
-data/*
+data
 !data/demo/
 model/*
 mxnet/*

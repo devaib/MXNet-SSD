@@ -38,9 +38,9 @@ class Detector(object):
         self.mod = mx.mod.Module(symbol, label_names=None, context=ctx)
         self.data_shape = data_shape
         if isinstance(data_shape, int):
-            self.mod.bind(data_shapes=[('data', (batch_size, 3, data_shape, data_shape))])
+            self.mod.bind(data_shapes=[('data', (batch_size, 6, data_shape, data_shape))])
         elif isinstance(data_shape, list):
-            self.mod.bind(data_shapes=[('data', (batch_size, 3, data_shape[0], data_shape[1]))])
+            self.mod.bind(data_shapes=[('data', (batch_size, 6, data_shape[0], data_shape[1]))])
         self.mod.set_params(args, auxs)
         self.data_shape = data_shape
         self.mean_pixels = mean_pixels
@@ -63,20 +63,38 @@ class Detector(object):
         num_images = det_iter._size
         result = []
         detections = []
+        detections2 = []
         if not isinstance(det_iter, mx.io.PrefetchingIter):
             det_iter = mx.io.PrefetchingIter(det_iter)
         start = timer()
         for pred, _, _ in self.mod.iter_predict(det_iter):
             detections.append(pred[0].asnumpy())
+            detections2.append(pred[1].asnumpy())
         time_elapsed = timer() - start
         if show_timer:
             print("Detection time for {} images: {:.4f} sec".format(
                 num_images, time_elapsed))
-        for output in detections:
-            for i in range(output.shape[0]):
-                det = output[i, :, :]
-                res = det[np.where(det[:, 0] >= 0)[0]]
-                result.append(res)
+        #for output in detections:
+        #    for i in range(output.shape[0]):
+        #        det = output[i, :, :]
+        #        res = det[np.where(det[:, 0] >= 0)[0]]
+        #        result.append(res)
+
+        assert len(detections) == len(detections2), "two stream outputs image list mismatch"
+        for img_index in range(len(detections)):
+            output = detections[img_index]
+            det = output[0, :, :]
+            res = det[np.where(det[:, 0] >= 0)[0]]
+
+            output2 = detections2[img_index]
+            det2 = output2[0, :, :]
+            res2 = det2[np.where(det[:, 0] >= 0)[0]]
+            # transform bbs back to original size
+            res2[:, 3] = res2[:, 3] / 2 + 0.25
+            res2[:, 5] = 0.75 - (1 - res2[:, 5]) / 2
+
+            result.append(np.concatenate((res, res2), axis=0))
+
         return result
 
     def im_detect(self, im_list, root_dir=None, extension=None, show_timer=False):
@@ -133,11 +151,12 @@ class Detector(object):
                     # if cls_id not in colors:
                     #     colors[cls_id] = (random.random(), random.random(), random.random())
                     #colors[cls_id] = (0.157, 0.443, 0.525)
-                    colors[cls_id] = (0.9, 0, 0)
+                    colors[cls_id] = (0, 0, 0.9)
                     xmin = int(dets[i, 2] * width)
                     ymin = int(dets[i, 3] * height)
                     xmax = int(dets[i, 4] * width)
                     ymax = int(dets[i, 5] * height)
+
                     rect = plt.Rectangle((xmin, ymin), xmax - xmin,
                                          ymax - ymin, fill=False,
                                          edgecolor=colors[cls_id],
@@ -228,29 +247,29 @@ class Detector(object):
                     score = det[i, 1]
                     if score > thresh:
                         # assemble valid_det in [img_index, x, y, w, h, score] format
-                        #x = int(det[i, 2] * width)
-                        #y = int(det[i, 3] * height)
-                        #w = int((det[i, 4] - det[i, 2]) * width)
-                        #h = int((det[i, 5] - det[i, 3]) * height)
-                        #valid_det = [imgindex, x, y, w, h, score]
-                        #valid_dets.append(valid_det)
-
-                        x = round(float(det[i, 2] * width), 2)
-                        y = round(float(det[i, 3] * height), 2)
-                        w = round(float((det[i, 4] - det[i, 2]) * width), 2)
-                        h = round(float((det[i, 5] - det[i, 3]) * height), 2)
-                        valid_det = ['Car', -1, -1, -10, x, y, x+w, y+h, -1, -1, -1, -1000, -1000, -1000, -10, score]
+                        x = int(det[i, 2] * width)
+                        y = int(det[i, 3] * height)
+                        w = int((det[i, 4] - det[i, 2]) * width)
+                        h = int((det[i, 5] - det[i, 3]) * height)
+                        valid_det = [imgindex, x, y, w, h, score]
                         valid_dets.append(valid_det)
+
+                        #x = round(float(det[i, 2] * width), 2)
+                        #y = round(float(det[i, 3] * height), 2)
+                        #w = round(float((det[i, 4] - det[i, 2]) * width), 2)
+                        #h = round(float((det[i, 5] - det[i, 3]) * height), 2)
+                        #valid_det = ['Car', -1, -1, -10, x, y, x+w, y+h, -1, -1, -1, -1000, -1000, -1000, -10, score]
+                        #valid_dets.append(valid_det)
 
 
 
         # write to file
         import csv
         with open(to_file, 'w+') as f:
-            #csv_writer = csv.writer(f)
-            #csv_writer.writerows(valid_dets)
-            csv_writer = csv.writer(f, delimiter=' ')
+            csv_writer = csv.writer(f)
             csv_writer.writerows(valid_dets)
+            #csv_writer = csv.writer(f, delimiter=' ')
+            #csv_writer.writerows(valid_dets)
 
         print('{} finished'.format(to_file))
 
