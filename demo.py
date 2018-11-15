@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
                 args.images = ','.join([os.path.join(imgpath, fn) for fn in image_list])
 
-                toFilePath = './data/caltech-pedestrian-dataset-converter/data/res/resnet-50-Caltech-test/{}'.format(s, v)
+                toFilePath = './data/caltech-pedestrian-dataset-converter/data/res/resnet-50-Caltech-test-samelabel/{}'.format(s, v)
                 if not os.path.exists(toFilePath):
                     os.makedirs(toFilePath)
                 to_file = os.path.join(toFilePath, '{}.txt'.format(v))    # skip layer defined in multibox_detection.cu
@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
                 args.dir = None
                 args.ext = None
-                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech-test', 'resnet-50')
+                args.prefix = os.path.join(os.getcwd(), 'model', 'resnet50', 'resnet-50-Caltech-test', 'same_label', 'resnet-50')
                 args.epoch = 10
                 args.data_shape = [480, 640]
                 #args.data_shape = [600, 800]
