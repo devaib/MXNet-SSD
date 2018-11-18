@@ -197,7 +197,7 @@ if __name__ == '__main__':
                 args.mean_r = 123
                 args.mean_g = 117
                 args.mean_b = 104
-                args.thresh = 0.1
+                args.thresh = 0.001
                 args.nms = 0.45
                 #args.force_nms = True
                 args.force_nms = False

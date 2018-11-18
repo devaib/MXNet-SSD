@@ -122,28 +122,28 @@ class CaltechPedestrian(Imdb):
 
                             coord = detection['pos']
                             # check height
-                            #if coord[3] <= 20:
-                            #    continue
+                            if coord[3] <= 20:
+                                continue
                             #if coord[3] > h_thres:
                             #    continue
 
                             # check visiblity ratio
-                            #coord_v = detection['posv']
-                            #if (type(coord_v) is not list) or (type(coord) is not list):
-                            #    continue
-                            #if not all(0 == v for v in coord_v):
-                            #    if (coord_v[2] * coord_v[3] / coord[2] / coord[3]) < v_min:
-                            #        continue
+                            coord_v = detection['posv']
+                            if (type(coord_v) is not list) or (type(coord) is not list):
+                                continue
+                            if not all(0 == v for v in coord_v):
+                                if (coord_v[2] * coord_v[3] / coord[2] / coord[3]) < v_min:
+                                    continue
 
                             # check bounds
-                            #if coord[0] < bnds[0]:
-                            #    continue
-                            #if coord[1] < bnds[1]:
-                            #    continue
-                            #if (coord[0] + coord[2]) > bnds[2]:
-                            #    continue
-                            #if (coord[1] + coord[3]) > bnds[3]:
-                            #    continue
+                            if coord[0] < bnds[0]:
+                                continue
+                            if coord[1] < bnds[1]:
+                                continue
+                            if (coord[0] + coord[2]) > bnds[2]:
+                                continue
+                            if (coord[1] + coord[3]) > bnds[3]:
+                                continue
 
                             cls_id = 0
                             xmin = float(coord[0]) / width

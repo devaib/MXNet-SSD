@@ -74,12 +74,13 @@ class Detector(object):
         if show_timer:
             print("Detection time for {} images: {:.4f} sec".format(
                 num_images, time_elapsed))
-        #for output in detections:
-        #    for i in range(output.shape[0]):
-        #        det = output[i, :, :]
-        #        res = det[np.where(det[:, 0] >= 0)[0]]
-        #        result.append(res)
-
+        '''
+        for output in detections:
+            for i in range(output.shape[0]):
+                det = output[i, :, :]
+                res = det[np.where(det[:, 0] >= 0)[0]]
+                result.append(res)
+        '''
         assert len(detections) == len(detections2), "two stream outputs image list mismatch"
         for img_index in range(len(detections)):
             output = detections[img_index]
