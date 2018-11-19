@@ -536,7 +536,8 @@ def train_net(net, train_path, num_classes, batch_size,
 
     # messager is activated in base_module
     mod.fit(train_iter,
-            val_iter,
+            #val_iter,
+            None,
             eval_metric=MultiBoxMetric(),
             validation_metric=valid_metric,
             batch_end_callback=batch_end_callback,
