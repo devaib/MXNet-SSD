@@ -434,7 +434,7 @@ def train_net(net, train_path, num_classes, batch_size,
                         caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
                         shuffle=True)
     train_iter = DetIter(imdb_train, batch_size, (data_shape[1], data_shape[2]), \
-                         mean_pixels=[128, 128, 128], rand_samplers=[], \
+                         mean_pixels=mean_pixels, rand_samplers=[], \
                          rand_mirror=False, shuffle=False, rand_seed=None, \
                          is_train=True, max_crop_trial=50)
 
@@ -445,7 +445,7 @@ def train_net(net, train_path, num_classes, batch_size,
                             caltech_path=os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter'),
                             shuffle=False)
         val_iter = DetIter(imdb_val, batch_size, (data_shape[1], data_shape[2]), \
-                           mean_pixels=[128, 128, 128], rand_samplers=[], \
+                           mean_pixels=mean_pixels, rand_samplers=[], \
                            rand_mirror=False, shuffle=False, rand_seed=None, \
                            is_train=True, max_crop_trial=50)
     else:

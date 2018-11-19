@@ -297,7 +297,6 @@ class DetIter(mx.io.DataIter):
         new_data[:, :c, :, :] = data
         #new_data[:, c:, :, :] = data_resized
         new_data[:, c:, :, :] = data  # test two same stream
-        self._data = {'data': mx.io.array(new_data)}
 
         # central area label conversion
         b = data.shape[0]
@@ -309,7 +308,6 @@ class DetIter(mx.io.DataIter):
             label_im = label2[b]
             index = 0
             for n in range(label_im.shape[0]):
-                invalid_label_index = []
                 label_bb = label_im[n]
                 [cls, xmin, ymin, xmax, ymax] = [i for i in label_bb]
                 if ymin >= 0.25 and ymax <= 0.75:
@@ -317,6 +315,16 @@ class DetIter(mx.io.DataIter):
                     ymax = 1 - (0.75 - ymax) * 2
                     label2_pad[b][index][:] = np.array([cls, xmin, ymin, xmax, ymax])
                     index = index + 1
+
+        ## augmentation
+        #for b in range(new_data.shape[0]):
+        #    img_resized = np.array(new_data[b, c:, :, :])
+        #    gt_resized = label2_pad[b]
+        #    data, label = self._data_augmentation(img_resized, gt_resized)
+        #    new_data[b, c:, :, :] = data
+        #    label2_pad[b, :, :] = label
+
+        self._data = {'data': mx.io.array(new_data)}
 
         # pad label with 0
         for i in range(len(batch_label)):
