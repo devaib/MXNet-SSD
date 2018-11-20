@@ -316,13 +316,7 @@ class DetIter(mx.io.DataIter):
                     label2_pad[b][index][:] = np.array([cls, xmin, ymin, xmax, ymax])
                     index = index + 1
 
-        ## augmentation
-        #for b in range(new_data.shape[0]):
-        #    img_resized = np.array(new_data[b, c:, :, :])
-        #    gt_resized = label2_pad[b]
-        #    data, label = self._data_augmentation(img_resized, gt_resized)
-        #    new_data[b, c:, :, :] = data
-        #    label2_pad[b, :, :] = label
+        # TODO: augumentation
 
         self._data = {'data': mx.io.array(new_data)}
 
@@ -333,9 +327,10 @@ class DetIter(mx.io.DataIter):
 
         if self.is_train:
             #self._label = {'label': mx.nd.array(np.array(batch_label))}
-            self._label = {'label': mx.nd.array(np.array(label1_pad)),
-                           #'label2': mx.nd.array(np.array(label2_pad))}
-                           'label2': mx.nd.array(np.array(label1_pad))}
+            #self._label = {'label': mx.nd.array(np.array(label1_pad)),
+            #               'label2': mx.nd.array(np.array(label2_pad))}
+            self._label = {'label': mx.nd.array(np.array(batch_label)),
+                           'label2': mx.nd.array(np.array(batch_label))}
         else:
             #self._label = {'label': None}
             self._label = {'label': None, 'label2': None}
