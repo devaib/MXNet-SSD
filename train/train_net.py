@@ -412,7 +412,7 @@ def train_net(net, train_path, num_classes, batch_size,
         logger.addHandler(fh)
 
     # check args
-    num_channel = 6
+    num_channel = 3
     if isinstance(data_shape, int):
         data_shape = (num_channel, data_shape, data_shape)
     if isinstance(data_shape, list):
@@ -536,8 +536,7 @@ def train_net(net, train_path, num_classes, batch_size,
 
     # messager is activated in base_module
     mod.fit(train_iter,
-            #val_iter,
-            None,
+            val_iter,
             eval_metric=MultiBoxMetric(),
             validation_metric=valid_metric,
             batch_end_callback=batch_end_callback,

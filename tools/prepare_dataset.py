@@ -147,25 +147,26 @@ if __name__ == '__main__':
     args = parse_args()
 
     # customized
-    args.dataset = 'kitti'
-    args.set = 'train_total'
-    args.shuffle = False
-    suffixs = ['', '_central', '_small', '_large', '_small_total', '_large_total']
-    suffix = suffixs[5]
-    args.target = os.path.join(curr_path, '..', 'data', 'kitti',
-                               'rec', 'car', args.set + suffix + '.lst')
-    args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
+    #args.dataset = 'kitti'
+    #args.set = 'train_total'
+    #args.shuffle = False
+    #suffixs = ['', '_central', '_small', '_large', '_small_total', '_large_total']
+    #suffix = suffixs[5]
+    #args.target = os.path.join(curr_path, '..', 'data', 'kitti',
+    #                           'rec', 'car', args.set + suffix + '.lst')
+    #args.root_path = os.path.join(curr_path, '..', 'data', 'kitti')
 
-    #args.dataset = 'caltech_new10x'
-    #args.set = 'train'
-    #if args.set == 'train':
-    #    args.shuffle = True
-    #elif args.set == 'val':
-    #    args.shuffle = False
-    #args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
-    #                           'new10x_rec_all', args.set + '.lst')
-    #args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
-    #suffix = ""
+    args.dataset = 'caltech'
+    args.set = 'train'
+    if args.set == 'train':
+        args.shuffle = True
+    elif args.set == 'val':
+        args.shuffle = False
+    args.target = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter',
+                               'rec_all', args.set + '.lst')
+    args.root_path = os.path.join(curr_path, '..', 'data', 'caltech-pedestrian-dataset-converter')
+
+    suffix = ""
 
     if args.dataset == 'pascal':
         db = load_pascal(args.set, args.year, args.root_path, args.shuffle)

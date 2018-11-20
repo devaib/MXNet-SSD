@@ -28,7 +28,8 @@ class CaltechPedestrian(Imdb):
 
         # todo: figure out train and val sets
         self.trainset = ['set00', 'set01', 'set02', 'set03', 'set04', 'set05']
-        self.valset = ['set06', 'set07', 'set08', 'set09', 'set10']
+        #self.valset = ['set06', 'set07', 'set08', 'set09', 'set10']
+        self.valset = ['set06']
         if (imageset == 'train'):
             self.imageset = self.trainset
         elif (imageset == 'val'):

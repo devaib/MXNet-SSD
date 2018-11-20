@@ -193,8 +193,6 @@ if __name__ == '__main__':
                                            'same-label-boundary', 'resnet-50')
                 args.epoch = 4
                 args.data_shape = [480, 640]
-                #args.data_shape = [600, 800]
-                #args.data_shape = [720, 960]
                 args.mean_r = 123
                 args.mean_g = 117
                 args.mean_b = 104

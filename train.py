@@ -143,7 +143,7 @@ if __name__ == '__main__':
     args.monitor_pattern = ".*"
     args.num_class = 1
     #args.num_example = 7481
-    args.num_example = 67082
+    args.num_example = 53522
     args.class_names = 'person'  # 'Car, Van, Truck, Pedestrian, Persion_sitting, Cyclist, Tram, Misc, DontCare'
     args.nms_thresh = 0.45
     args.overlap_thresh = 0.5

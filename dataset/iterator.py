@@ -283,26 +283,30 @@ class DetIter(mx.io.DataIter):
         # resize for each image
         data_resized = np.zeros([b, c, h, w])
         for i in range(b):
-            im = data[i]
+            im = np.copy(data[i])
+            im[0] = im[0] + self._mean_pixels.asnumpy()[2][0][0]
+            im[1] = im[1] + self._mean_pixels.asnumpy()[1][0][0]
+            im[2] = im[2] + self._mean_pixels.asnumpy()[0][0][0]
             im_cv = np.transpose(im, (1, 2, 0))
-            im_cv = im_cv + 128
             im_cropped = im_cv[h/4:h*3/4, :, :]
             im_resized = cv2.resize(im_cropped, dsize=(w, h), interpolation=cv2.INTER_CUBIC)
             #cv2.imwrite('test.jpg', im_cv[...,::-1])
             #cv2.imwrite('cropped.jpg', im_cropped[...,::-1])
             #cv2.imwrite('resized.jpg', im_resized[...,::-1])
-            im_minus = im_resized - 128
-            im_transback = np.transpose(im_minus, (2, 0, 1))
-            data_resized[i] = im_transback
+            im_resized = np.transpose(im_resized, (2, 0, 1))
+            im_resized[0] = im_resized[0] - self._mean_pixels.asnumpy()[2][0][0]
+            im_resized[1] = im_resized[1] - self._mean_pixels.asnumpy()[1][0][0]
+            im_resized[2] = im_resized[2] - self._mean_pixels.asnumpy()[0][0][0]
+            data_resized[i] = im_resized
         new_data[:, :c, :, :] = data
-        #new_data[:, c:, :, :] = data_resized
-        new_data[:, c:, :, :] = data  # test two same stream
+        new_data[:, c:, :, :] = data_resized
+        #new_data[:, c:, :, :] = data  # test two same stream
 
         # central area label conversion
         b = data.shape[0]
         label2 = np.copy(batch_label)
-        label1_pad = -1 * np.ones((b, 100, 5))
-        label2_pad = -1 * np.ones((b, 100, 5))
+        label1_pad = -1 * np.ones((b, 70, 5))
+        label2_pad = -1 * np.ones((b, 70, 5))
         # adapt label coordinates
         for b in range(len(label2)):
             label_im = label2[b]
@@ -327,10 +331,8 @@ class DetIter(mx.io.DataIter):
 
         if self.is_train:
             #self._label = {'label': mx.nd.array(np.array(batch_label))}
-            #self._label = {'label': mx.nd.array(np.array(label1_pad)),
-            #               'label2': mx.nd.array(np.array(label2_pad))}
-            self._label = {'label': mx.nd.array(np.array(batch_label)),
-                           'label2': mx.nd.array(np.array(batch_label))}
+            self._label = {'label': mx.nd.array(np.array(label1_pad)),
+                           'label2': mx.nd.array(np.array(label2_pad))}
         else:
             #self._label = {'label': None}
             self._label = {'label': None, 'label2': None}
